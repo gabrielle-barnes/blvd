@@ -2,7 +2,7 @@
   "name": "blvd",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "blvd.js",
   "scripts": {
     "test": "c8 mocha"
   },
