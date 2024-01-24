@@ -1,0 +1,20 @@
+{
+  "name": "blvd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "c8 mocha"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "Gabrielle Barnes, Funmi Idowu, Kimberly Kubo",
+  "license": "ISC",
+  "devDependencies": {
+    "c8": "^9.1.0",
+    "mocha": "^10.2.0"
+  },
+  "dependencies": {
+    "ohm-js": "^17.1.0"
+  }
+}
