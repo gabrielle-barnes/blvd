@@ -1,4 +1,6 @@
-<img src="https://github.com/gabrielle-barns/docs/logo.png">
+<p align="center">
+<img src="docs/logo.png">
+</p>
 
 # blvd
 
