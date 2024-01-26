@@ -107,13 +107,11 @@ END SCENE
 
 </td>
 <td>
-
 <code>function arithmetic(a, b){
     let arit1 = a + b
     let arit2 = a \* b
 }
 </code>
-
 </td>
 </tr> </table>
 
@@ -123,39 +121,31 @@ END SCENE
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-
 <code>ACTION i in range from 1, 6:
     say i
 </code>
-
 </td>
 <td>
-
 <code>for(let i = 1; i < 6; i++){
     console.log(i)
 }
 </code>
-
 </td>
 </tr>
 
 <td>
-
 <code>MAKE int i, 1
 PERFORM i <= 5:
     say i
     i++
 </code>
-
 </td>
 <td>
-
 <code>let i = 1
 while(i <= 5){
     console.log(i)
 }
 </code>
-
 </td>
 </tr> </table>
 
@@ -165,7 +155,6 @@ while(i <= 5){
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-
 <code>NOMINATE review is 1:
     say "1 Star"
 RUNNER-UP review is 2:
@@ -173,18 +162,17 @@ RUNNER-UP review is 2:
 SUPPORTING:
     say "3 or more stars"
 </code>
-
 </td>
 <td>
-
 <code>if(review == 1) {
     console.log("1 Star")
-} else if(review == 2){
+} 
+else if(review == 2){
     console.log("2 Star")
-} else {
+} 
+else {
     console.log("3 or more stars")
 }
 </code>
-
 </td>
 </tr> </table>
