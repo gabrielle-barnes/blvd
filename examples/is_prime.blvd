@@ -1,0 +1,10 @@
+SCENE is_prime has number: 
+	NOMINATE number <= 1:
+		RETURN false 
+	ACTION i in range from 2, number + 1:
+			NOMINATE number % i is 0:
+				RETURN false 
+	RETURN true 
+END SCENE
+
+say is_prime of 17--	
