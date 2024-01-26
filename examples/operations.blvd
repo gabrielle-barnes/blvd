@@ -1,0 +1,17 @@
+Operations without precedence
+5 + 3 * 2 = 11    
+10 + 2 * 5 - 3 / 2 = 28.5
+4 + 2 * 8 / 2  - 5 % 3  ** 2 = 10
+
+Operations with precedence
+( 5 + 3 ) * 2 = 16
+10 + 2 * ( 5 - 3 ) / 2 = 12
+( ( 4 + 2 ) * ( 8 / 2 ) - ( 5 % 3 ) ) ** 2 = 484
+
+MAKE int operation1, ( 5 + 3 ) * 2--
+MAKE int operation2, 10 + 2 * ( 5 - 3 ) / 2 = 12--
+MAKE int operation3, ( ( 4 + 2 ) * ( 8 / 2 ) - ( 5 % 3 ) ) ** 2--
+
+say operation1--
+say operation2--
+say operation3--
