@@ -49,7 +49,7 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr>
 <td>
 
-<code>say "Hello, World!"</code>
+<code>say "Hello, World!"--</code>
 
 </td>
 <td>
@@ -66,7 +66,7 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr>
 <td>
 
-<code>MAKE string dog, "dog"</code>
+<code>MAKE string dog, "dog"--</code>
 
 </td>
 <td>
@@ -83,7 +83,7 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr>
 <td>
 
-<code>dog as string dog</code>
+<code>dog as string dog--</code>
 
 </td>
 <td>
@@ -100,20 +100,18 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr>
 <td>
 <code>SCENE arithmetic has a, b: 
-    MAKE int arit1, a + b
-    MAKE int arit2, a * b
+    MAKE int arit1, a + b--
+    MAKE int arit2, a * b--
 END SCENE
 </code>
 
 </td>
 <td>
-
 <code>function arithmetic(a, b){
     let arit1 = a + b
-    let arit2 = a \* b
+    let arit2 = a * b
 }
 </code>
-
 </td>
 </tr> </table>
 
@@ -123,39 +121,31 @@ END SCENE
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-
 <code>ACTION i in range from 1, 6:
-    say i
+    say i--
 </code>
-
 </td>
 <td>
-
 <code>for(let i = 1; i < 6; i++){
     console.log(i)
 }
 </code>
-
 </td>
 </tr>
 
 <td>
-
-<code>MAKE int i, 1
+<code>MAKE int i, 1--
 PERFORM i <= 5:
-    say i
-    i++
+    say i--
+    i++--
 </code>
-
 </td>
 <td>
-
 <code>let i = 1
 while(i <= 5){
     console.log(i)
 }
 </code>
-
 </td>
 </tr> </table>
 
@@ -165,26 +155,24 @@ while(i <= 5){
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-
 <code>NOMINATE review is 1:
-    say "1 Star"
+    say "1 Star"--
 RUNNER-UP review is 2:
-    say "2 Stars"
+    say "2 Stars"--
 SUPPORTING:
-    say "3 or more stars"
+    say "3 or more stars"--
 </code>
-
 </td>
 <td>
-
 <code>if(review == 1) {
     console.log("1 Star")
-} else if(review == 2){
+} 
+else if(review == 2){
     console.log("2 Star")
-} else {
+} 
+else {
     console.log("3 or more stars")
 }
 </code>
-
 </td>
 </tr> </table>
