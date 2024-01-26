@@ -102,16 +102,15 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <code>SCENE arithmetic has a, b: 
     MAKE int arit1, a + b
     MAKE int arit2, a * b
-END SCENE 
+END SCENE
 </code>
 
 </td>
 <td>
 
-<code>
-function arithmetic(a, b){
+<code>function arithmetic(a, b){
     let arit1 = a + b
-    let arit2 = a * b
+    let arit2 = a \* b
 }
 </code>
 
@@ -125,16 +124,14 @@ function arithmetic(a, b){
 <tr>
 <td>
 
-<code>
-ACTION i in range from 1, 6:
+<code>ACTION i in range from 1, 6:
     say i
 </code>
 
 </td>
 <td>
 
-<code>
-for(let i = 1; i < 6; i++){
+<code>for(let i = 1; i < 6; i++){
     console.log(i)
 }
 </code>
@@ -144,8 +141,7 @@ for(let i = 1; i < 6; i++){
 
 <td>
 
-<code>
-MAKE int i, 1
+<code>MAKE int i, 1
 PERFORM i <= 5:
     say i
     i++
@@ -154,8 +150,7 @@ PERFORM i <= 5:
 </td>
 <td>
 
-<code>
-let i = 1
+<code>let i = 1
 while(i <= 5){
     console.log(i)
 }
@@ -164,15 +159,14 @@ while(i <= 5){
 </td>
 </tr> </table>
 
-### If/Else if/Else
+### Conditionals
 
 <table>
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
 
-<code>
-NOMINATE review is 1:
+<code>NOMINATE review is 1:
     say "1 Star"
 RUNNER-UP review is 2:
     say "2 Stars"
@@ -183,12 +177,11 @@ SUPPORTING:
 </td>
 <td>
 
-<code>
-if(review == 1) {
+<code>if(review == 1) {
     console.log("1 Star")
 } else if(review == 2){
     console.log("2 Star")
-}else {
+} else {
     console.log("3 or more stars")
 }
 </code>
