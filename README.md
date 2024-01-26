@@ -1,4 +1,4 @@
-<img src=“docs/logo.png”>
+<img src="https://github.com/gabrielle-barns/docs/logo.png">
 
 # blvd
 
