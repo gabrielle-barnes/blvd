@@ -1,0 +1,9 @@
+SCENE list_structure:
+	MAKE list best_movies, [“Fallen Angels”, “Bones and All”, “Saltburn”]--
+	MAKE string second_movie, best_movies[1]--
+	APPEND “In theMood for Love” to best_movies--
+	
+	(note: print list of the movies)
+	ACTION movie in best_movies:
+		say movie--
+END SCENE

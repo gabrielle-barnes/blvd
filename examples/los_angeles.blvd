@@ -1,0 +1,10 @@
+SCENE dict_structure:
+	MAKE dict los_angeles, {
+		“acres”: 321000,
+		“state”: “California”,
+		“age”: 242
+}--
+
+ACTION key, value in los_angeles.items:
+	say f”{key}: {value}”--
+END SCENE
