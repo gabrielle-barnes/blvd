@@ -99,12 +99,10 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-
-<code>
-SCENE arithmetic has a, b: 
+<code>SCENE arithmetic has a, b: 
     MAKE int arit1, a + b
     MAKE int arit2, a * b
-END SCENE
+END SCENE 
 </code>
 
 </td>
