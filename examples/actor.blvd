@@ -1,0 +1,10 @@
+(note: a class example)
+stage ACTOR:
+	the ACTOR has a name, a movie, and a quote:
+		MAKE ACTOR name, GIVEN name--
+		MAKE ACTOR movie, GIVEN movie--
+		MAKE ACTOR quote, GIVEN quote--
+	the ACTOR can speak:
+        say quote--
+
+KING_JULIAN: an ACTOR with name "King Julian", movie "Madagascar", and quote "Kings can't get arrested? That's so unfair."--
