@@ -1,6 +1,6 @@
 import * as assert from "assert/strict";
-describe('Sample Test', ( ) => {
+describe('Sample Test',( ) => {
 	it('should test that true === true',() => {
-		assert.equal(true, true);
+		assert.equal(true,true);
     });
 });
