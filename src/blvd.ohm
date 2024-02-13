@@ -1,0 +1,146 @@
+blvd {
+
+	Script 			= Comments | Decl | Stmt* 
+	Comments		= comment
+	Decl 			= VarDecl | TypeDecl | FuncDecl | ClassDecl
+    Stmt			= PrintStmt | ForStmt | IfStmt | WhileStmt | AssignmentStmt	// ListStmt DictStmt  
+                
+	// DECLARATIONS
+    VarDecl			= var Type id "," Exp dd nl
+    TypeDecl 		= id equalSign Type id dd nl
+    FuncDecl		= functionStart Type id has Params ":" "\n"
+                      Block
+                      functionEnd nl						    --funcParams
+                        
+    ClassDecl		= class id ":" nl
+    				  (Constructor | VarDecl | FuncDecl)* nl
+                        
+    Constructor		= ctor has Params ":" nl
+    				  CtorBody
+                      
+    CtorBody		= (id id "," MemberExp dd nl)*
+    MemberExp		= given id 						--self
+    				| Exp	
+                   
+    Method			= methodStart Type id has Params ":" "\n"
+                      Block
+                      methodEnd nl
+                       
+    Params			= ListOf<Param, ","> ","?
+    Param			= Type id
+
+	// STATEMENTS
+    PrintStmt		= print Exp dd nl 	
+                      
+    ForStmt			= for Type id in RangeFunc ":" nl
+    				  Block
+    
+    IfStmt			= if id is Exp ":" nl Block
+    				  ElseIf* Else?                    
+    ElseIf			= elseif id is Exp ":" nl Block 
+    Else			= else ":" nl Block 
+    
+    WhileStmt		= while Exp ":" nl Block
+    
+    Block			= (Stmt | Decl)* 			--GenBlock
+    
+    AssignmentStmt	= assign id equalSign Exp dd nl
+
+	// EXTRA FUNCTIONS
+    RangeFunc		= range from Exp "," Exp
+
+    // EXPRESSIONS
+    Exp				= Exp "or" Exp1  			--boolOr
+    				| Exp1	
+    Exp1			= Exp1 "and" Exp2 			--boolAnd
+    				| Exp2
+    Exp2			= Exp3 relop Exp3  			--boolCondit    
+    				| Exp3
+    Exp3			= Exp3 ("+" | ~dd "-") Exp4		--addSub
+    				| Exp4
+    Exp4 			= Exp4 ("*" | "/" | "%") Exp5 --multDivMod
+    				| Exp5 
+    Exp5			= Exp6 "**" Exp5			--exp
+    				| Exp6
+    Exp6			= "(" Exp ")"				--parens
+    				| q message q				--string
+    				| id
+                    | num
+                    | (true | false)
+                    | "[" ListOf<Exp, ","> "]" ","?      --list
+                    
+    KeyValue		= Exp ":" Exp
+    
+	// TYPES
+    Type			= string | int | boolean | list 
+    
+    value			= "\""
+    
+    // KEY WORDS
+    print			= "say" ~alnum
+    var				= "MAKE" ~alnum
+    string			= "string" ~alnum
+    int				= "int" ~alnum
+    boolean			= "boolean" ~alnum
+    list			= "list" ~alnum
+    true			= "true" ~alnum
+    false			= "false" ~alnum
+    equalSign		= "as" ~alnum
+    has				= "has" ~alnum
+    is				= "is" ~alnum
+    range			= "range" ~alnum
+    from			= "from" ~alnum
+    in				= "in" ~alnum
+    ctor          	= "CONSTRUCTOR" ~idchar
+    given			= "GIVEN" ~idchar
+    assign			= "cast" ~alnum
+    append			= "APPEND" ~alnum
+    functionStart	= "SCENE" ~alnum
+    methodStart		= "SCENE" ~alnum
+    functionEnd		= "END SCENE" ~alnum
+    methodEnd		= "END SCENE" ~alnum
+    for				= "ACTION" ~alnum 
+    while			= "PERFORM" ~alnum
+    if				= "NOMINATE" ~alnum
+    elseif			= "RUNNER-UP" ~alnum
+    else			= "SUPPORTING" ~alnum
+    class			= "STAGE" ~alnum
+    return			= "RETURN" ~alnum
+
+    keywords		= print | var | string | int | boolean | list 
+					| true | false | equalSign | has
+					| is | range | from | in | ctor | given | assign | append 
+                    | functionStart
+					| functionEnd | for | while | if | elseif
+					| else | class | return
+                    
+ 	// COMMENTS			
+    comment 		= "(note:" commentBody ")" nl
+    commentBody 	= (~")" any)*
+
+	// CATEGORY? 
+    message 		= (~dd ~q any)* 			--stringlit
+
+	// ID’s, NUM, RELOP
+    id				= ~keywords letter idchar*
+    idchar			= alnum | "_"
+    num				= digit*
+    relop			= "<=" | "<" | ">=" | ">" | "==" | "!="
+
+	// LIL CHARACTERS
+    space          	:= " " | "\t" | "\r" | comment
+    nl              = "\n" | end
+    q               = "\""
+    dd				= "--"
+
+}
+
+// (note: a class example)
+//STAGE Dog:
+	//CONSTRUCTOR has string name, string movie, string quote:
+		//Dog name, GIVEN name--
+		//Dog movie, GIVEN movie--
+		//Dog quote, GIVEN quote--
+	//SCENE string cat has:
+        //say quote--
+    //END SCENE
