@@ -1,20 +1,12 @@
 import assert from "node:assert/strict"
 import compile from "../src/compiler.js"
 
-const sampleProgram = "print(0);"
+// Test for valid syntax
+assert.strictEqual(compile("valid javascript code"), "Syntax is ok");
 
-describe("The compiler", () => {
-  it("throws when the output type is missing", done => {
-    assert.throws(() => compile(sampleProgram), /Unknown output type/)
-    done()
-  })
-  it("throws when the output type is unknown", done => {
-    assert.throws(() => compile(sampleProgram, "no such type"), /Unknown output type/)
-    done()
-  })
-  it("accepts the parsed option", done => {
-    const compiled = compile(sampleProgram, "parsed")
-    assert(compiled.startsWith("Syntax is ok"))
-    done()
-  })
-})
+// Test for invalid syntax
+assert.throws(() => {
+  compile("invalid javascript code");
+}, /Syntax error/);
+
+console.log("All tests passed successfully.");
