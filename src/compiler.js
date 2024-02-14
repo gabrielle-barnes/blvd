@@ -1,8 +1,10 @@
 import parse from "./parser.js"
 
-export default function compile(source, outputType) {
-  if (!["parsed"].includes(outputType)) {
-    throw new Error("Unknown output type")
+export default function compile(source) {
+  try {
+    parse(source)
+    return "Syntax is ok"
+  } catch (e) {
+    console.error(`Syntax error: ${e}`)
   }
-  if (outputType === "parsed") return "Syntax is ok"
 }

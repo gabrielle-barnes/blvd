@@ -15,7 +15,7 @@ blvd {
   Constructor   = ctor has Params ":" nl CtorBody
                       
   CtorBody      = (id id "," MemberExp dd nl)*
-  MemberExp     = given id                             --self
+  MemberExp     = given id                          --self
                 | Exp	
                    
   Method        = methodStart Type id has Params ":" "\n" Block methodEnd nl
@@ -42,20 +42,20 @@ blvd {
   RangeFunc     = range from Exp "," Exp
 
   // EXPRESSIONS
-  Exp           = Exp "or" Exp1  			          
+  Exp           = Exp "or" Exp1  			              --booleanOr
                 | Exp1	
-  Exp1          = Exp1 "and" Exp2 			           
+  Exp1          = Exp1 "and" Exp2 		              --booleanAnd	           
                 | Exp2
-  Exp2          = Exp3 relop Exp3  			           --relationOps    
+  Exp2          = Exp3 relop Exp3  			            --relationOps    
                 | Exp3
-  Exp3          = Exp3 ("+" | ~dd "-") Exp4		       
+  Exp3          = Exp3 ("+" | ~dd "-") Exp4		      --addSub
                 | Exp4
-  Exp4          = Exp4 ("*" | "/" | "%") Exp5         
+  Exp4          = Exp4 ("*" | "/" | "%") Exp5       --multDivMod
                 | Exp5 
-  Exp5          = Exp6 "**" Exp5			           --exponent
+  Exp5          = Exp6 "**" Exp5			              --exponent
                 | Exp6
-  Exp6          = "(" Exp ")"				           --parens
-                | q message q				           --stringlit
+  Exp6          = "(" Exp ")"				                --parens
+                | q message q				                --stringlit
                 | id
                 | num
                 | (true | false)
