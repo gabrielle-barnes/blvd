@@ -1,10 +1,11 @@
 blvd {
   Script        = Prologue Act+ Epilogue
-  Prologue      = prologue Direction+ endPrologue nl
-  Act           = act digit+ nl nl Direction+ endAct nl
-  Epilogue      = epilogue Direction+ endEpilogue nl
-  Direction     = DialogueLine | Cast | comment
+  Prologue      = prologue nl Direction+ endPrologue nl nl
+  Act           = act digit+ nl Direction+ endAct nl nl
+  Epilogue      = epilogue nl Direction+ endEpilogue nl
+  Direction     = DialogueLine | CastLine | comment
   DialogueLine  = PrintStmt | ForStmt | IfStmt | WhileStmt | ReturnStmt
+  CastLine		  = CastDecl | RecastDecl | FuncDecl | ClassDecl
   
   // STATEMENTS
   PrintStmt     = print Exp dd nl 
@@ -21,37 +22,56 @@ blvd {
   
   ReturnStmt	  = return Exp
   
-  // CAST (add RECAST as type change or update value?)
-  Cast          = cast Type id as Exp dd nl
+  // CASTING
+  CastDecl      = cast Type id as Exp dd nl
+  
+  
+  RecastDecl	  = recast id (as Exp | into Type) dd nl
+  FuncDecl		  = functionStart Type id has Params ":" "\n" Block functionEnd nl 
+  ClassDecl		  = class id ":" nl (Constructor | CastDecl | FuncDecl)*
+  
+  // CONSTRUCTOR
+  Constructor   = ctor has Params ":" nl CtorBody
+  CtorBody      = (id id "," MemberExp dd nl)*
+  MemberExp     = given id                          --self
+                | Exp	
+
+  Params        = ListOf<Param, ","> ","?
+  Param         = Type id
   
   // EXTRA FUNCTIONS
   RangeFunc     = range from Exp "," Exp
 
   // EXPRESSIONS
-  Exp           = Exp "or" Exp1  			          --booleanOr
+  Exp           = Exp "or" Exp1  			              --booleanOr
                 | Exp1	
-  Exp1          = Exp1 "and" Exp2 		          --booleanAnd	           
+  Exp1          = Exp1 "and" Exp2 		              --booleanAnd	           
                 | Exp2
-  Exp2          = Exp3 relop Exp3  			        --relationOps    
+  Exp2          = Exp3 relop Exp3  			            --relationOps    
                 | Exp3
-  Exp3          = Exp3 ("+" | ~dd "-") Exp4		  --addSub
+  Exp3          = Exp3 ("+" | ~dd "-") Exp4		      --addSub
                 | Exp4
-  Exp4          = Exp4 ("*" | "/" | "%") Exp5   --multDivMod
+  Exp4          = Exp4 ("*" | "/" | "%") Exp5       --multDivMod
                 | Exp5 
-  Exp5          = Exp6 "**" Exp5			          --exponent
+  Exp5          = Exp6 "**" Exp5			              --exponent
                 | Exp6
-  Exp6          = "(" Exp ")"				            --parens
-                | q message q				            --stringlit
+  Exp6          = "(" Exp ")"				                --parens
+                | ListLit
+                | message				          	        --stringlit
+                | (true | false)
                 | id
                 | num
-                | (true | false)
                 
+
+  // LIST LITERALS
+  ListLit		    = "["ListOf<Exp, ","> "]"
+  
   // TYPES
   Type          = string | int | boolean | list
   
   // KEYWORDS
   print         = "say" ~idchar
-  var           = "MAKE" ~idchar
+  // var           = "MAKE" ~idchar
   string        = "string" ~idchar
   int           = "int" ~idchar
   boolean       = "boolean" ~idchar
@@ -80,15 +100,17 @@ blvd {
   class         = "STAGE" ~idchar
   return        = "RETURN" ~idchar
   prologue		  = "PROLOGUE" ~idchar
-  endPrologue	  = "END PROLOGUE" ~idchar
+  endPrologue	  = "END OF PROLOGUE" ~idchar
   act			      = "ACT" ~idchar
-  endAct		    = "end of ACT" ~idchar
+  endAct		    = "END OF ACT" ~idchar
   epilogue		  = "EPILOGUE" ~idchar
   endEpilogue	  = "FIN" ~idchar
   cast			    = "CAST" ~idchar
   as			      = "as" ~idchar
+  recast		    = "RECAST" ~idchar
+  into			    = "into"
 
-  keywords      = print | var | string | int | boolean | list | true
+  keywords      = print | string | int | boolean | list | true
                 | false | equalSign | has | is | range | from
                 | in | ctor | given | assign | append | functionStart
                 | functionEnd | for | while | if | elseif
@@ -102,7 +124,7 @@ blvd {
   // ID’s, NUM, RELOP
   id            = ~keywords letter idchar*
   idchar        = alnum | "_"
-  num           = digit*
+  num           = digit* ("." digit+)? (("e" | "E") ("+" | "-")? digit digit? digit?)?
   relop         = "<=" | "<" | ">=" | ">" | "==" | "!="
 
   // LIL CHARACTERS
