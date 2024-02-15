@@ -1,7 +1,7 @@
 blvd {
   Script        = Comments | Decl | Stmt* 
   Comments      = comment
-  Decl          = VarDecl | TypeDecl | FuncDecl | ClassDecl
+  Decl          = VarDecl | TypeDecl | FuncDecl | ClassDecl | ListDecl
   Stmt          = PrintStmt | ForStmt | IfStmt | WhileStmt 
                 | AssignStmt  
                 
@@ -11,6 +11,8 @@ blvd {
   FuncDecl      = functionStart Type id has Params ":" "\n" Block functionEnd nl  
                         
   ClassDecl     = class id ":" nl (Constructor | VarDecl | FuncDecl)* nl
+
+  ListDecl      = var list id "," "["ListOf<Exp, ","> "]" dd nl
                         
   Constructor   = ctor has Params ":" nl CtorBody
                       
@@ -61,7 +63,7 @@ blvd {
                 | (true | false)
     
   // TYPES
-  Type          = string | int | boolean 
+  Type          = string | int | boolean | list
     
   value         = "\""
     
@@ -71,6 +73,7 @@ blvd {
   string        = "string" ~alnum
   int           = "int" ~alnum
   boolean       = "boolean" ~alnum
+  list          = "list" ~alnum
   true          = "true" ~alnum
   false         = "false" ~alnum
   equalSign     = "as" ~alnum
@@ -95,11 +98,11 @@ blvd {
   class         = "STAGE" ~alnum
   return        = "RETURN" ~alnum
 
-  keywords      = print | var | string | int | boolean | true
+  keywords      = print | var | string | int | boolean | list | true
                 | false | equalSign | has | is | range | from
                 | in | ctor | given | assign | append | functionStart
                 | functionEnd | for | while | if | elseif
-                | else | class | return
+                | else | class | return 
                     
   // COMMENTS			
   comment       = "(note:" commentBody ")" nl
