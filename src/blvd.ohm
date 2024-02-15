@@ -1,115 +1,104 @@
 blvd {
-  Script        = Comments | Decl | Stmt* 
-  Comments      = comment
-  Decl          = VarDecl | TypeDecl | FuncDecl | ClassDecl | ListDecl
-  Stmt          = PrintStmt | ForStmt | IfStmt | WhileStmt 
-                | AssignStmt  
-                
-  // DECLARATIONS
-  VarDecl       = var Type id "," Exp dd nl
-  TypeDecl      = id equalSign Type id dd nl
-  FuncDecl      = functionStart Type id has Params ":" "\n" Block functionEnd nl  
-                        
-  ClassDecl     = class id ":" nl (Constructor | VarDecl | FuncDecl)* nl
-
-  ListDecl      = var list id "," "["ListOf<Exp, ","> "]" dd nl
-                        
-  Constructor   = ctor has Params ":" nl CtorBody
-                      
-  CtorBody      = (id id "," MemberExp dd nl)*
-  MemberExp     = given id                          --self
-                | Exp	
-                   
-  Method        = methodStart Type id has Params ":" "\n" Block methodEnd nl
-                       
-  Params        = ListOf<Param, ","> ","?
-  Param         = Type id
-
+  Script        = Prologue Act+ Epilogue
+  Prologue      = prologue Direction+ endPrologue nl
+  Act           = act digit+ nl nl Direction+ endAct nl
+  Epilogue      = epilogue Direction+ endEpilogue nl
+  Direction     = DialogueLine | Cast | comment
+  DialogueLine  = PrintStmt | ForStmt | IfStmt | WhileStmt | ReturnStmt
+  
   // STATEMENTS
-  PrintStmt     = print Exp dd nl 	
-                      
+  PrintStmt     = print Exp dd nl 
+  
   ForStmt       = for Type id in RangeFunc ":" nl Block
-    
+  
   IfStmt        = if id is Exp ":" nl Block ElseIf* Else?                   
   ElseIf        = elseif id is Exp ":" nl Block 
   Else          = else ":" nl Block 
     
   WhileStmt     = while Exp ":" nl Block
     
-  Block         = (Stmt | Decl)*                  
-    
-  AssignStmt    = assign id equalSign Exp dd nl
-
+  Block         = Direction*                  
+  
+  ReturnStmt	  = return Exp
+  
+  // CAST (add RECAST as type change or update value?)
+  Cast          = cast Type id as Exp dd nl
+  
   // EXTRA FUNCTIONS
   RangeFunc     = range from Exp "," Exp
 
   // EXPRESSIONS
-  Exp           = Exp "or" Exp1  			              --booleanOr
+  Exp           = Exp "or" Exp1  			          --booleanOr
                 | Exp1	
-  Exp1          = Exp1 "and" Exp2 		              --booleanAnd	           
+  Exp1          = Exp1 "and" Exp2 		          --booleanAnd	           
                 | Exp2
-  Exp2          = Exp3 relop Exp3  			            --relationOps    
+  Exp2          = Exp3 relop Exp3  			        --relationOps    
                 | Exp3
-  Exp3          = Exp3 ("+" | ~dd "-") Exp4		      --addSub
+  Exp3          = Exp3 ("+" | ~dd "-") Exp4		  --addSub
                 | Exp4
-  Exp4          = Exp4 ("*" | "/" | "%") Exp5       --multDivMod
+  Exp4          = Exp4 ("*" | "/" | "%") Exp5   --multDivMod
                 | Exp5 
-  Exp5          = Exp6 "**" Exp5			              --exponent
+  Exp5          = Exp6 "**" Exp5			          --exponent
                 | Exp6
-  Exp6          = "(" Exp ")"				                --parens
-                | q message q				                --stringlit
+  Exp6          = "(" Exp ")"				            --parens
+                | q message q				            --stringlit
                 | id
                 | num
                 | (true | false)
-    
+                
   // TYPES
   Type          = string | int | boolean | list
-    
-  value         = "\""
-    
-  // KEY WORDS
-  print         = "say" ~alnum
-  var           = "MAKE" ~alnum
-  string        = "string" ~alnum
-  int           = "int" ~alnum
-  boolean       = "boolean" ~alnum
-  list          = "list" ~alnum
-  true          = "true" ~alnum
-  false         = "false" ~alnum
-  equalSign     = "as" ~alnum
-  has           = "has" ~alnum
-  is            = "is" ~alnum
-  range         = "range" ~alnum
-  from          = "from" ~alnum
-  in            = "in" ~alnum
+  
+  // KEYWORDS
+  print         = "say" ~idchar
+  var           = "MAKE" ~idchar
+  string        = "string" ~idchar
+  int           = "int" ~idchar
+  boolean       = "boolean" ~idchar
+  list          = "list" ~idchar
+  true          = "true" ~idchar
+  false         = "false" ~idchar
+  equalSign     = "as" ~idchar
+  has           = "has" ~idchar
+  is            = "is" ~idchar
+  range         = "range" ~idchar
+  from          = "from" ~idchar
+  in            = "in" ~idchar
   ctor          = "CONSTRUCTOR" ~idchar
   given         = "GIVEN" ~idchar
-  assign        = "cast" ~alnum
-  append        = "APPEND" ~alnum
-  functionStart = "SCENE" ~alnum
-  methodStart   = "SCENE" ~alnum
-  functionEnd   = "END SCENE" ~alnum
-  methodEnd     = "END SCENE" ~alnum
-  for           = "ACTION" ~alnum 
-  while         = "PERFORM" ~alnum
-  if            = "NOMINATE" ~alnum
-  elseif        = "RUNNER-UP" ~alnum
-  else          = "SUPPORTING" ~alnum
-  class         = "STAGE" ~alnum
-  return        = "RETURN" ~alnum
+  assign        = "cast" ~idchar
+  append        = "APPEND" ~idchar
+  functionStart = "SCENE" ~idchar
+  methodStart   = "SCENE" ~idchar
+  functionEnd   = "END SCENE" ~idchar
+  methodEnd     = "END SCENE" ~idchar
+  for           = "ACTION" ~idchar 
+  while         = "PERFORM" ~idchar
+  if            = "NOMINATE" ~idchar
+  elseif        = "RUNNER-UP" ~idchar
+  else          = "SUPPORTING" ~idchar
+  class         = "STAGE" ~idchar
+  return        = "RETURN" ~idchar
+  prologue		  = "PROLOGUE" ~idchar
+  endPrologue	  = "END PROLOGUE" ~idchar
+  act			      = "ACT" ~idchar
+  endAct		    = "end of ACT" ~idchar
+  epilogue		  = "EPILOGUE" ~idchar
+  endEpilogue	  = "FIN" ~idchar
+  cast			    = "CAST" ~idchar
+  as			      = "as" ~idchar
 
   keywords      = print | var | string | int | boolean | list | true
                 | false | equalSign | has | is | range | from
                 | in | ctor | given | assign | append | functionStart
                 | functionEnd | for | while | if | elseif
-                | else | class | return 
-                    
+                | else | class | return | prologue | endPrologue | act
+                | endAct | cast | as
+                
   // COMMENTS			
-  comment       = "(note:" commentBody ")" nl
-  commentBody   = (~")" any)*
- 
-  message       = (~dd ~q any)* 
-
+  comment       = "(note:" (~")" any)* ")" nl
+  message       = q (~dd ~q any)* q
+  
   // ID’s, NUM, RELOP
   id            = ~keywords letter idchar*
   idchar        = alnum | "_"
@@ -121,4 +110,5 @@ blvd {
   nl            = "\n" | end
   q             = "\""
   dd            = "--"
+  
 }
