@@ -26,6 +26,8 @@ const syntaxErrors = [
   //   ["an expression starting with a *", "MAKE int x = * 71;", /Line 1, col 5/],
 ]
 
+// for lines and columns can write the error message (missing semicolon)
+
 describe("The parser", () => {
   for (const [scenario, source] of syntaxChecks) {
     it(`properly specifies ${scenario}`, () => {
