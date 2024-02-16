@@ -66,12 +66,12 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr>
 <td>
 
-<code>MAKE string dog, "dog"--</code>
+<code>CAST string actor as "lead"--</code>
 
 </td>
 <td>
 
-<code>let dog = "dog"</code>
+<code>let actor = "lead"</code>
 
 </td>
 </tr> </table>
@@ -83,12 +83,12 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr>
 <td>
 
-<code>dog as string dog--</code>
+<code>RECAST actor into string--</code>
 
 </td>
 <td>
 
-<code>let aDog = String(dog)</code>
+<code>let actor = String(actor)</code>
 
 </td>
 </tr> </table>
@@ -99,17 +99,17 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-<code>SCENE arithmetic has a, b: 
-    MAKE int arit1, a + b--
-    MAKE int arit2, a * b--
+<code>SCENE int freeway has string fwy: 
+    CAST string  fwy1 as "101"--
+    CAST string fwy2 as "405"--
 END SCENE
 </code>
 
 </td>
 <td>
-<code>function arithmetic(a, b){
-    let arit1 = a + b
-    let arit2 = a * b
+<code>function freeway(fwy){
+    let fwy1 = "101"
+    let fwy2 = "405"
 }
 </code>
 </td>
@@ -121,29 +121,28 @@ END SCENE
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-<code>ACTION i in range from 1, 6:
-    say i--
+<code>ACTION int stars in range from 1, 6:
+    say stars--
 </code>
 </td>
 <td>
-<code>for(let i = 1; i < 6; i++){
-    console.log(i)
+<code>for(let stars = 1; stars < 6; stars++){
+    console.log(stars)
 }
 </code>
 </td>
 </tr>
 
 <td>
-<code>MAKE int i, 1--
-PERFORM i <= 5:
-    say i--
-    i++--
+<code>CAST int rating as 1--
+PERFORM rating <= 5:
+    say "less than 5 stars"--
 </code>
 </td>
 <td>
-<code>let i = 1
-while(i <= 5){
-    console.log(i)
+<code>let rating = 1
+while(rating <= 5){
+    console.log(rating)
 }
 </code>
 </td>
