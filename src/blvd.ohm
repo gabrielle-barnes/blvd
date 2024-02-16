@@ -42,21 +42,21 @@ blvd {
   RangeFunc     = range from Exp "," Exp
 
   // EXPRESSIONS
-  Exp           = Exp "or" Exp1  			                      --booleanOr
+  Exp           = Exp "or" Exp1                             --booleanOr
                 | Exp1	
-  Exp1          = Exp1 "and" Exp2 		                      --booleanAnd	           
+  Exp1          = Exp1 "and" Exp2                           --booleanAnd	           
                 | Exp2
-  Exp2          = Exp3 relop Exp3  			                    --relationOps    
+  Exp2          = Exp3 relop Exp3                           --relationOps    
                 | Exp3
-  Exp3          = Exp3 ("+" | ~dd "-") Exp4		              --addSub
+  Exp3          = Exp3 ("+" | ~dd "-") Exp4                 --addSub
                 | Exp4
   Exp4          = Exp4 ("*" | "/" | "%") Exp5               --multDivMod
                 | Exp5 
-  Exp5          = Exp6 "**" Exp5			                      --exponent
+  Exp5          = Exp6 "**" Exp5                            --exponent
                 | Exp6
-  Exp6          = "(" Exp ")"				                        --parens
+  Exp6          = "(" Exp ")"                               --parens
                 | ListLit
-                | message				          	                --stringlit
+                | message                                   --stringlit
                 | (true | false)
                 | id
                 | num
