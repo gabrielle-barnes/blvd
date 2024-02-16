@@ -1,0 +1,13 @@
+PROLOGUE
+  (note: variable assignment)
+  CAST int i as 1--
+END OF PROLOGUE
+
+ACT 1
+  (note: type casting)
+  RECAST i into string--
+END OF ACT
+
+EPILOGUE 
+  say (83 * ((((-((((13 / 21)))))))) + 1 - 0)--
+FIN
