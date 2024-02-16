@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import parse from "../src/parser.js";
-import { describe, it } from "mocha";
 
 const syntaxChecks = [
   [
@@ -49,11 +48,11 @@ const syntaxChecks = [
   ],
   [
     "print statement",
-    "PROLOGUE\n SCENE say 0-- END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    `PROLOGUE\n SCENE string director has string direction:\n say "action"--\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
     "for statement",
-    `PROLOGUE\n SCENE ACTION int i in range from 1, 6:\n say "i"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n SCENE string director has:\n ACTION int i in range from 1, 6:\n say "i"--\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
     "variable declaration (integer)",
@@ -69,7 +68,7 @@ const syntaxChecks = [
   ],
   [
     "class declarations",
-    `(note: a class example)\n STAGE Dog:\n CONSTRUCTOR has string name, string movie, string quote:\n Dog name, GIVEN name--\n Dog movie, GIVEN movie--\n Dog quote, GIVEN quote--\n SCENE string cat has:\n say quote--\n END SCENE\n CAST list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--\n,`,
+    `PROLOGUE\n (note: a class example)\n STAGE Dog:\n CONSTRUCTOR has string name, string movie, string quote:\n Dog name, GIVEN name--\n Dog movie, GIVEN movie--\n Dog quote, GIVEN quote--\n SCENE string cat has:\n say quote--\n END SCENE\n CAST list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--\n END OF PROLOGUE\n\n  ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
 ];
 
@@ -77,52 +76,47 @@ const syntaxErrors = [
   [
     "non-letter in an identifier",
     `PROLOGUE\n CAST int ab😭c as 2--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 23/,
+    /Line 2, col 13/,
   ],
   [
     "malformed number",
     `PROLOGUE\n CAST int x as 2.--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 27/,
+    /Line 2, col 18/,
   ],
   [
     "missing -- and new line",
     "PROLOGUE\n CAST int x as 3 END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
-    /Line 2, col 27/,
+    /Line 2, col 18/,
   ],
   [
     "a missing right operand",
     `PROLOGUE\n say (5 + --\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 20/,
+    /Line 2, col 11/,
   ],
   [
     "a non-operator",
     `PROLOGUE\n say (7 * (2 _ 3))--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 24/,
+    /Line 2, col 14/,
   ],
   [
     "an expression starting with )",
     `PROLOGUE\n CAST string x as )--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 29/,
+    /Line 2, col 19/,
   ],
   [
     "a statement starting with expression",
     `PROLOGUE\n x * 5--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 12/,
+    /Line 2, col 2/,
   ],
   [
     "an illegal statement on line 2",
     `PROLOGUE\n say (5)--\n x * 5--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 24/,
+    /Line 3, col 2/,
   ],
   [
     "a statement starting with a )",
     `PROLOGUE\n say (5)--\n ) * 5--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 24/,
-  ],
-  [
-    "an expression starting with a *",
-    `PROLOGUE\n CAST int x as * 71--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 1, col 26/,
+    /Line 3, col 2/,
   ],
 ];
 

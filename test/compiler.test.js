@@ -15,7 +15,8 @@ import assert from "node:assert/strict";
 import compile from "../src/compiler.js";
 //import { Program } from "../src/core.js";
 
-const sampleProgram = "print(0);";
+const sampleProgram =
+  "PROLOGUE\n say 0--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n";
 
 describe("The compiler", () => {
   it("throws when the output type is missing", (done) => {

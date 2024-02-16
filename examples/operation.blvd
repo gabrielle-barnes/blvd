@@ -1,8 +1,8 @@
 PROLOGUE
   (note: Operations without precedence)
-  say 5 + 3 * 2 is 11--    
-  say 10 + 2 * 5 - 3 / 2 is 28.5--
-  say 4 + 2 * 8 / 2  - 5 % 3  ** 2 is 10--
+  say (5 + 3 * 2) + "is" + 11--    
+  say (10 + 2 * 5 - 3 / 2) + "is" + 28.5--
+  say (4 + 2 * 8 / 2  - 5 % 3  ** 2) + "is" + 10 -- 
 END OF PROLOGUE
 
 ACT 1

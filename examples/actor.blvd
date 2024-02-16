@@ -8,7 +8,7 @@ STAGE StevenYeun:
 END OF PROLOGUE
 
 ACT 1
-  SCENE string director has direction:
+  SCENE string director has string direction:
     say quote--
   END SCENE    
 END OF ACT
