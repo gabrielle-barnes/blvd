@@ -28,8 +28,8 @@ const syntaxChecks = [
     "PROLOGUE\n CAST int x as (1<(2<=(3==(4!=(5 >= (6>7))))))--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
   ],
   [
-    "end of program inside comment",
-    "PROLOGUE\n say (0)--\n (note: yay) END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    "comments on own line",
+    "PROLOGUE\n say (0)--\n (note: yay)\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
   ],
   [
     "comments with no text are ok",
