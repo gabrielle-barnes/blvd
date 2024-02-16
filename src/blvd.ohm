@@ -5,7 +5,7 @@ blvd {
   Epilogue      = epilogue nl Direction+ endEpilogue nl
   Direction     = DialogueLine | CastLine | comment | "\n"
   DialogueLine  = PrintStmt | ForStmt | IfStmt | WhileStmt | ReturnStmt
-  CastLine		  = CastDecl | RecastDecl | FuncDecl | ClassDecl
+  CastLine      = CastDecl | RecastDecl | FuncDecl | ClassDecl
   
   // STATEMENTS
   PrintStmt     = print Exp dd nl 
@@ -20,20 +20,19 @@ blvd {
     
   Block         = Direction*                  
   
-  ReturnStmt	  = return Exp
+  ReturnStmt    = return Exp
   
   // CASTING
   CastDecl      = cast Type id as Exp dd nl
-  
-  
-  RecastDecl	  = recast id (as Exp | into Type) dd nl
-  FuncDecl		  = functionStart Type id has Params ":" "\n" Block functionEnd nl 
-  ClassDecl		  = class id ":" nl (Constructor | CastDecl | FuncDecl)*
+  RecastDecl    = recast id (as Exp | into Type) dd nl
+
+  FuncDecl      = functionStart Type id has Params ":" "\n" Block functionEnd nl 
+  ClassDecl     = class id ":" nl (Constructor | CastDecl | FuncDecl)*
   
   // CONSTRUCTOR
   Constructor   = ctor has Params ":" nl CtorBody
   CtorBody      = (id id "," MemberExp dd nl)*
-  MemberExp     = given id                          --self
+  MemberExp     = given id                                  --self
                 | Exp	
 
   Params        = ListOf<Param, ","> ","?
@@ -43,35 +42,33 @@ blvd {
   RangeFunc     = range from Exp "," Exp
 
   // EXPRESSIONS
-  Exp           = Exp "or" Exp1  			              --booleanOr
+  Exp           = Exp "or" Exp1  			                      --booleanOr
                 | Exp1	
-  Exp1          = Exp1 "and" Exp2 		              --booleanAnd	           
+  Exp1          = Exp1 "and" Exp2 		                      --booleanAnd	           
                 | Exp2
-  Exp2          = Exp3 relop Exp3  			            --relationOps    
+  Exp2          = Exp3 relop Exp3  			                    --relationOps    
                 | Exp3
-  Exp3          = Exp3 ("+" | ~dd "-") Exp4		      --addSub
+  Exp3          = Exp3 ("+" | ~dd "-") Exp4		              --addSub
                 | Exp4
-  Exp4          = Exp4 ("*" | "/" | "%") Exp5       --multDivMod
+  Exp4          = Exp4 ("*" | "/" | "%") Exp5               --multDivMod
                 | Exp5 
-  Exp5          = Exp6 "**" Exp5			              --exponent
+  Exp5          = Exp6 "**" Exp5			                      --exponent
                 | Exp6
-  Exp6          = "(" Exp ")"				                --parens
+  Exp6          = "(" Exp ")"				                        --parens
                 | ListLit
-                | message				          	        --stringlit
+                | message				          	                --stringlit
                 | (true | false)
                 | id
                 | num
                 
-
   // LIST LITERALS
-  ListLit		    = "["ListOf<Exp, ","> "]"
+  ListLit       = "["ListOf<Exp, ","> "]"
   
   // TYPES
   Type          = string | int | boolean | list
   
   // KEYWORDS
   print         = "say" ~idchar
-  // var           = "MAKE" ~idchar
   string        = "string" ~idchar
   int           = "int" ~idchar
   boolean       = "boolean" ~idchar
@@ -99,23 +96,23 @@ blvd {
   else          = "SUPPORTING" ~idchar
   class         = "STAGE" ~idchar
   return        = "RETURN" ~idchar
-  prologue		  = "PROLOGUE" ~idchar
-  endPrologue	  = "END OF PROLOGUE" ~idchar
-  act			      = "ACT" ~idchar
-  endAct		    = "END OF ACT" ~idchar
-  epilogue		  = "EPILOGUE" ~idchar
-  endEpilogue	  = "FIN" ~idchar
-  cast			    = "CAST" ~idchar
-  as			      = "as" ~idchar
-  recast		    = "RECAST" ~idchar
-  into			    = "into"
+  prologue      = "PROLOGUE" ~idchar
+  endPrologue   = "END OF PROLOGUE" ~idchar
+  act           = "ACT" ~idchar
+  endAct        = "END OF ACT" ~idchar
+  epilogue      = "EPILOGUE" ~idchar
+  endEpilogue   = "FIN" ~idchar
+  cast          = "CAST" ~idchar
+  as            = "as" ~idchar
+  recast        = "RECAST" ~idchar
+  into          = "into" ~idchar
 
   keywords      = print | string | int | boolean | list | true
                 | false | equalSign | has | is | range | from
                 | in | ctor | given | assign | append | functionStart
-                | functionEnd | for | while | if | elseif
-                | else | class | return | prologue | endPrologue | act
-                | endAct | cast | as
+                | methodStart | functionEnd | methodEnd | for | while
+                | if | elseif | else | class | return | prologue
+                | endPrologue | act | endAct | cast | as | recast | into
                 
   // COMMENTS			
   comment       = "(note:" (~")" any)* ")" nl
