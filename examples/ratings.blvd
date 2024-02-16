@@ -1,0 +1,14 @@
+PROLOGUE
+  say "example of functions"--
+END OF PROLOGUE
+
+ACT 1
+  SCENE int arithmetic has int stars, int actors:
+	CAST int stars as 5--
+    RECAST actors into string--
+  END SCENE
+END OF ACT
+
+EPILOGUE
+  
+FIN

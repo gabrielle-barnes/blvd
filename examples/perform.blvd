@@ -1,0 +1,20 @@
+PROLOGUE
+  (note: loop examples)
+  say "for and while"--
+END OF PROLOGUE
+
+ACT 1
+  (note: for loop)
+  ACTION int i in range from 1, 6:
+	say "i"--
+END OF ACT
+
+ACT 2
+  PERFORM i <= 5:
+    say "i"--
+    RECAST i as i + 1--
+END OF ACT
+
+EPILOGUE
+ 
+FIN

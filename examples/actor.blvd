@@ -1,10 +1,18 @@
 (note: a class example)
-stage ACTOR:
-	the ACTOR has a name, a movie, and a quote:
-		MAKE ACTOR name, GIVEN name--
-		MAKE ACTOR movie, GIVEN movie--
-		MAKE ACTOR quote, GIVEN quote--
-	the ACTOR can speak:
-        say quote--
+PROLOGUE
+STAGE StevenYeun:
+  CONSTRUCTOR has string name, string movie, string quote:
+    StevenYeun name, GIVEN name--
+    StevenYeun movie, GIVEN movie--
+    StevenYeun quote, GIVEN quote--     
+END OF PROLOGUE
 
-KING_JULIAN: an ACTOR with name "King Julian", movie "Madagascar", and quote "Kings can't get arrested? That's so unfair."--
+ACT 1
+  SCENE string director has direction:
+    say quote--
+  END SCENE    
+END OF ACT
+
+EPILOGUE
+  say 0--
+FIN
