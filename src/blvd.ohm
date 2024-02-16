@@ -3,7 +3,7 @@ blvd {
   Prologue      = prologue nl Direction+ endPrologue nl nl
   Act           = act digit+ nl Direction+ endAct nl nl
   Epilogue      = epilogue nl Direction+ endEpilogue nl
-  Direction     = DialogueLine | CastLine | comment
+  Direction     = DialogueLine | CastLine | comment | "\n"
   DialogueLine  = PrintStmt | ForStmt | IfStmt | WhileStmt | ReturnStmt
   CastLine		  = CastDecl | RecastDecl | FuncDecl | ClassDecl
   
