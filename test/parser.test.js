@@ -120,8 +120,6 @@ const syntaxErrors = [
   ],
 ];
 
-// for lines and columns can write the error message (missing semicolon)
-
 describe("The parser", () => {
   for (const [scenario, source] of syntaxChecks) {
     it(`properly specifies ${scenario}`, () => {
