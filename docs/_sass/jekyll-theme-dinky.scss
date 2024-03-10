@@ -422,3 +422,14 @@ footer {
     color:#444;
   }
 }
+
+a.buttons.github {
+    background: teal; /* Change the background color to teal */
+    color: teal; /* Change the text color to teal */
+  }
+  
+  a.buttons.github:hover {
+    background: darkcyan; /* Change the background color on hover */
+    color: darkcyan; /* Change the text color on hover */
+  }
+  
