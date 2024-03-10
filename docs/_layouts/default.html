@@ -27,11 +27,13 @@
           <li><a class="buttons github" href="{{ site.github.repository_url }}">View On GitHub</a></li>
         </ul>
 
+        <!-- TO DO -->
+        <!-- Trying to add all users and their GitHub -->
         {% if site.github.is_project_page %}
-          <p> class="header">This project is maintained by 
-            <p><a class="header name" href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
-            <p><a class="header name" href="{{ https://github.com/Funmi-idowu }}">{{ Funmi Idowu }}</a></p>
-            <p><a class="header name" href="{{ https://github.com/Kimberly-Kubo }}">{{ Kimberly Kubo }}</a></p>
+          <p class="header">This project is maintained by 
+            <a class="header name" href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>
+            <a class="header name" href="https://github.com/Funmi-idowu">Funmi Idowu</a>
+            <a class="header name" href="https://github.com/Kimberly-Kubo">Kimberly Kubo</a>
           </p>
         {% endif %}
 
