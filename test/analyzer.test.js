@@ -1,7 +1,13 @@
-import assert from "node:assert/strict"
-import parse from "../src/parser.js"
-import analyze from "../src/analyzer.js"
-import { program, variableDeclaration, variable, binary, floatType } from "../src/core.js"
+import assert from "node:assert/strict";
+import parse from "../src/parser.js";
+import analyze from "../src/analyzer.js";
+import {
+  program,
+  variableDeclaration,
+  variable,
+  binaryExpression,
+  floatType,
+} from "../src/core.js";
 
 // Programs that are semantically correct
 const semanticChecks = [
@@ -82,7 +88,7 @@ const semanticChecks = [
   ["built-in sin", "print(sin(π));"],
   ["built-in cos", "print(cos(93.999));"],
   ["built-in hypot", "print(hypot(-4.0, 3.00001));"],
-]
+];
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
@@ -103,11 +109,7 @@ const semanticErrors = [
     /Break can only appear in a loop/,
   ],
   ["return outside function", "return;", /Return can only appear in a function/],
-  [
-    "return value from void function",
-    "function f() {return 1;}",
-    /Cannot return a value/,
-  ],
+  ["return value from void function", "function f() {return 1;}", /Cannot return a value/],
   ["return nothing from non-void", "function f(): int {return;}", /should be returned/],
   ["return type mismatch", "function f(): int {return false;}", /boolean to a int/],
   ["non-boolean short if test", "if 1 {}", /Expected a boolean/],
@@ -144,16 +146,8 @@ const semanticErrors = [
   ["diff type array elements", "print([3,3.0]);", /Not all elements have the same type/],
   ["shadowing", "let x = 1;\nwhile true {let x = 1;}", /Identifier x already declared/],
   ["call of uncallable", "let x = 1;\nprint(x());", /Call of non-function/],
-  [
-    "Too many args",
-    "function f(x: int) {}\nf(1,2);",
-    /1 argument\(s\) required but 2 passed/,
-  ],
-  [
-    "Too few args",
-    "function f(x: int) {}\nf();",
-    /1 argument\(s\) required but 0 passed/,
-  ],
+  ["Too many args", "function f(x: int) {}\nf(1,2);", /1 argument\(s\) required but 2 passed/],
+  ["Too few args", "function f(x: int) {}\nf();", /1 argument\(s\) required but 0 passed/],
   [
     "Parameter type mismatch",
     "function f(x: int) {}\nf(false);",
@@ -176,18 +170,18 @@ const semanticErrors = [
   ["Non-type in param", "let x=1;function f(y:x){}", /Type expected/],
   ["Non-type in return type", "let x=1;function f():x{return 1;}", /Type expected/],
   ["Non-type in field type", "let x=1;struct S {y:x}", /Type expected/],
-]
+];
 
 describe("The analyzer", () => {
   for (const [scenario, source] of semanticChecks) {
     it(`recognizes ${scenario}`, () => {
-      assert.ok(analyze(parse(source)))
-    })
+      assert.ok(analyze(parse(source)));
+    });
   }
   for (const [scenario, source, errorMessagePattern] of semanticErrors) {
     it(`throws on ${scenario}`, () => {
-      assert.throws(() => analyze(parse(source)), errorMessagePattern)
-    })
+      assert.throws(() => analyze(parse(source)), errorMessagePattern);
+    });
   }
   it("produces the expected representation for a trivial program", () => {
     assert.deepEqual(
@@ -195,9 +189,9 @@ describe("The analyzer", () => {
       program([
         variableDeclaration(
           variable("x", false, floatType),
-          binary("+", variable("π", true, floatType), 2.2, floatType)
+          binaryExpression("+", variable("π", true, floatType), 2.2, floatType)
         ),
       ])
-    )
-  })
-})
+    );
+  });
+});
