@@ -6,8 +6,7 @@ const STRING = core.stringType
 const BOOLEAN = core.boolType
 
 class Context {
-
-  /*constructor({ parent = null, locals = new Map(), inLoop = false, function: f = null }) {
+  constructor({ parent = null, locals = new Map(), inLoop = false, function: f = null }) {
     Object.assign(this, { parent, locals, inLoop, function: f })
   }
   add(name, entity) {
@@ -22,8 +21,6 @@ class Context {
   newChildContext(props) {
     return new Context({ ...this, ...props, parent: this, locals: new Map() })
   } 
-  */
-
 } 
 
 
@@ -116,6 +113,7 @@ export default function analyze(match) {
   }
 
   /* !!Do we have this?!! */
+  /*
   function assignable(fromType, toType) {
     return (
       toType == ANY ||
@@ -129,6 +127,7 @@ export default function analyze(match) {
         toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
     )
   }
+  */
 
   /* !!Is IntType and FloatType being "num" correct?!! */
   function typeDescription(type) {
