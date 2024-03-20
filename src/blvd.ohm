@@ -20,11 +20,11 @@ blvd {
     
   Block         = Direction*                  
   
-  ReturnStmt    = return Exp
+  ReturnStmt    = return Exp dd nl
   
   // CASTING
   CastDecl      = cast Type id as Exp dd nl
-  RecastDecl    = recast id (as Exp | into Type) dd nl
+  RecastDecl    = recast id as Exp dd nl
 
   FuncDecl      = functionStart Type id has Params ":" "\n" Block functionEnd nl 
   ClassDecl     = class id ":" nl (Constructor | CastDecl | FuncDecl)*
@@ -65,7 +65,7 @@ blvd {
   ListLit       = "["ListOf<Exp, ","> "]"
   
   // TYPES
-  Type          = string | int | boolean | list
+  Type          = (string | int | boolean) list?
   
   // KEYWORDS
   print         = "say" ~idchar
@@ -95,7 +95,7 @@ blvd {
   elseif        = "RUNNER-UP" ~idchar
   else          = "SUPPORTING" ~idchar
   class         = "STAGE" ~idchar
-  return        = "RETURN" ~idchar
+  return        = "EXIT WITH" ~idchar
   prologue      = "PROLOGUE" ~idchar
   endPrologue   = "END OF PROLOGUE" ~idchar
   act           = "ACT" ~idchar

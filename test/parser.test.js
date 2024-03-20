@@ -68,7 +68,7 @@ const syntaxChecks = [
   ],
   [
     "class declarations",
-    `PROLOGUE\n (note: a class example)\n STAGE Dog:\n CONSTRUCTOR has string name, string movie, string quote:\n Dog name, GIVEN name--\n Dog movie, GIVEN movie--\n Dog quote, GIVEN quote--\n SCENE string cat has:\n say quote--\n END SCENE\n CAST list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--\n END OF PROLOGUE\n\n  ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n (note: a class example)\n STAGE Dog:\n CONSTRUCTOR has string name, string movie, string quote:\n Dog name, GIVEN name--\n Dog movie, GIVEN movie--\n Dog quote, GIVEN quote--\n SCENE string cat has:\n say quote--\n END SCENE\n CAST string list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--\n END OF PROLOGUE\n\n  ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
 ];
 

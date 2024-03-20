@@ -11,10 +11,9 @@ import {
 
 // Programs that are semantically correct
 const semanticChecks = [
-  ["variable declarations", 'const x = 1; let y = "false";'],
-  ["complex array types", "function f(x: [[[int?]]?]) {}"],
-  ["increment and decrement", "let x = 10; x--; x++;"],
-  ["initialize with empty array", "let a = [int]();"],
+  ["variable declarations", "PROLOGUE\nCAST int x as 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n"],
+  ["increment and decrement", "PROLOGUE\nCAST int x as 1--\nRECAST x as x + 1--\nRECAST x as x - 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n"],
+/*  ["initialize with empty array", "let a = [int]();"],
   ["type declaration", "struct S {f: (int)->boolean? g: string}"],
   ["assign arrays", "let a = [int]();let b=[1];a=b;b=a;"],
   ["assign to array element", "const a = [1,2,3]; a[1]=100;"],
@@ -87,12 +86,12 @@ const semanticChecks = [
   ["built-in constants", "print(25.0 * π);"],
   ["built-in sin", "print(sin(π));"],
   ["built-in cos", "print(cos(93.999));"],
-  ["built-in hypot", "print(hypot(-4.0, 3.00001));"],
+  ["built-in hypot", "print(hypot(-4.0, 3.00001));"], */
 ];
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
-  ["non-distinct fields", "struct S {x: boolean x: int}", /Fields must be distinct/],
+/*  ["non-distinct fields", "struct S {x: boolean x: int}", /Fields must be distinct/],
   ["non-int increment", "let x=false;x++;", /an integer/],
   ["non-int decrement", 'let x=some[""];x++;', /an integer/],
   ["undeclared id", "print(x);", /Identifier x not declared/],
@@ -165,11 +164,10 @@ const semanticErrors = [
     "bad return type in fn assign",
     'function f(x: int): int {return 1;} function g(y: int): string {return "uh-oh";} f = g;',
     /Cannot assign a \(int\)->string to a \(int\)->int/,
-  ],
-  ["bad call to sin()", "print(sin(true));", /Cannot assign a boolean to a float/],
-  ["Non-type in param", "let x=1;function f(y:x){}", /Type expected/],
-  ["Non-type in return type", "let x=1;function f():x{return 1;}", /Type expected/],
-  ["Non-type in field type", "let x=1;struct S {y:x}", /Type expected/],
+  ], */
+  ["Non-type in param", "PROLOGUE\nCAST int x as 1--\nSCENE string f has x fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Expected ":"/],
+  ["Non-type in return type", "PROLOGUE\nCAST int x as 1--\nSCENE x f has string fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Expected "boolean", "int", or "string"/],
+  ["Non-type in field type", "PROLOGUE\nCAST int x as 1--\nCAST x y as 2--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Expected "boolean", "int", or "string"/],
 ];
 
 describe("The analyzer", () => {
@@ -183,7 +181,7 @@ describe("The analyzer", () => {
       assert.throws(() => analyze(parse(source)), errorMessagePattern);
     });
   }
-  it("produces the expected representation for a trivial program", () => {
+  /* it("produces the expected representation for a trivial program", () => {
     assert.deepEqual(
       analyze(parse("let x = π + 2.2;")),
       program([
@@ -193,5 +191,5 @@ describe("The analyzer", () => {
         ),
       ])
     );
-  });
+  }); */
 });
