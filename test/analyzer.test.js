@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import parse from "../src/parser.js";
 import analyze from "../src/analyzer.js";
-import {
+/* import {
   program,
   variableDeclaration,
   variable,
   binaryExpression,
   floatType,
-} from "../src/core.js";
+} from "../src/core.js"; */
 
 // Programs that are semantically correct
 const semanticChecks = [
@@ -165,9 +165,9 @@ const semanticErrors = [
     'function f(x: int): int {return 1;} function g(y: int): string {return "uh-oh";} f = g;',
     /Cannot assign a \(int\)->string to a \(int\)->int/,
   ], */
-  ["Non-type in param", "PROLOGUE\nCAST int x as 1--\nSCENE string f has x fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Expected ":"/],
-  ["Non-type in return type", "PROLOGUE\nCAST int x as 1--\nSCENE x f has string fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Expected "boolean", "int", or "string"/],
-  ["Non-type in field type", "PROLOGUE\nCAST int x as 1--\nCAST x y as 2--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Expected "boolean", "int", or "string"/],
+  ["Non-type in param", "PROLOGUE\nCAST int x as 1--\nSCENE string f has x fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Type expected/],
+  ["Non-type in return type", "PROLOGUE\nCAST int x as 1--\nSCENE x f has string fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Type expected/],
+  ["Non-type in field type", "PROLOGUE\nCAST int x as 1--\nCAST x y as 2--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Type expected/],
 ];
 
 describe("The analyzer", () => {
