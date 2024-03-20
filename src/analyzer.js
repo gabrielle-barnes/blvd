@@ -1,6 +1,7 @@
 import * as core from "./core.js"
 
 const INT = core.intType
+// FLOAT is not used in the current version of the language
 const FLOAT = core.floatType
 const STRING = core.stringType
 const BOOLEAN = core.boolType
@@ -199,11 +200,233 @@ export default function analyze(match) {
 
   /* Definitions of the semantic actions */
 
-  /* const builder = match.matcher.grammar.createSemantics().addOperation("rep") 
-    Program(statements) {
-      return core.program(statements.children.map(s => s.rep()))
+  // do we need to specify nl for line ending?
+  const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
+    Script(prologue, acts, epilogue) {
+      return core.script(prologue.rep(), acts.rep(), epilogue.rep())
     },
-  */
+    Prologue(_prologue, _nl_0, directions, _endPrologue, _nl_1, _nl_2) {
+      return directions.rep()
+    },
+    Act(_act, digit, _nl_0, directions, _endAct, _nl_1, _nl_2) {
+      return directions.rep()
+    },
+    Epilogue(_epilogue, _nl_0, directions, _endEpilogue, _nl_1) {
+      return directions.rep()
+    },
+    /* Direction(line){
+      return line.rep()
+    },
+    DialogueLine(stmt){
+      return stmt.rep()
+    },
+    CastLine(decl){
+      return decl.rep()
+    }, */
+    PrintStmt(_print, expression, _dd, _nl) {},
+    ForStmt(_for, type, id, _in, range, _colon, block) {
+      return core.forStatement(id.sourceString, range.rep(), block.rep())
+    },
+    MemberExp_self(_given, name) {},
+    MemberExp(exp) {},
+    /*Program(blocks) {
+      return core.program(blocks.children.map(e => e.rep()))
+      //return core.script(prologue.rep(), acts.rep(), epilogue.rep())
+    },
+    // How do we check PROLOGUE/ACT/ EPILOGUE?
+    Block(_open, statements, _close) {
+      return core.block(statements.rep())
+    },
+    // is type.rep() ok?
+    VarDecl(_cast, type, id, _as, exp, _dd, _nl) {
+      const initializer = exp.rep()
+      const variable = core.variable(id.sourceString, type.rep(), initializer.type)
+=     mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, variable)
+      return core.variableDeclaration(variable, initializer)
+    },
+    FuncDecl(_startFunc, type, id, _has, parameters, _colon, _nl, block, _endFunc) {
+      const func = core.func(id.sourceString)
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, func)
+
+      context = context.newChildContext({ inLoop: false, function: func })
+      const params = parameters.rep()
+
+      const paramTypes = params.map(p => p.type)
+      const returnType = type.children[0].rep()
+      func.type = core.functionType(paramTypes, returnType)
+
+      const body = block.rep()
+      
+      context = context.parent
+      return core.functionDeclaration(func, params, body)
+    },
+    ClassDecl(_class, name, _colon, fields, methods, constructor) {
+      const className = name.sourceString
+      mustNotAlreadyBeDeclared(className, name)
+      const fieldTypes = fields.rep()
+      const methodTypes = methods.rep()
+      const constructorType = constructor.rep()
+      context.add(className, { type: { kind: "ClassType", name: className, fields: fieldTypes, methods: methodTypes, constructor: constructorType } })
+      return core.classDeclaration(className, fieldTypes, methodTypes, constructorType)
+    },
+    // may need to replace block with ctorbody
+    Constructor(_constructor, parameters, _colon, block) {
+      const constructorParameters = parameters.rep()
+      context = context.newChildContext({ function: { type: { kind: "FunctionType", paramTypes: constructorParameters, returnType: VOID } } })
+      const body = block.rep()
+      context = context.parent
+      return core.constructor(constructorParameters, body)
+    },
+    MemberExp_self(_given, name) {
+      const fieldName = name.sourceString
+      const entity = context.lookup(fieldName)
+      must(entity, `Identifier ${fieldName} not declared`, name)
+      return core.variable(fieldName, entity.type)
+    },
+    Params(_has, params, _colon) {
+      return params.asIteration().children.map(e => e.rep())
+    },
+    Param(type, id) {
+      const param = core.variable(id.sourceString, false, type.rep())
+      mustNotAlreadyBeDeclared(param.name, { at: id })
+      context.add(param.name, param)
+      return param
+    },
+    // Direction
+    // DialogueLine
+    PrintStmt(_print, expression) {
+      return core.printStatement(expression.rep())
+    },
+    ForStmt(_for, _open, iterator, _in, collection, _close, body) {
+      return core.forStatement(iterator.sourceString, collection.rep(), body.rep())
+    },
+    // the following is copilot generated
+    IfStmt(_if, exp, block) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      const consequent = block.rep()
+      return core.ifStatement(test, consequent, null)
+    },
+    ElseIf(_else, _if, exp, block) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      const consequent = block.rep()
+      return core.elseIfStatement(test, consequent)
+    },
+    ElseStmt(_else, block) {
+      return core.elseStatement(block.rep())
+    },
+    WhileStmt(_while, exp, block) {
+      const test = exp.rep()
+      mustHaveBooleanType(test, { at: exp })
+      context = context.newChildContext({ inLoop: true })
+      const body = block.rep()
+      context = context.parent
+      return core.whileStatement(test, body)
+    },
+    ReturnStmt(returnKeyword, exp) {
+      mustBeInAFunction({ at: returnKeyword })
+      mustReturnSomething(context.function, { at: returnKeyword })
+      const returnExpression = exp.rep()
+      mustBeReturnable(returnExpression, { from: context.function }, { at: exp })
+      return core.returnStatement(returnExpression)
+    },
+    AssignmentStmt(_recast, variable, _as, exp, _dd, _nl) {
+      const target = variable.rep()
+      const source = exp.rep()
+      mustBeAssignable(source, { toType: target.type }, { at: variable })
+      return core.assignmentStatement(target, source)
+    },
+    Type_id(id) {
+      const type = context.lookup(id.sourceString)
+      mustHaveBeenFound(type, id.sourceString, { at: id })
+      mustBeAType(type, { at: id })
+      return type
+    },*/
+    Exp_booleanOr(exps, _or, exp) {
+      let right = exp.rep()
+      mustHaveBooleanType(right, { at: exp })
+      for (let e of exps.rep()) {
+        let left = e.rep()
+        mustHaveBooleanType(left, { at: e })
+        right = core.binaryExpression(left, right)
+      }
+      return right
+    },
+    Exp1_booleanAnd(exps, _and, exp) {
+      let right = exp.rep()
+      mustHaveBooleanType(right, { at: exp })
+      for (let e of exps.rep()) {
+        let left = e.rep()
+        mustHaveBooleanType(left, { at: e })
+        right = core.binaryExpression(left, right)
+      }
+      return right
+    },
+    Exp2_relationOps(left, op, right) {
+      let leftExp = left.rep()
+      let rightExp = right.rep()
+      mustBothHaveTheSameType(leftExp, rightExp, { at: right })
+      mustHaveNumericOrStringType(leftExp, { at: left })
+      mustHaveNumericOrStringType(rightExp, { at: right })
+      return core.binaryExpression(leftExp, rightExp)
+    },
+    Exp3_addSub(exps, ops, exp) {
+      let right = exp.rep()
+      mustHaveNumericType(right, { at: exp })
+      for (let e of exps.rep()) {
+        let left = e.rep()
+        mustBothHaveTheSameType(left, right, { at: e })
+        mustHaveNumericType(left, { at: e })
+        right = core.binaryExpression(left, right)
+      }
+      return right
+    },
+    Exp4_mulDivMod(exps, ops, exp) {
+      let right = exp.rep()
+      mustHaveNumericType(right, { at: exp })
+      for (let e of exps.rep()) {
+        let left = e.rep()
+        mustBothHaveTheSameType(left, right, { at: e })
+        mustHaveNumericType(left, { at: e })
+        right = core.binaryExpression(left, right)
+      }
+      return right
+    },
+    Exp5_exponent(exp, ops, exps) {
+      let right = exp.rep()
+      mustHaveNumericType(right, { at: exp })
+      for (let e of exps.rep()) {
+        let left = e.rep()
+        mustBothHaveTheSameType(left, right, { at: e })
+        mustHaveNumericType(left, { at: e })
+        right = core.binaryExpression(left, right)
+      }
+      return right
+    },
+    Exp6_parens(_open, exp, _close) {
+      return exp.rep()
+    },
+    Exp6_listexp(_open, args, _close) {
+      const elements = args.asIteration().children.map(e => e.rep())
+      mustAllHaveSameType(elements, { at: args })
+      return core.listExpression(elements)
+    },
+    true(_) {
+      return true
+    },
+    false(_) {
+      return false
+    },
+    message(_openQuote, _chars, _closeQuote) {
+      return this.sourceString
+    },
+    num(_int, _dot, _decimal, _e, _sign, _pow_0, _pow_1, _pow_2) {
+      return Number(this.sourceString)
+    },
+  })
 
     
 

@@ -83,3 +83,16 @@ export function subscriptExpression(array, index) {
 export function call(callee, args) {
     return { kind: "Call", callee, args }
 }
+export const standardLibrary = Object.freeze({
+    float: floatType,
+    boolean: boolType,
+    string: stringType,
+  })
+  
+  // We want every expression to have a type property. But we aren't creating
+  // special entities for numbers, strings, and booleans; instead, we are
+  // just using JavaScript values for those. Fortunately we can monkey patch
+  // the JS classes for these to give us what we want.
+  String.prototype.type = stringType
+  Number.prototype.type = floatType
+  Boolean.prototype.type = boolType

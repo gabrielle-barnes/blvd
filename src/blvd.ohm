@@ -26,11 +26,11 @@ blvd {
   CastDecl      = cast Type id as Exp dd nl
   RecastDecl    = recast id as Exp dd nl
 
-  FuncDecl      = functionStart Type id has Params ":" "\n" Block functionEnd nl 
-  ClassDecl     = class id ":" nl (Constructor | CastDecl | FuncDecl)*
+  FuncDecl      = function Type id has Params ":" "\n" Block endFunction nl 
+  ClassDecl     = class id ":" nl (Constructor | CastDecl | FuncDecl)* endClass nl
   
   // CONSTRUCTOR
-  Constructor   = ctor has Params ":" nl CtorBody
+  Constructor   = ctor has Params ":" nl CtorBody endCtor nl
   CtorBody      = (id id "," MemberExp dd nl)*
   MemberExp     = given id                                  --self
                 | Exp	
@@ -55,14 +55,11 @@ blvd {
   Exp5          = Exp6 "**" Exp5                            --exponent
                 | Exp6
   Exp6          = "(" Exp ")"                               --parens
-                | ListLit
+                | "["ListOf<Exp, ","> "]"                   --listexp
                 | message                                   --stringlit
                 | (true | false)
                 | id
                 | num
-                
-  // LIST LITERALS
-  ListLit       = "["ListOf<Exp, ","> "]"
   
   // TYPES
   Type          = (string | int | boolean) list?
@@ -82,37 +79,38 @@ blvd {
   from          = "from" ~idchar
   in            = "in" ~idchar
   ctor          = "CONSTRUCTOR" ~idchar
+  endCtor       = "END CONSTRUCTOR" ~idchar
   given         = "GIVEN" ~idchar
   assign        = "cast" ~idchar
   append        = "APPEND" ~idchar
-  functionStart = "SCENE" ~idchar
-  methodStart   = "SCENE" ~idchar
-  functionEnd   = "END SCENE" ~idchar
-  methodEnd     = "END SCENE" ~idchar
   for           = "ACTION" ~idchar 
   while         = "PERFORM" ~idchar
   if            = "NOMINATE" ~idchar
   elseif        = "RUNNER-UP" ~idchar
   else          = "SUPPORTING" ~idchar
+  function      = "SCENE" ~idchar
+  endFunction   = "END SCENE" ~idchar
+  method        = "SCENE" ~idchar
+  endMethod     = "END SCENE" ~idchar
   class         = "STAGE" ~idchar
-  return        = "EXIT WITH" ~idchar
+  endClass      = "EXIT STAGE" ~idchar
   prologue      = "PROLOGUE" ~idchar
   endPrologue   = "END OF PROLOGUE" ~idchar
   act           = "ACT" ~idchar
   endAct        = "END OF ACT" ~idchar
   epilogue      = "EPILOGUE" ~idchar
   endEpilogue   = "FIN" ~idchar
+  return        = "EXIT WITH" ~idchar
   cast          = "CAST" ~idchar
   as            = "as" ~idchar
   recast        = "RECAST" ~idchar
-  into          = "into" ~idchar
 
-  keywords      = print | string | int | boolean | list | true
-                | false | equalSign | has | is | range | from
-                | in | ctor | given | assign | append | functionStart
-                | methodStart | functionEnd | methodEnd | for | while
-                | if | elseif | else | class | return | prologue
-                | endPrologue | act | endAct | cast | as | recast | into
+  keywords      = print | string | int | boolean | list | true | false 
+                | equalSign | has | is | range | from | in | ctor | given 
+                | assign | append | function | endFunction | method 
+                | endMethod | for | while | if | elseif | else | class 
+                | endClass | return | prologue | endPrologue | act | endAct 
+                | cast | as | recast | into
                 
   // COMMENTS			
   comment       = "(note:" (~")" any)* ")" nl
