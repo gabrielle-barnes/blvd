@@ -1,92 +1,91 @@
-import * as core from "./core.js"
+import * as core from "./core.js";
 
-const INT = core.intType
+const INT = core.intType;
 // FLOAT is not used in the current version of the language
-const FLOAT = core.floatType
-const STRING = core.stringType
-const BOOLEAN = core.boolType
+const FLOAT = core.floatType;
+const STRING = core.stringType;
+const BOOLEAN = core.boolType;
 
 class Context {
   constructor({ parent = null, locals = new Map(), inLoop = false, function: f = null }) {
-    Object.assign(this, { parent, locals, inLoop, function: f })
+    Object.assign(this, { parent, locals, inLoop, function: f });
   }
   add(name, entity) {
-    this.locals.set(name, entity)
+    this.locals.set(name, entity);
   }
   lookup(name) {
-    return this.locals.get(name) || this.parent?.lookup(name)
+    return this.locals.get(name) || this.parent?.lookup(name);
   }
   static root() {
-    return new Context({ locals: new Map(Object.entries(core.standardLibrary)) })
+    return new Context({ locals: new Map(Object.entries(core.standardLibrary)) });
   }
   newChildContext(props) {
-    return new Context({ ...this, ...props, parent: this, locals: new Map() })
-  } 
-} 
-
+    return new Context({ ...this, ...props, parent: this, locals: new Map() });
+  }
+}
 
 export default function analyze(match) {
   /* a local variable to hold the current context */
-  let context = Context.root()
+  let context = Context.root();
 
   /* a bunch of semantic validation functions */
-  /* !!I think we need to add a constructor related function!! */ 
+  /* !!I think we need to add a constructor related function!! */
   function must(condition, message, errorLocation) {
     if (!condition) {
-      const prefix = errorLocation.at.source.getLineAndColumnMessage()
-      throw new Error(`${prefix}${message}`)
+      const prefix = errorLocation.at.source.getLineAndColumnMessage();
+      throw new Error(`${prefix}${message}`);
     }
   }
 
   function mustNotAlreadyBeDeclared(name, at) {
-    must(!context.lookup(name), `Identifier ${name} already declared`, at)
+    must(!context.lookup(name), `Identifier ${name} already declared`, at);
   }
 
   function mustHaveBeenFound(entity, name, at) {
-    must(entity, `Identifier ${name} not declared`, at)
+    must(entity, `Identifier ${name} not declared`, at);
   }
 
   function mustHaveNumericType(e, at) {
-    must([INT, FLOAT].includes(e.type), "Expected a number", at)
+    must([INT, FLOAT].includes(e.type), "Expected a number", at);
   }
 
   function mustHaveNumericOrStringType(e, at) {
-    must([INT, FLOAT, STRING].includes(e.type), "Expected a number or string", at)
+    must([INT, FLOAT, STRING].includes(e.type), "Expected a number or string", at);
   }
 
   function mustHaveBooleanType(e, at) {
-    must(e.type === BOOLEAN, "Expected a boolean", at)
+    must(e.type === BOOLEAN, "Expected a boolean", at);
   }
 
   function mustHaveAListType(e, at) {
-    must(e.type?.kind === "ListType", "Expected an list", at)
+    must(e.type?.kind === "ListType", "Expected an list", at);
   }
 
   function mustHaveAClassType(e, at) {
-    must(e.type?.kind === "ClassType", "Expected a class", at)
+    must(e.type?.kind === "ClassType", "Expected a class", at);
   }
 
   function mustBothHaveTheSameType(e1, e2, at) {
-    must(equivalent(e1.type, e2.type), "Operands do not have the same type", at)
+    must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
 
   function mustAllHaveSameType(expressions, at) {
     // Used to check the elements of an list expression, and the two
     // arms of a conditional expression, among other scenarios.
     must(
-      expressions.slice(1).every(e => equivalent(e.type, expressions[0].type)),
+      expressions.slice(1).every((e) => equivalent(e.type, expressions[0].type)),
       "Not all elements have the same type",
       at
-    )
+    );
   }
 
   function mustBeAType(e, at) {
     // This is a rather ugly hack
-    must(e?.kind.endsWith("Type"), "Type expected", at)
+    must(e?.kind.endsWith("Type"), "Type expected", at);
   }
 
   function mustBeAListType(t, at) {
-    must(t?.kind === "Listype", "Must be an array type", at)
+    must(t?.kind === "Listype", "Must be an array type", at);
   }
 
   /* TO DO */
@@ -94,10 +93,10 @@ export default function analyze(match) {
   function includesAsField(classType, type) {
     // Whether the class type has a field of type type, directly or indirectly
     return classType.fields.some(
-      field =>
+      (field) =>
         field.type === type ||
         (field.type?.kind === "ClassType" && includesAsField(field.type, type))
-    )
+    );
   }
 
   function equivalent(t1, t2) {
@@ -110,7 +109,7 @@ export default function analyze(match) {
         equivalent(t1.returnType, t2.returnType) &&
         t1.paramTypes.length === t2.paramTypes.length &&
         t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
-    )
+    );
   }
 
   /* !!Do we have this?!! */
@@ -134,68 +133,66 @@ export default function analyze(match) {
   function typeDescription(type) {
     switch (type.kind) {
       case "IntType":
-        return "num"
+        return "num";
       case "FloatType":
-        return "num"
+        return "num";
       case "StringType":
-        return "string"
+        return "string";
       case "BoolType":
-        return "boolean"
+        return "boolean";
       case "ClassType":
-        return type.name
+        return type.name;
 
       /* !!We also have methods which have same aspects in functions!! */
       /* !!So do we rewrite this piece of code?!! */
       case "FunctionType":
-        const paramTypes = type.paramTypes.map(typeDescription).join(", ")
-        const returnType = typeDescription(type.returnType)
-        return `(${paramTypes})->${returnType}`
+        const paramTypes = type.paramTypes.map(typeDescription).join(", ");
+        const returnType = typeDescription(type.returnType);
+        return `(${paramTypes})->${returnType}`;
       case "ListType":
-        return `[${typeDescription(type.baseType)}]`
+        return `[${typeDescription(type.baseType)}]`;
     }
   }
 
   function mustBeAssignable(e, { toType: type }, at) {
-    const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(
-      type
-    )}`
-    must(assignable(e.type, type), message, at)
+    const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(type)}`;
+    must(assignable(e.type, type), message, at);
   }
 
   /* !!Not sure how to do fields!! */
   function mustHaveDistinctFields(type, at) {
-    const fieldNames = new Set(type.fields.map(f => f.name))
-    must(fieldNames.size === type.fields.length, "Fields must be distinct", at)
+    const fieldNames = new Set(type.fields.map((f) => f.name));
+    must(fieldNames.size === type.fields.length, "Fields must be distinct", at);
   }
 
   function mustHaveMember(structType, field, at) {
-    must(structType.fields.map(f => f.name).includes(field), "No such field", at)
+    must(structType.fields.map((f) => f.name).includes(field), "No such field", at);
   }
 
   function mustBeInAFunction(at) {
-    must(context.function, "Return can only appear in a function", at)
+    must(context.function, "Return can only appear in a function", at);
   }
 
   function mustBeCallable(e, at) {
-    const callable = e?.kind === "ClassType" || e.type?.kind === "FunctionType"
-    must(callable, "Call of non-function or non-constructor", at)
+    const callable = e?.kind === "ClassType" || e.type?.kind === "FunctionType";
+    must(callable, "Call of non-function or non-constructor", at);
   }
 
   function mustNotReturnAnything(f, at) {
-    must(f.type.returnType === VOID, "Something should be returned", at)
+    must(f.type.returnType === VOID, "Something should be returned", at);
   }
 
   function mustReturnSomething(f, at) {
-    must(f.type.returnType !== VOID, "Cannot return a value from this function", at)
+    must(f.type.returnType !== VOID, "Cannot return a value from this function", at);
   }
 
   function mustBeReturnable(e, { from: f }, at) {
-    mustBeAssignable(e, { toType: f.type.returnType }, at)
+    mustBeAssignable(e, { toType: f.type.returnType }, at);
   }
 
   function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
-    const message = `${paramCount} argument(s) required but ${argCount} passed`
-    must(argCount === paramCount, message, at)
+    const message = `${paramCount} argument(s) required but ${argCount} passed`;
+    must(argCount === paramCount, message, at);
   }
 
   /* Definitions of the semantic actions */
@@ -203,136 +200,199 @@ export default function analyze(match) {
   // do we need to specify nl for line ending?
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Script(prologue, acts, epilogue) {
-      return core.script(prologue.rep(), acts.rep(), epilogue.rep())
+      return core.script(prologue.rep(), acts.rep(), epilogue.rep());
     },
     Prologue(_prologue, _nl_0, directions, _endPrologue, _nl_1, _nl_2) {
-      return directions.rep()
+      return directions.rep();
     },
     Act(_act, digit, _nl_0, directions, _endAct, _nl_1, _nl_2) {
-      return directions.rep()
+      return directions.rep();
     },
     Epilogue(_epilogue, _nl_0, directions, _endEpilogue, _nl_1) {
-      return directions.rep()
+      return directions.rep();
     },
-    Direction(line){
-      return line.rep()
+    Direction(line) {
+      return line.rep();
     },
-    DialogueLine(stmt){
-      return stmt.rep()
+    DialogueLine(stmt) {
+      return stmt.rep();
     },
-    CastLine(decl){
-      return decl.rep()
+    CastLine(decl) {
+      return decl.rep();
     },
-    PrintStmt(_print, expression, _dd, _nl) {},
+    PrintStmt(_print, expression, _dd, _nl) {
+      return core.printStatement(expression.rep());
+    },
     ForStmt(_for, type, id, _in, range, _colon, block) {
-      return core.forStatement(id.sourceString, range.rep(), block.rep())
+      const iterator_type = type.rep();
+
+      return core.forStatement(id.sourceString, range.rep(), block.rep());
     },
-    IfStmt(_if, id, _is, exp, _colon, _nl, block, elseifstmt, elsestmt){},
-    ElseIf(_elseif, id, _is, exp, _colon, _nl, block){},
-    Else(_else, _colon, _nl, block){},
-    WhileStmt(_while, exp, _colon, _nl, block){},
-    Block(directions){},
-    ReturnStmt(_return, exp, _dd, _nl){},
-    CastDecl(_cast, type, id, _as, exp, _dd, _nl){},
-    RecastDecl(_recast, id, _as, exp, _dd, _nl){},
-    FuncDecl(_function, type, id, _has, params, _colon, _nl_0, block, _endfunction, _nl_1){},
-    ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1){},
-    Constructor(_ctor, _has, params, _colon, _nl, ctorbody, _endctor, _nl){},
+    IfStmt(_if, id, _is, exp, _colon, _nl, block, elseifstmt, elsestmt) {
+      const test = exp.rep();
+      mustHaveBooleanType(test, { at: exp });
+      context = context.newChildContext();
+      const consequent = block.rep();
+      context = context.parent;
+      return core.IfStmt(test, consequent);
+    },
+    ElseIf(_elseif, id, _is, exp, _colon, _nl, block) {
+      const test = exp.rep();
+      mustHaveBooleanType(test, { at: exp });
+      context = context.newChildContext();
+      const consequent = block.rep();
+      //Help!!!
+      //const alternate = trailingIfStatement.rep()
+      //return core.ElseIf(test, consequent, alternate)
+    },
+    Else(_else, _colon, _nl, block) {
+      const test = exp.rep();
+      mustHaveBooleanType(test, { at: exp });
+      context = context.newChildContext();
+      const consequent = block1.rep();
+      context = context.parent;
+      context = context.newChildContext();
+      const alternate = block2.rep();
+      context = context.parent;
+      return core.Else(test, consequent, alternate);
+    },
+    WhileStmt(_while, exp, _colon, _nl, block) {
+      const test = exp.rep();
+      mustHaveBooleanType(test, { at: exp });
+      context = context.newChildContext({ inLoop: true });
+      const body = block.rep();
+      context = context.parent;
+      return core.WhileStmt(test, body);
+    },
+    Block(directions) {},
+    ReturnStmt(_return, exp, _dd, _nl) {},
+    CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
+      const initializer = exp.rep();
+      const variable = core.variable(id.sourceString, type.rep(), initializer.type);
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      context.add(id.sourceString, variable);
+      return core.variableDeclaration(variable, initializer);
+    },
+    //HELP!!!
+    RecastDecl(_recast, id, _as, exp, _dd, _nl) {
+      const source = expression.rep();
+      const target = variable.rep();
+      mustBeAssignable(source, { at: core.variable });
+    },
+    FuncDecl(_function, type, id, _has, params, _colon, _nl_0, block, _endfunction, _nl_1) {
+      const func = core.func(id.sourceString);
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      context.add(id.sourceString, func);
+
+      context = context.newChildContext({ inLoop: false, function: func });
+      const params = paremeters.rep();
+    },
+    ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1) {},
+    Constructor(_ctor, _has, params, _colon, _nl, ctorbody, _endctor, _nl) {},
     /* CtorBody() TO DO need field
        MemberExp_self(_given, name) {},
        MemberExp(exp) {},
     */
-    Params(params, _colon){},
-    Param(type, id){},
-    RangeFunc(_range, _from, exp_0, _comma, exp_1){},
+    Params(params, _colon) {},
+    Param(type, id) {},
+    RangeFunc(_range, _from, exp_0, _comma, exp_1) {},
 
     Exp_booleanOr(exps, _or, exp) {
-      let right = exp.rep()
-      mustHaveBooleanType(right, { at: exp })
+      let right = exp.rep();
+      mustHaveBooleanType(right, { at: exp });
       for (let e of exps.rep()) {
-        let left = e.rep()
-        mustHaveBooleanType(left, { at: e })
-        right = core.binaryExpression(left, right)
+        let left = e.rep();
+        mustHaveBooleanType(left, { at: e });
+        right = core.binaryExpression(left, right);
       }
-      return right
+      return right;
     },
     Exp1_booleanAnd(exps, _and, exp) {
-      let right = exp.rep()
-      mustHaveBooleanType(right, { at: exp })
+      let right = exp.rep();
+      mustHaveBooleanType(right, { at: exp });
       for (let e of exps.rep()) {
-        let left = e.rep()
-        mustHaveBooleanType(left, { at: e })
-        right = core.binaryExpression(left, right)
+        let left = e.rep();
+        mustHaveBooleanType(left, { at: e });
+        right = core.binaryExpression(left, right);
       }
-      return right
+      return right;
     },
     Exp2_relationOps(left, op, right) {
-      let leftExp = left.rep()
-      let rightExp = right.rep()
-      mustBothHaveTheSameType(leftExp, rightExp, { at: right })
-      mustHaveNumericOrStringType(leftExp, { at: left })
-      mustHaveNumericOrStringType(rightExp, { at: right })
-      return core.binaryExpression(leftExp, rightExp)
+      let leftExp = left.rep();
+      let rightExp = right.rep();
+      mustBothHaveTheSameType(leftExp, rightExp, { at: right });
+      mustHaveNumericOrStringType(leftExp, { at: left });
+      mustHaveNumericOrStringType(rightExp, { at: right });
+      return core.binaryExpression(leftExp, rightExp);
     },
     Exp3_addSub(exps, ops, exp) {
-      let right = exp.rep()
-      mustHaveNumericType(right, { at: exp })
+      let right = exp.rep();
+      mustHaveNumericType(right, { at: exp });
       for (let e of exps.rep()) {
-        let left = e.rep()
-        mustBothHaveTheSameType(left, right, { at: e })
-        mustHaveNumericType(left, { at: e })
-        right = core.binaryExpression(left, right)
+        let left = e.rep();
+        mustBothHaveTheSameType(left, right, { at: e });
+        mustHaveNumericType(left, { at: e });
+        right = core.binaryExpression(left, right);
       }
-      return right
+      return right;
     },
     Exp4_mulDivMod(exps, ops, exp) {
-      let right = exp.rep()
-      mustHaveNumericType(right, { at: exp })
+      let right = exp.rep();
+      mustHaveNumericType(right, { at: exp });
       for (let e of exps.rep()) {
-        let left = e.rep()
-        mustBothHaveTheSameType(left, right, { at: e })
-        mustHaveNumericType(left, { at: e })
-        right = core.binaryExpression(left, right)
+        let left = e.rep();
+        mustBothHaveTheSameType(left, right, { at: e });
+        mustHaveNumericType(left, { at: e });
+        right = core.binaryExpression(left, right);
       }
-      return right
+      return right;
     },
     Exp5_exponent(exp, ops, exps) {
-      let right = exp.rep()
-      mustHaveNumericType(right, { at: exp })
+      let right = exp.rep();
+      mustHaveNumericType(right, { at: exp });
       for (let e of exps.rep()) {
-        let left = e.rep()
-        mustBothHaveTheSameType(left, right, { at: e })
-        mustHaveNumericType(left, { at: e })
-        right = core.binaryExpression(left, right)
+        let left = e.rep();
+        mustBothHaveTheSameType(left, right, { at: e });
+        mustHaveNumericType(left, { at: e });
+        right = core.binaryExpression(left, right);
       }
-      return right
+      return right;
     },
     Exp6_parens(_open, exp, _close) {
-      return exp.rep()
+      return exp.rep();
     },
     Exp6_listexp(_open, args, _close) {
-      const elements = args.asIteration().children.map(e => e.rep())
-      mustAllHaveSameType(elements, { at: args })
-      return core.listExpression(elements)
+      const elements = args.asIteration().children.map((e) => e.rep());
+      mustAllHaveSameType(elements, { at: args });
+      return core.listExpression(elements);
     },
-    Exp6(lit){},
-    Type(type, list){},
+    Exp6(lit) {},
+    Type(type, list) {
+      //handle custom types
+      let type =
+        type === "boolean"
+          ? core.boolType
+          : type === "int"
+          ? core.floatType
+          : type === "string"
+          ? core.stringType
+          : core.customType;
+      //must make sure a variable exist before its used
+    },
     true(_) {
-      return true
+      return true;
     },
     false(_) {
-      return false
+      return false;
     },
     message(_openQuote, _chars, _closeQuote) {
-      return this.sourceString
+      return this.sourceString;
     },
     num(_int, _dot, _decimal, _e, _sign, _pow_0, _pow_1, _pow_2) {
-      return Number(this.sourceString)
+      return Number(this.sourceString);
     },
-  })
-
-    
+  });
 
   /* One line to run it */
-  return builder(match).rep()
+  return builder(match).rep();
 }
