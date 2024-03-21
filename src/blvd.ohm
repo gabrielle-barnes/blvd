@@ -56,7 +56,7 @@ blvd {
                 | Exp6
   Exp6          = "(" Exp ")"                               --parens
                 | "["ListOf<Exp, ","> "]"                   --listexp
-                | message                                   --stringlit
+                | message                                   
                 | (true | false)
                 | id
                 | num

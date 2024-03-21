@@ -214,7 +214,7 @@ export default function analyze(match) {
     Epilogue(_epilogue, _nl_0, directions, _endEpilogue, _nl_1) {
       return directions.rep()
     },
-    /* Direction(line){
+    Direction(line){
       return line.rep()
     },
     DialogueLine(stmt){
@@ -222,129 +222,30 @@ export default function analyze(match) {
     },
     CastLine(decl){
       return decl.rep()
-    }, */
+    },
     PrintStmt(_print, expression, _dd, _nl) {},
     ForStmt(_for, type, id, _in, range, _colon, block) {
       return core.forStatement(id.sourceString, range.rep(), block.rep())
     },
-    MemberExp_self(_given, name) {},
-    MemberExp(exp) {},
-    /*Program(blocks) {
-      return core.program(blocks.children.map(e => e.rep()))
-      //return core.script(prologue.rep(), acts.rep(), epilogue.rep())
-    },
-    // How do we check PROLOGUE/ACT/ EPILOGUE?
-    Block(_open, statements, _close) {
-      return core.block(statements.rep())
-    },
-    // is type.rep() ok?
-    VarDecl(_cast, type, id, _as, exp, _dd, _nl) {
-      const initializer = exp.rep()
-      const variable = core.variable(id.sourceString, type.rep(), initializer.type)
-=     mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-      context.add(id.sourceString, variable)
-      return core.variableDeclaration(variable, initializer)
-    },
-    FuncDecl(_startFunc, type, id, _has, parameters, _colon, _nl, block, _endFunc) {
-      const func = core.func(id.sourceString)
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-      context.add(id.sourceString, func)
+    IfStmt(_if, id, _is, exp, _colon, _nl, block, elseifstmt, elsestmt){},
+    ElseIf(_elseif, id, _is, exp, _colon, _nl, block){},
+    Else(_else, _colon, _nl, block){},
+    WhileStmt(_while, exp, _colon, _nl, block){},
+    Block(directions){},
+    ReturnStmt(_return, exp, _dd, _nl){},
+    CastDecl(_cast, type, id, _as, exp, _dd, _nl){},
+    RecastDecl(_recast, id, _as, exp, _dd, _nl){},
+    FuncDecl(_function, type, id, _has, params, _colon, _nl_0, block, _endfunction, _nl_1){},
+    ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1){},
+    Constructor(_ctor, _has, params, _colon, _nl, ctorbody, _endctor, _nl){},
+    /* CtorBody() TO DO need field
+       MemberExp_self(_given, name) {},
+       MemberExp(exp) {},
+    */
+    Params(params, _colon){},
+    Param(type, id){},
+    RangeFunc(_range, _from, exp_0, _comma, exp_1){},
 
-      context = context.newChildContext({ inLoop: false, function: func })
-      const params = parameters.rep()
-
-      const paramTypes = params.map(p => p.type)
-      const returnType = type.children[0].rep()
-      func.type = core.functionType(paramTypes, returnType)
-
-      const body = block.rep()
-      
-      context = context.parent
-      return core.functionDeclaration(func, params, body)
-    },
-    ClassDecl(_class, name, _colon, fields, methods, constructor) {
-      const className = name.sourceString
-      mustNotAlreadyBeDeclared(className, name)
-      const fieldTypes = fields.rep()
-      const methodTypes = methods.rep()
-      const constructorType = constructor.rep()
-      context.add(className, { type: { kind: "ClassType", name: className, fields: fieldTypes, methods: methodTypes, constructor: constructorType } })
-      return core.classDeclaration(className, fieldTypes, methodTypes, constructorType)
-    },
-    // may need to replace block with ctorbody
-    Constructor(_constructor, parameters, _colon, block) {
-      const constructorParameters = parameters.rep()
-      context = context.newChildContext({ function: { type: { kind: "FunctionType", paramTypes: constructorParameters, returnType: VOID } } })
-      const body = block.rep()
-      context = context.parent
-      return core.constructor(constructorParameters, body)
-    },
-    MemberExp_self(_given, name) {
-      const fieldName = name.sourceString
-      const entity = context.lookup(fieldName)
-      must(entity, `Identifier ${fieldName} not declared`, name)
-      return core.variable(fieldName, entity.type)
-    },
-    Params(_has, params, _colon) {
-      return params.asIteration().children.map(e => e.rep())
-    },
-    Param(type, id) {
-      const param = core.variable(id.sourceString, false, type.rep())
-      mustNotAlreadyBeDeclared(param.name, { at: id })
-      context.add(param.name, param)
-      return param
-    },
-    // Direction
-    // DialogueLine
-    PrintStmt(_print, expression) {
-      return core.printStatement(expression.rep())
-    },
-    ForStmt(_for, _open, iterator, _in, collection, _close, body) {
-      return core.forStatement(iterator.sourceString, collection.rep(), body.rep())
-    },
-    // the following is copilot generated
-    IfStmt(_if, exp, block) {
-      const test = exp.rep()
-      mustHaveBooleanType(test, { at: exp })
-      const consequent = block.rep()
-      return core.ifStatement(test, consequent, null)
-    },
-    ElseIf(_else, _if, exp, block) {
-      const test = exp.rep()
-      mustHaveBooleanType(test, { at: exp })
-      const consequent = block.rep()
-      return core.elseIfStatement(test, consequent)
-    },
-    ElseStmt(_else, block) {
-      return core.elseStatement(block.rep())
-    },
-    WhileStmt(_while, exp, block) {
-      const test = exp.rep()
-      mustHaveBooleanType(test, { at: exp })
-      context = context.newChildContext({ inLoop: true })
-      const body = block.rep()
-      context = context.parent
-      return core.whileStatement(test, body)
-    },
-    ReturnStmt(returnKeyword, exp) {
-      mustBeInAFunction({ at: returnKeyword })
-      mustReturnSomething(context.function, { at: returnKeyword })
-      const returnExpression = exp.rep()
-      mustBeReturnable(returnExpression, { from: context.function }, { at: exp })
-      return core.returnStatement(returnExpression)
-    },
-    AssignmentStmt(_recast, variable, _as, exp, _dd, _nl) {
-      const target = variable.rep()
-      const source = exp.rep()
-      mustBeAssignable(source, { toType: target.type }, { at: variable })
-      return core.assignmentStatement(target, source)
-    },
-    Type_id(id) {
-      const type = context.lookup(id.sourceString)
-      mustHaveBeenFound(type, id.sourceString, { at: id })
-      mustBeAType(type, { at: id })
-      return type
-    },*/
     Exp_booleanOr(exps, _or, exp) {
       let right = exp.rep()
       mustHaveBooleanType(right, { at: exp })
@@ -414,6 +315,8 @@ export default function analyze(match) {
       mustAllHaveSameType(elements, { at: args })
       return core.listExpression(elements)
     },
+    Exp6(lit){},
+    Type(type, list){},
     true(_) {
       return true
     },
