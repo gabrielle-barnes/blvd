@@ -228,33 +228,30 @@ export default function analyze(match) {
 
       return core.forStatement(id.sourceString, range.rep(), block.rep());
     },
-    IfStmt(_if, id, _is, exp, _colon, _nl, block, elseifstmt, elsestmt) {
+    // if x is 10: but get rid of id and is, so its if y is 2:
+    IfStmt(_if, exp, _colon, _nl, block, elseifstmt, elsestmt) {
       const test = exp.rep();
       mustHaveBooleanType(test, { at: exp });
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      return core.IfStmt(test, consequent);
+      const elseifs = elseifstmt?.rep();
+      const else_ = elsestmt?.rep();
+      return core.IfStmt(test, consequent, elseifs, else_);
     },
-    ElseIf(_elseif, id, _is, exp, _colon, _nl, block) {
+    ElseIf(_elseif, exp, _colon, _nl, block) {
       const test = exp.rep();
       mustHaveBooleanType(test, { at: exp });
       context = context.newChildContext();
       const consequent = block.rep();
-      //Help!!!
-      //const alternate = trailingIfStatement.rep()
-      //return core.ElseIf(test, consequent, alternate)
+      context = context.parent;
+      return core.ElseIf(test, consequent)
     },
     Else(_else, _colon, _nl, block) {
-      const test = exp.rep();
-      mustHaveBooleanType(test, { at: exp });
       context = context.newChildContext();
-      const consequent = block1.rep();
+      const consequent = block.rep();
       context = context.parent;
-      context = context.newChildContext();
-      const alternate = block2.rep();
-      context = context.parent;
-      return core.Else(test, consequent, alternate);
+      return core.Else(consequent)
     },
     WhileStmt(_while, exp, _colon, _nl, block) {
       const test = exp.rep();
@@ -264,8 +261,14 @@ export default function analyze(match) {
       context = context.parent;
       return core.WhileStmt(test, body);
     },
-    Block(directions) {},
-    ReturnStmt(_return, exp, _dd, _nl) {},
+    // Block(directions) {},
+    ReturnStmt(_return, exp, _dd, _nl) {
+      mustBeInAFunction({ at: _return });
+      mustReturnSomething(context.function, { at: _return });
+      const returnBody = exp.rep();
+      mustBeReturnable(returnBody, { from: context.function }, { at: exp });
+      return core.ReturnStmt(returnBody);
+    },
     CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
       const initializer = exp.rep();
       const variable = core.variable(id.sourceString, type.rep(), initializer.type);
@@ -273,11 +276,11 @@ export default function analyze(match) {
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
     },
-    //HELP!!!
     RecastDecl(_recast, id, _as, exp, _dd, _nl) {
-      const source = expression.rep();
-      const target = variable.rep();
-      mustBeAssignable(source, { at: core.variable });
+      const source = exp.rep();
+      const target = id.rep();
+      mustBeAssignable(source, { toType: target.type }, { at: id });
+      return core.assignmentStatement(target, source);
     },
     FuncDecl(_function, type, id, _has, params, _colon, _nl_0, block, _endfunction, _nl_1) {
       const func = core.func(id.sourceString);
@@ -285,7 +288,13 @@ export default function analyze(match) {
       context.add(id.sourceString, func);
 
       context = context.newChildContext({ inLoop: false, function: func });
-      const params = paremeters.rep();
+      const params_ = paremeters.rep();
+      func.paramType = params.map((p)=>p.type);
+      func.returnType = type.rep();
+
+      const body = block.rep();
+      context = context.parent;
+      return core.functionDeclaration(func, params_, body);
     },
     ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1) {},
     Constructor(_ctor, _has, params, _colon, _nl, ctorbody, _endctor, _nl) {},
@@ -293,9 +302,18 @@ export default function analyze(match) {
        MemberExp_self(_given, name) {},
        MemberExp(exp) {},
     */
-    Params(params, _colon) {},
-    Param(type, id) {},
-    RangeFunc(_range, _from, exp_0, _comma, exp_1) {},
+    Params(params, _colon) {
+      return params.asIteration().children.map((p)=>p.rep());
+    },
+    Param(type, id) {
+      const variable = core.variable(id.sourceString, type.rep());
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      context.add(id.sourceString, variable);
+      return core.variableDeclaration(variable);
+    },
+    RangeFunc(_range, _from, exp_0, _comma, exp_1) {
+
+    },
 
     Exp_booleanOr(exps, _or, exp) {
       let right = exp.rep();

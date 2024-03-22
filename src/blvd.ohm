@@ -12,8 +12,8 @@ blvd {
   
   ForStmt       = for Type id in RangeFunc ":" nl Block
   
-  IfStmt        = if id is Exp ":" nl Block ElseIf* Else?                   
-  ElseIf        = elseif id is Exp ":" nl Block 
+  IfStmt        = if Exp ":" nl Block ElseIf* Else?                   
+  ElseIf        = elseif Exp ":" nl Block 
   Else          = else ":" nl Block 
     
   WhileStmt     = while Exp ":" nl Block
@@ -110,7 +110,7 @@ blvd {
                 | assign | append | function | endFunction | method 
                 | endMethod | for | while | if | elseif | else | class 
                 | endClass | return | prologue | endPrologue | act | endAct 
-                | cast | as | recast | into
+                | cast | as | recast
                 
   // COMMENTS			
   comment       = "(note:" (~")" any)* ")" nl
@@ -120,7 +120,7 @@ blvd {
   id            = ~keywords letter idchar*
   idchar        = alnum | "_"
   num           = digit* ("." digit+)? (("e" | "E") ("+" | "-")? digit digit? digit?)?
-  relop         = "<=" | "<" | ">=" | ">" | "==" | "!="
+  relop         = "<=" | "<" | ">=" | ">" | "==" | "!=" | "is"
 
   // LIL CHARACTERS
   space         := " " | "\t" | "\r" | comment
