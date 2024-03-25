@@ -101,6 +101,7 @@ export default function analyze(match) {
 
   function equivalent(t1, t2) {
     return (
+      t1 === t2 ||
       (t1?.kind === "ListType" &&
         t2?.kind === "ListType" &&
         equivalent(t1.baseType, t2.baseType)) ||
@@ -200,19 +201,25 @@ export default function analyze(match) {
   // do we need to specify nl for line ending?
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Script(prologue, acts, epilogue) {
-      return core.script(prologue.rep(), acts.rep(), epilogue.rep());
+      const statements = [];
+      for (let statement of prologue.rep()) statements.push(statement);
+      for (let act of acts.children) {
+        for (let statement of act.rep()) statements.push(statement);
+      }
+      for (let statement of epilogue.rep()) statements.push(statement);
+      return core.program(statements);
     },
     Prologue(_prologue, _nl_0, directions, _endPrologue, _nl_1, _nl_2) {
-      return directions.rep();
+      return directions.children.map((d) => d.rep());
     },
     Act(_act, digit, _nl_0, directions, _endAct, _nl_1, _nl_2) {
-      return directions.rep();
+      return directions.children.map((d) => d.rep());
     },
     Epilogue(_epilogue, _nl_0, directions, _endEpilogue, _nl_1) {
-      return directions.rep();
+      return directions.children.map((d) => d.rep());
     },
-    Direction(line) {
-      return line.rep();
+    Direction_freeze(_nl) {
+      return core.emptyStatement();
     },
     DialogueLine(stmt) {
       return stmt.rep();
@@ -223,7 +230,7 @@ export default function analyze(match) {
     PrintStmt(_print, expression, _dd, _nl) {
       return core.printStatement(expression.rep());
     },
-    ForStmt(_for, type, id, _in, range, _colon, block) {
+    ForStmt(_for, type, id, _in, range, _colon, _nl, block) {
       const iterator_type = type.rep();
 
       return core.forStatement(id.sourceString, range.rep(), block.rep());
@@ -245,13 +252,13 @@ export default function analyze(match) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      return core.ElseIf(test, consequent)
+      return core.ElseIf(test, consequent);
     },
     Else(_else, _colon, _nl, block) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      return core.Else(consequent)
+      return core.Else(consequent);
     },
     WhileStmt(_while, exp, _colon, _nl, block) {
       const test = exp.rep();
@@ -289,7 +296,7 @@ export default function analyze(match) {
 
       context = context.newChildContext({ inLoop: false, function: func });
       const params_ = paremeters.rep();
-      func.paramType = params.map((p)=>p.type);
+      func.paramType = params.map((p) => p.type);
       func.returnType = type.rep();
 
       const body = block.rep();
@@ -297,13 +304,13 @@ export default function analyze(match) {
       return core.functionDeclaration(func, params_, body);
     },
     ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1) {},
-    Constructor(_ctor, _has, params, _colon, _nl, ctorbody, _endctor, _nl) {},
+    Constructor(_ctor, _has, params, _colon, _nl_0, ctorbody, _endctor, _nl_1) {},
     /* CtorBody() TO DO need field
        MemberExp_self(_given, name) {},
        MemberExp(exp) {},
     */
     Params(params, _colon) {
-      return params.asIteration().children.map((p)=>p.rep());
+      return params.asIteration().children.map((p) => p.rep());
     },
     Param(type, id) {
       const variable = core.variable(id.sourceString, type.rep());
@@ -311,9 +318,7 @@ export default function analyze(match) {
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable);
     },
-    RangeFunc(_range, _from, exp_0, _comma, exp_1) {
-
-    },
+    RangeFunc(_range, _from, exp_0, _comma, exp_1) {},
 
     Exp_booleanOr(exps, _or, exp) {
       let right = exp.rep();
@@ -354,7 +359,7 @@ export default function analyze(match) {
       }
       return right;
     },
-    Exp4_mulDivMod(exps, ops, exp) {
+    Exp4_multDivMod(exps, ops, exp) {
       let right = exp.rep();
       mustHaveNumericType(right, { at: exp });
       for (let e of exps.rep()) {
@@ -384,17 +389,22 @@ export default function analyze(match) {
       mustAllHaveSameType(elements, { at: args });
       return core.listExpression(elements);
     },
-    Exp6(lit) {},
+    Exp6_id(id) {
+      // const entity = context.lookup(id.sourceString);
+      // mustHaveBeenFound(entity, id.sourceString, { at: id });
+      // return core.variable(entity.name, entity.type);
+      return id.sourceString;
+    },
+
     Type(type, list) {
       //handle custom types
-      let type =
-        type === "boolean"
-          ? core.boolType
-          : type === "int"
-          ? core.floatType
-          : type === "string"
-          ? core.stringType
-          : core.customType;
+      return type === "boolean"
+        ? core.boolType
+        : type === "int"
+        ? core.floatType
+        : type === "string"
+        ? core.stringType
+        : core.customType;
       //must make sure a variable exist before its used
     },
     true(_) {

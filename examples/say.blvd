@@ -1,0 +1,15 @@
+PROLOGUE
+  say 1 is 1--
+END OF PROLOGUE
+
+ACT 1
+  say 2--
+END OF ACT
+
+ACT 2
+  say 3--
+END OF ACT
+
+EPILOGUE
+  say 4--
+FIN

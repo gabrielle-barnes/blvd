@@ -3,7 +3,9 @@ blvd {
   Prologue      = prologue nl Direction+ endPrologue nl nl
   Act           = act digit+ nl Direction+ endAct nl nl
   Epilogue      = epilogue nl Direction+ endEpilogue nl
-  Direction     = DialogueLine | CastLine | comment | "\n"
+  Direction     = DialogueLine 
+                | CastLine
+                | "\n"                                      --freeze
   DialogueLine  = PrintStmt | ForStmt | IfStmt | WhileStmt | ReturnStmt
   CastLine      = CastDecl | RecastDecl | FuncDecl | ClassDecl
   
@@ -58,7 +60,7 @@ blvd {
                 | "["ListOf<Exp, ","> "]"                   --listexp
                 | message                                   
                 | (true | false)
-                | id
+                | id              --id
                 | num
   
   // TYPES

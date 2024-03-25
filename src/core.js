@@ -1,5 +1,5 @@
-export function program(blocks) {
-  return { kind: "Program", blocks };
+export function program(statements) {
+  return { kind: "Program", statements };
 }
 export function block(statements) {
   return { kind: "Block", statements };
@@ -34,7 +34,9 @@ export const stringType = { kind: "StringType " };
 export function customType(type) {
   return { kind: "CustomType", id: type };
 }
-
+export function emptyStatement() {
+  return { kind: "EmptyStatement" };
+}
 export function listType(baseType) {
   return { kind: "ListType", baseType };
 }

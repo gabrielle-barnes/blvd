@@ -6,9 +6,9 @@ ACT 1
   NOMINATE review is 1:
     say "1 Star"--
   RUNNER-UP review is 2:
-	say "2 Stars"--
+    say "2 Stars"--
   SUPPORTING:
-	say "3 or more stars"--
+    say "3 or more stars"--
 END OF ACT
 
 EPILOGUE
