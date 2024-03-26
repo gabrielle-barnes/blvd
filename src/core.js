@@ -73,8 +73,8 @@ export function memberExpression(object, id) {
 export function rangeFunction(lowerbound, upperbound) {
   return { kind: "RangeFunction", lowerbound, upperbound };
 }
-export function binaryExpression(left, right) {
-  return { kind: "BinaryExpression", left, right };
+export function binaryExpression(op, left, right, type) {
+  return { kind: "BinaryExpression", op, left, right, type };
 }
 export function unaryExpression(operand) {
   return { kind: "UnaryExpression", operand };

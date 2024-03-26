@@ -64,7 +64,7 @@ export default function analyze(match) {
   }
 
   function mustBothHaveTheSameType(e1, e2, at) {
-    console.log("types", e1, e2);
+    console.log("types", e1.type, e2.type);
 
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
@@ -133,7 +133,7 @@ export default function analyze(match) {
   function typeDescription(type) {
     switch (type.kind) {
       case "NumberType":
-        return "num";
+        return "number";
       case "StringType":
         return "string";
       case "BoolType":
@@ -338,13 +338,15 @@ export default function analyze(match) {
       }
       return right;
     },
-    Exp2_relationOps(left, op, right) {
+    Exp2_relationOps(left, relop, right) {
       let leftExp = left.rep();
+      let op = relop.sourceString;
       let rightExp = right.rep();
-      mustBothHaveTheSameType(leftExp, rightExp, { at: right });
-      mustHaveNumericOrStringType(leftExp, { at: left });
-      mustHaveNumericOrStringType(rightExp, { at: right });
-      return core.binaryExpression(leftExp, rightExp);
+      if (["<", "<=", ">", ">="].includes(op)) {
+        mustHaveNumericOrStringType(leftExp, { at: left });
+      }
+      mustBothHaveTheSameType(leftExp, rightExp, { at: relop });
+      return core.binaryExpression(op, leftExp, rightExp, BOOLEAN);
     },
     Exp3_addSub(exps, ops, exp) {
       let right = exp.rep();
@@ -412,6 +414,9 @@ export default function analyze(match) {
     },
     false(_) {
       return false;
+    },
+    number(_) {
+      return core.numberType;
     },
     message(_openQuote, _chars, _closeQuote) {
       return this.sourceString;
