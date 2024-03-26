@@ -3,9 +3,9 @@ PROLOGUE
 END OF PROLOGUE
 
 ACT 1
-  SCENE int arithmetic has int stars, int actors:
-	CAST int stars as 5--
-    RECAST actors into string--
+  SCENE number arithmetic has number stars, number actors:
+	CAST number stars as 5--
+    RECAST actors as 0--
   END SCENE
 END OF ACT
 

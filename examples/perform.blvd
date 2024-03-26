@@ -5,7 +5,7 @@ END OF PROLOGUE
 
 ACT 1
   (note: for loop)
-  ACTION int i in range from 1, 6:
+  ACTION number i in range from 1, 6:
 	say "i"--
 END OF ACT
 

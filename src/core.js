@@ -28,7 +28,7 @@ export function listType() {
 */
 
 export const boolType = { kind: "BoolType" };
-export const floatType = { kind: "NumberType" };
+export const numberType = { kind: "NumberType" };
 export const stringType = { kind: "StringType " };
 
 export function customType(type) {
@@ -89,7 +89,7 @@ export function call(callee, args) {
   return { kind: "Call", callee, args };
 }
 export const standardLibrary = Object.freeze({
-  float: floatType,
+  number: numberType,
   boolean: boolType,
   string: stringType,
 });
@@ -99,5 +99,5 @@ export const standardLibrary = Object.freeze({
 // just using JavaScript values for those. Fortunately we can monkey patch
 // the JS classes for these to give us what we want.
 String.prototype.type = stringType;
-Number.prototype.type = floatType;
+Number.prototype.type = numberType;
 Boolean.prototype.type = boolType;

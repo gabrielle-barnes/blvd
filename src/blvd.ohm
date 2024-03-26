@@ -64,12 +64,12 @@ blvd {
                 | num
   
   // TYPES
-  Type          = (string | int | boolean) list?
+  Type          = (string | number | boolean) list?
   
   // KEYWORDS
   print         = "say" ~idchar
   string        = "string" ~idchar
-  int           = "int" ~idchar
+  number        = "number" ~idchar
   boolean       = "boolean" ~idchar
   list          = "list" ~idchar
   true          = "true" ~idchar
@@ -107,7 +107,7 @@ blvd {
   as            = "as" ~idchar
   recast        = "RECAST" ~idchar
 
-  keywords      = print | string | int | boolean | list | true | false 
+  keywords      = print | string | number | boolean | list | true | false 
                 | equalSign | has | is | range | from | in | ctor | given 
                 | assign | append | function | endFunction | method 
                 | endMethod | for | while | if | elseif | else | class 

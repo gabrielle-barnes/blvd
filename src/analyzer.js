@@ -1,8 +1,6 @@
 import * as core from "./core.js";
 
-const INT = core.intType;
-// FLOAT is not used in the current version of the language
-const FLOAT = core.floatType;
+const NUMBER = core.numberType;
 const STRING = core.stringType;
 const BOOLEAN = core.boolType;
 
@@ -46,11 +44,11 @@ export default function analyze(match) {
   }
 
   function mustHaveNumericType(e, at) {
-    must([INT, FLOAT].includes(e.type), "Expected a number", at);
+    must([NUMBER].includes(e.type), "Expected a number", at);
   }
 
   function mustHaveNumericOrStringType(e, at) {
-    must([INT, FLOAT, STRING].includes(e.type), "Expected a number or string", at);
+    must([NUMBER, STRING].includes(e.type), "Expected a number or string", at);
   }
 
   function mustHaveBooleanType(e, at) {
@@ -66,6 +64,8 @@ export default function analyze(match) {
   }
 
   function mustBothHaveTheSameType(e1, e2, at) {
+    console.log("types", e1, e2);
+
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
 
@@ -130,12 +130,9 @@ export default function analyze(match) {
   }
   */
 
-  /* !!Is IntType and FloatType being "num" correct?!! */
   function typeDescription(type) {
     switch (type.kind) {
-      case "IntType":
-        return "num";
-      case "FloatType":
+      case "NumberType":
         return "num";
       case "StringType":
         return "string";
@@ -290,18 +287,19 @@ export default function analyze(match) {
       return core.assignmentStatement(target, source);
     },
     FuncDecl(_function, type, id, _has, params, _colon, _nl_0, block, _endfunction, _nl_1) {
-      const func = core.func(id.sourceString);
+      const functionDeclaration = core.functionDeclaration(id.sourceString);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      context.add(id.sourceString, func);
+      context.add(id.sourceString, functionDeclaration);
 
-      context = context.newChildContext({ inLoop: false, function: func });
-      const params_ = paremeters.rep();
-      func.paramType = params.map((p) => p.type);
-      func.returnType = type.rep();
+      context = context.newChildContext({ inLoop: false, function: functionDeclaration });
+      const params_ = params.rep();
+      console.log("parameters:", params_);
+      functionDeclaration.paramType = params.map((p) => p.type);
+      functionDeclaration.returnType = type.rep();
 
       const body = block.rep();
       context = context.parent;
-      return core.functionDeclaration(func, params_, body);
+      return core.functionDeclaration(functionDeclaration, params_, body);
     },
     ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1) {},
     Constructor(_ctor, _has, params, _colon, _nl_0, ctorbody, _endctor, _nl_1) {},
@@ -390,18 +388,20 @@ export default function analyze(match) {
       return core.listExpression(elements);
     },
     Exp6_id(id) {
-      // const entity = context.lookup(id.sourceString);
-      // mustHaveBeenFound(entity, id.sourceString, { at: id });
-      // return core.variable(entity.name, entity.type);
-      return id.sourceString;
+      const entity = context.lookup(id.sourceString);
+      mustHaveBeenFound(entity, id.sourceString, { at: id });
+
+      //return core.variable(entity.name, entity.type);
+      return entity;
     },
 
     Type(type, list) {
       //handle custom types
+      console.log("type", type);
       return type === "boolean"
         ? core.boolType
-        : type === "int"
-        ? core.floatType
+        : type === "number"
+        ? core.NumberType
         : type === "string"
         ? core.stringType
         : core.customType;

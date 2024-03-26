@@ -3,6 +3,7 @@ PROLOGUE
 END OF PROLOGUE
 
 ACT 1
+  CAST number review as 1--
   NOMINATE review is 1:
     say "1 Star"--
   RUNNER-UP review is 2:
