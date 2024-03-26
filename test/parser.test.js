@@ -20,11 +20,11 @@ const syntaxChecks = [
   ],
   [
     "all arithmetic operators",
-    "PROLOGUE\n CAST int x as ((2 + 4 - (-7.3)) * ((8 ** 13) / 1))--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    "PROLOGUE\n CAST number x as ((2 + 4 - (-7.3)) * ((8 ** 13) / 1))--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
   ],
   [
     "all relational operators",
-    "PROLOGUE\n CAST int x as (1<(2<=(3==(4!=(5 >= (6>7))))))--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    "PROLOGUE\n CAST number x as (1<(2<=(3==(4!=(5 >= (6>7))))))--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
   ],
   [
     "comments on own line",
@@ -36,7 +36,7 @@ const syntaxChecks = [
   ],
   [
     "non-Latin letters in identifiers",
-    "PROLOGUE\n CAST int コンパイラ as 100--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    "PROLOGUE\n CAST number コンパイラ as 100--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
   ],
   [
     "variable declaritions",
@@ -44,7 +44,7 @@ const syntaxChecks = [
   ],
   [
     "function declaritions",
-    `PROLOGUE\n SCENE int arithmetic has int a, int b:\n (note: math)\n CAST int arit1 as "message"--\n CAST int arit2 as "message"--\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n SCENE number arithmetic has number a, number b:\n (note: math)\n CAST number arit1 as "message"--\n CAST number arit2 as "message"--\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
     "print statement",
@@ -52,11 +52,11 @@ const syntaxChecks = [
   ],
   [
     "for statement",
-    `PROLOGUE\n SCENE string director has:\n ACTION int i in range from 1, 6:\n say "i"--\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n SCENE string director has:\n ACTION number i in range from 1, 6:\n say "i"--\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
-    "variable declaration (integer)",
-    "PROLOGUE\n CAST int i as 1--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    "variable declaration (num)",
+    "PROLOGUE\n CAST number i as 1--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
   ],
   [
     "conditionals",
@@ -64,7 +64,7 @@ const syntaxChecks = [
   ],
   [
     "while statement",
-    `PROLOGUE\n PERFORM i <= 5:\n say "i"--\n CAST int i as (i + 1)--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n PERFORM i <= 5:\n say "i"--\n CAST number i as (i + 1)--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
     "class declarations",
@@ -75,17 +75,17 @@ const syntaxChecks = [
 const syntaxErrors = [
   [
     "non-letter in an identifier",
-    `PROLOGUE\n CAST int ab😭c as 2--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n CAST number ab😭c as 2--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
     /Line 2, col 13/,
   ],
   [
     "malformed number",
-    `PROLOGUE\n CAST int x as 2.--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n CAST number x as 2.--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
     /Line 2, col 18/,
   ],
   [
     "missing -- and new line",
-    "PROLOGUE\n CAST int x as 3 END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    "PROLOGUE\n CAST number x as 3 END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
     /Line 2, col 18/,
   ],
   [
