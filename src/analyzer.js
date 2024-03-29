@@ -265,7 +265,9 @@ export default function analyze(match) {
       context = context.parent;
       return core.WhileStmt(test, body);
     },
-    // Block(directions) {},
+    Block(directions) {
+      return core.block(directions.children.map((d) => d.rep()));
+    },
     ReturnStmt(_return, exp, _dd, _nl) {
       mustBeInAFunction({ at: _return });
       mustReturnSomething(context.function, { at: _return });
