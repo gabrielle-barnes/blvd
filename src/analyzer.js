@@ -113,23 +113,6 @@ export default function analyze(match) {
     );
   }
 
-  /* !!Do we have this?!! */
-  /*
-  function assignable(fromType, toType) {
-    return (
-      toType == ANY ||
-      equivalent(fromType, toType) ||
-      (fromType?.kind === "FunctionType" &&
-        toType?.kind === "FunctionType" &&
-        // covariant in return types
-        assignable(fromType.returnType, toType.returnType) &&
-        fromType.paramTypes.length === toType.paramTypes.length &&
-        // contravariant in parameter types
-        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
-    )
-  }
-  */
-
   function typeDescription(type) {
     switch (type.kind) {
       case "NumberType":
@@ -140,9 +123,6 @@ export default function analyze(match) {
         return "boolean";
       case "ClassType":
         return type.name;
-
-      /* !!We also have methods which have same aspects in functions!! */
-      /* !!So do we rewrite this piece of code?!! */
       case "FunctionType":
         const paramTypes = type.paramTypes.map(typeDescription).join(", ");
         const returnType = typeDescription(type.returnType);
@@ -157,14 +137,13 @@ export default function analyze(match) {
     must(assignable(e.type, type), message, at);
   }
 
-  /* !!Not sure how to do fields!! */
   function mustHaveDistinctFields(type, at) {
     const fieldNames = new Set(type.fields.map((f) => f.name));
     must(fieldNames.size === type.fields.length, "Fields must be distinct", at);
   }
 
-  function mustHaveMember(structType, field, at) {
-    must(structType.fields.map((f) => f.name).includes(field), "No such field", at);
+  function mustHaveMember(classType, field, at) {
+    must(classType.fields.map((f) => f.name).includes(field), "No such field", at);
   }
 
   function mustBeInAFunction(at) {
@@ -194,8 +173,6 @@ export default function analyze(match) {
   }
 
   /* Definitions of the semantic actions */
-
-  // do we need to specify nl for line ending?
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Script(prologue, acts, epilogue) {
       const statements = [];
@@ -232,7 +209,6 @@ export default function analyze(match) {
 
       return core.forStatement(id.sourceString, range.rep(), block.rep());
     },
-    // if x is 10: but get rid of id and is, so its if y is 2:
     IfStmt(_if, exp, _colon, _nl, block, elseifstmt, elsestmt) {
       const test = exp.rep();
       mustHaveBooleanType(test, { at: exp });
@@ -265,7 +241,6 @@ export default function analyze(match) {
       context = context.parent;
       return core.WhileStmt(test, body);
     },
-    // Block(directions) {},
     ReturnStmt(_return, exp, _dd, _nl) {
       mustBeInAFunction({ at: _return });
       mustReturnSomething(context.function, { at: _return });
@@ -301,12 +276,46 @@ export default function analyze(match) {
       context = context.parent;
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
-    ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1) {},
-    Constructor(_ctor, _has, params, _colon, _nl_0, ctorbody, _endctor, _nl_1) {},
-    /* CtorBody() TO DO need field
-       MemberExp_self(_given, name) {},
-       MemberExp(exp) {},
-    */
+    ClassDecl(_class, id, _colon, _nl_0, fields, constructor, variableDeclaration, functionDeclaration, _endclass, _nl_1) {
+      const type = core.classDeclaration(id.sourceString, [])
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
+      context.add(id.sourceString, type)
+
+      // fields
+      type.fields = fields.children.map(field => field.rep())
+      mustHaveDistinctFields(type, { at: id })
+      mustNotBeSelfContaining(type, { at: id })
+
+      // constructors 
+      type.constructor = constructor.children.map(constructor => constructor.rep())
+      mustHaveDistinctFields(type, { at: id })
+
+      // variable assignment (CAST)
+      type.variableDeclaration = variableDeclaration.children.map(variableDeclaration => variableDeclaration.rep())
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+
+      // functions 
+      type.functionDeclaration = functionDeclaration.children.map(functionDeclaration => functionDeclaration.rep())
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+
+      return core.typeDeclaration(type)
+    },
+    Field(type, id) {
+      return core.field(id.sourceString, type.rep())
+    },
+    Constructor(_ctor, _has, params, _colon, _nl_0, ctorbody, _endctor, _nl_1) {
+      // parameters
+      context = context.newChildContext({ inLoop: false, function: functionDeclaration });
+      const param = params.rep();
+      constructor.paramType = param.map((p) => p.type);
+
+      // need to make new core for ctorbody? because ctorbody can only have member expressions
+      // when block can have much more
+      const constructor_body = ctorbody.rep()
+
+      context = context.parent
+      return core.constructor(param, constructor_body)
+    },
     Params(params, _colon) {
       return params.asIteration().children.map((p) => p.rep());
     },

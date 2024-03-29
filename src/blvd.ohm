@@ -6,7 +6,7 @@ blvd {
   Direction     = DialogueLine 
                 | CastLine
                 | "\n"                                      --freeze
-  DialogueLine  = PrintStmt | ForStmt | IfStmt | WhileStmt | ReturnStmt
+  DialogueLine  = PrintStmt | ForStmt | IfStmt | WhileStmt | ReturnStmt | CreateObject 
   CastLine      = CastDecl | RecastDecl | FuncDecl | ClassDecl
   
   // STATEMENTS
@@ -28,14 +28,17 @@ blvd {
   CastDecl      = cast Type id as Exp dd nl
   RecastDecl    = recast id as Exp dd nl
 
-  FuncDecl      = function Type id has Params ":" "\n" Block endFunction nl 
-  ClassDecl     = class id ":" nl (Constructor | CastDecl | FuncDecl)* endClass nl
+  FuncDecl      = nl? function Type id has Params ":" "\n" Block endFunction nl 
+  ClassDecl     = class id ":" nl (Field| Constructor | CastDecl | FuncDecl)* nl? endClass nl 
+  Field         = Type id dd nl
   
   // CONSTRUCTOR
-  Constructor   = ctor has Params ":" nl CtorBody endCtor nl
-  CtorBody      = (id id "," MemberExp dd nl)*
-  MemberExp     = given id                                  --self
-                | Exp	
+  Constructor   = nl? ctor has Params ":" nl CtorBody endCtor nl
+  CtorBody      = (id MemberExp as id dd nl)*
+  MemberExp     = given  
+  
+  CreateObject  = cast Type id as id "(" ListOf<Exp, ","> ")" dd nl
+  Call          = id "." id "(" ListOf<Exp, ","> ")" 
 
   Params        = ListOf<Param, ","> ","?
   Param         = Type id
@@ -60,6 +63,7 @@ blvd {
                 | "["ListOf<Exp, ","> "]"                   --listexp
                 | message                                   
                 | (true | false)
+                | Call 
                 | id              --id
                 | num
   
