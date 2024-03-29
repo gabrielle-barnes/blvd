@@ -49,6 +49,12 @@ export function forStatement(iterator, collection, body) {
 export function ifStatement(test, consequent, alternate) {
   return { kind: "IfStatement", test, consequent, alternate };
 }
+export function elseIfStatement(test, consequent) {
+  return { kind: "elseIfStatement", test, consequent };
+}
+export function elseStatement(consequent) {
+  return { kind: "elseStatement", consequent };
+}
 export function whileStatement(test, body) {
   return { kind: "WhileStatement", test, body };
 }

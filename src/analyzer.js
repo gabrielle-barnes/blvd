@@ -64,8 +64,6 @@ export default function analyze(match) {
   }
 
   function mustBothHaveTheSameType(e1, e2, at) {
-    console.log("mustBothHaveTheSameType: ", e1.type, e2.type);
-
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
 
@@ -239,9 +237,9 @@ export default function analyze(match) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      const elseifs = elseifstmt?.rep();
-      const else_ = elsestmt?.rep();
-      return core.IfStmt(test, consequent, elseifs, else_);
+      const elseifs = elseifstmt?.children.map((e) => e.rep());
+      const else_ = elsestmt?.children.map((e) => e.rep());
+      return core.ifStatement(test, consequent, elseifs, else_);
     },
     ElseIf(_elseif, exp, _colon, _nl, block) {
       const test = exp.rep();
@@ -249,13 +247,13 @@ export default function analyze(match) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      return core.ElseIf(test, consequent);
+      return core.elseIfStatement(test, consequent);
     },
     Else(_else, _colon, _nl, block) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      return core.Else(consequent);
+      return core.elseStatement(consequent);
     },
     WhileStmt(_while, exp, _colon, _nl, block) {
       const test = exp.rep();
@@ -279,7 +277,6 @@ export default function analyze(match) {
       const initializer = exp.rep();
       mustBothHaveTheSameType(initializer.type, type, { at: id });
       const variable = core.variable(id.sourceString, initializer.type);
-      console.log("CastDecl: variable.type = ", variable.type);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
@@ -297,7 +294,6 @@ export default function analyze(match) {
 
       context = context.newChildContext({ inLoop: false, function: functionDeclaration });
       const params_ = params.rep();
-      console.log("parameters:", params_);
       functionDeclaration.paramType = params.map((p) => p.type);
       functionDeclaration.returnType = type.rep();
 
@@ -403,7 +399,6 @@ export default function analyze(match) {
 
     Type(type, list) {
       //handle custom types
-      console.log("Type: type = ", type);
       return type.sourceString === "boolean"
         ? core.boolType
         : type.sourceString === "number"
