@@ -64,7 +64,7 @@ export default function analyze(match) {
   }
 
   function mustBothHaveTheSameType(e1, e2, at) {
-    console.log("types", e1.type, e2.type);
+    console.log("mustBothHaveTheSameType: ", e1.type, e2.type);
 
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
@@ -275,7 +275,9 @@ export default function analyze(match) {
     },
     CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
       const initializer = exp.rep();
-      const variable = core.variable(id.sourceString, type.rep(), initializer.type);
+      mustBothHaveTheSameType(initializer.type, type, { at: id });
+      const variable = core.variable(id.sourceString, initializer.type);
+      console.log("CastDecl: variable.type = ", variable.type);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
@@ -399,12 +401,12 @@ export default function analyze(match) {
 
     Type(type, list) {
       //handle custom types
-      console.log("type", type);
-      return type === "boolean"
+      console.log("Type: type = ", type);
+      return type.sourceString === "boolean"
         ? core.boolType
-        : type === "number"
+        : type.sourceString === "number"
         ? core.NumberType
-        : type === "string"
+        : type.sourceString === "string"
         ? core.stringType
         : core.customType;
       //must make sure a variable exist before its used
