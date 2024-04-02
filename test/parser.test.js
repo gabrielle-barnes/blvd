@@ -64,29 +64,29 @@ const syntaxChecks = [
   ],
   [
     "while statement",
-    `PROLOGUE\n PERFORM i <= 5:\n say "i"--\n CAST number i as (i + 1)--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n PERFORM i <= 5:\n say "i"--\n CAST number i as (i + 1)--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
     "class declarations",
-    `PROLOGUE\n (note: a class example)\n STAGE Dog:\n CONSTRUCTOR has string name, string movie, string quote:\n Dog name, GIVEN name--\n Dog movie, GIVEN movie--\n Dog quote, GIVEN quote--\n END CONSTRUCTOR\n SCENE string cat has:\n say quote--\n END SCENE\n CAST string list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--\n EXIT STAGE \n END OF PROLOGUE\n\n  ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n STAGE Movie:\n string a--\n string b--\n EXIT STAGE\n\n END OF PROLOGUE\n\n  ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
   ],
 ];
 
 const syntaxErrors = [
   [
     "non-letter in an identifier",
-    `PROLOGUE\n CAST number ab😭c as 2--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 13/,
+    `PROLOGUE\n CAST number ab😭c as 2--\n\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    /Line 2, col 16/,
   ],
   [
     "malformed number",
     `PROLOGUE\n CAST number x as 2.--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
-    /Line 2, col 18/,
+    /Line 2, col 21/,
   ],
   [
     "missing -- and new line",
     "PROLOGUE\n CAST number x as 3 END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
-    /Line 2, col 18/,
+    /Line 2, col 21/,
   ],
   [
     "a missing right operand",

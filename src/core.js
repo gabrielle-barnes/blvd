@@ -10,22 +10,9 @@ export function variableDeclaration(variable, initializer) {
 export function variable(name, type) {
   return { kind: "Variable", name, type };
 }
-// Keywords or types
-
-/*
-export function stringType() {
-    return { kind: "StringType" }
+export function typeDeclaration(type) {
+  return { kind: "TypeDeclaration", type };
 }
-export function boolType() {
-    return { kind: "BoolType" }
-}
-export function numberType() {
-    return { kind: "NumberType" }
-}
-export function listType() {
-    return { kind: "ListType" }
-}
-*/
 
 export const boolType = { kind: "BoolType" };
 export const numberType = { kind: "NumberType" };
@@ -49,6 +36,12 @@ export function forStatement(iterator, collection, body) {
 export function ifStatement(test, consequent, alternate) {
   return { kind: "IfStatement", test, consequent, alternate };
 }
+export function elseIfStatement(test, consequent) {
+  return { kind: "elseIfStatement", test, consequent };
+}
+export function elseStatement(consequent) {
+  return { kind: "elseStatement", consequent };
+}
 export function whileStatement(test, body) {
   return { kind: "WhileStatement", test, body };
 }
@@ -61,8 +54,11 @@ export function assignmentStatement(target, source) {
 export function functionDeclaration(name, parameters, retrn, body) {
   return { kind: "FunctionDeclaration", name, parameters, retrn, body };
 }
-export function classDeclaration(name, fields, methods, constructor) {
-  return { kind: "ClassDeclaration", name, fields, methods, constructor };
+export function classDeclaration(name, fields, methods, constructor, functions) {
+  return { kind: "ClassDeclaration", name, fields, methods, constructor, functions };
+}
+export function field(type, name) {
+  return { kind: "Field", type, name }
 }
 export function constructor(parameters, body) {
   return { kind: "Constructor", parameters, body };
@@ -94,10 +90,6 @@ export const standardLibrary = Object.freeze({
   string: stringType,
 });
 
-// We want every expression to have a type property. But we aren't creating
-// special entities for numbers, strings, and booleans; instead, we are
-// just using JavaScript values for those. Fortunately we can monkey patch
-// the JS classes for these to give us what we want.
 String.prototype.type = stringType;
 Number.prototype.type = numberType;
 Boolean.prototype.type = boolType;
