@@ -29,7 +29,8 @@ blvd {
   RecastDecl    = recast id as Exp dd nl
 
   FuncDecl      = nl? function Type id has Params ":" "\n" Block endFunction nl 
-  ClassDecl     = class id ":" nl (Field| Constructor | CastDecl | FuncDecl)* nl? endClass nl 
+  ClassDecl     = class id ":" nl Member* nl? endClass nl 
+  Member        = Field | Constructor | CastDecl | FuncDecl
   Field         = Type id dd nl
   
   // CONSTRUCTOR

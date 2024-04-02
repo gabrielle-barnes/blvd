@@ -99,6 +99,19 @@ export default function analyze(match) {
     );
   }
 
+  function assignable(fromType, toType) {
+    return (
+      equivalent(fromType, toType) ||
+      (fromType?.kind === "FunctionType" &&
+        toType?.kind === "FunctionType" &&
+        // covariant in return types
+        assignable(fromType.returnType, toType.returnType) &&
+        fromType.paramTypes.length === toType.paramTypes.length &&
+        // contravariant in parameter types
+        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
+    );
+  }
+
   function equivalent(t1, t2) {
     return (
       t1 === t2 ||
@@ -259,6 +272,7 @@ export default function analyze(match) {
     RecastDecl(_recast, id, _as, exp, _dd, _nl) {
       const source = exp.rep();
       const target = id.rep();
+      console.log("source:", source.type, "target:", target.type);
       mustBeAssignable(source, { toType: target.type }, { at: id });
       return core.assignmentStatement(target, source);
     },
@@ -278,32 +292,36 @@ export default function analyze(match) {
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
     // class body? has fields, constructor, variableDeclaration, functionDeclaration
-    ClassDecl(_class, id, _colon, _nl_0, _class_body, _nl_1, _endclass, _nl_2) {
-      const type = core.classDeclaration(id.sourceString, [])
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id })
-      context.add(id.sourceString, type)
+    ClassDecl(_class, id, _colon, _nl_0, members, _nl_1, _endclass, _nl_2) {
+      const type = core.classDeclaration(id.sourceString, []);
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      context.add(id.sourceString, type);
 
-      // fields
-      type.fields = fields.children.map(field => field.rep())
-      mustHaveDistinctFields(type, { at: id })
-      mustNotBeSelfContaining(type, { at: id })
+      // members
+      type.fields = members.children.map((member) => member.rep());
+      mustHaveDistinctFields(type, { at: id });
+      mustNotBeSelfContaining(type, { at: id });
 
-      // constructors 
-      type.constructor = constructor.children.map(constructor => constructor.rep())
-      mustHaveDistinctFields(type, { at: id })
+      // constructors
+      type.constructor = constructor.children.map((constructor) => constructor.rep());
+      mustHaveDistinctFields(type, { at: id });
 
       // variable assignment (CAST)
-      type.variableDeclaration = variableDeclaration.children.map(variableDeclaration => variableDeclaration.rep())
+      type.variableDeclaration = variableDeclaration.children.map((variableDeclaration) =>
+        variableDeclaration.rep()
+      );
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
 
-      // functions 
-      type.functionDeclaration = functionDeclaration.children.map(functionDeclaration => functionDeclaration.rep())
+      // functions
+      type.functionDeclaration = functionDeclaration.children.map((functionDeclaration) =>
+        functionDeclaration.rep()
+      );
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
 
-      return core.typeDeclaration(type)
+      return core.typeDeclaration(type);
     },
     Field(type, id, _dd, _nl) {
-      return core.field(id.sourceString, type.rep())
+      return core.field(id.sourceString, type.rep());
     },
     Constructor(_nl_0, _ctor, _has, params, _colon, _nl_1, ctorbody, _endctor, _nl_2) {
       // parameters
@@ -313,10 +331,10 @@ export default function analyze(match) {
 
       // need to make new core for ctorbody? because ctorbody can only have member expressions
       // when block can have much more
-      const constructor_body = ctorbody.rep()
+      const constructor_body = ctorbody.rep();
 
-      context = context.parent
-      return core.constructor(param, constructor_body)
+      context = context.parent;
+      return core.constructor(param, constructor_body);
     },
     Params(params, _colon) {
       return params.asIteration().children.map((p) => p.rep());
@@ -360,16 +378,16 @@ export default function analyze(match) {
       return core.binaryExpression(op, leftExp, rightExp, BOOLEAN);
     },
     Exp3_addSub(exp1, ops, exp2) {
-      const [left, op, right] = [exp1.rep(), ops.sourceString, exp2.rep()]
+      const [left, op, right] = [exp1.rep(), ops.sourceString, exp2.rep()];
       if (op === "+") {
-        mustHaveNumericOrStringType(left, { at: exp1 })
+        mustHaveNumericOrStringType(left, { at: exp1 });
       } else {
-        mustHaveNumericType(left, { at: exp1 })
+        mustHaveNumericType(left, { at: exp1 });
       }
-      mustBothHaveTheSameType(left, right, { at: ops })
-      return core.binaryExpression(op, left, right, left.type)
+      mustBothHaveTheSameType(left, right, { at: ops });
+      return core.binaryExpression(op, left, right, left.type);
     },
-      /*
+    /*
       let right = exp2.rep();
       mustHaveNumericType(right, { at: exp2 });
       for (let e of exp1.rep()) {
@@ -429,6 +447,9 @@ export default function analyze(match) {
         ? core.stringType
         : core.customType;
       //must make sure a variable exist before its used
+    },
+    id(_first, _rest) {
+      return this.sourceString;
     },
     true(_) {
       return true;
