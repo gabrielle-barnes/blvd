@@ -215,9 +215,9 @@ export default function analyze(match) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      const elseifs = elseifstmt?.rep();
-      const else_ = elsestmt?.rep();
-      return core.IfStmt(test, consequent, elseifs, else_);
+      const elseifs = elseifstmt?.children.map((e) => e.rep());
+      const else_ = elsestmt?.children.map((e) => e.rep());
+      return core.ifStatement(test, consequent, elseifs, else_);
     },
     ElseIf(_elseif, exp, _colon, _nl, block) {
       const test = exp.rep();
@@ -225,13 +225,13 @@ export default function analyze(match) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      return core.ElseIf(test, consequent);
+      return core.elseIfStatement(test, consequent);
     },
     Else(_else, _colon, _nl, block) {
       context = context.newChildContext();
       const consequent = block.rep();
       context = context.parent;
-      return core.Else(consequent);
+      return core.elseStatement(consequent);
     },
     WhileStmt(_while, exp, _colon, _nl, block) {
       const test = exp.rep();
@@ -250,7 +250,8 @@ export default function analyze(match) {
     },
     CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
       const initializer = exp.rep();
-      const variable = core.variable(id.sourceString, type.rep(), initializer.type);
+      mustBothHaveTheSameType(initializer.type, type, { at: id });
+      const variable = core.variable(id.sourceString, initializer.type);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
@@ -261,7 +262,7 @@ export default function analyze(match) {
       mustBeAssignable(source, { toType: target.type }, { at: id });
       return core.assignmentStatement(target, source);
     },
-    FuncDecl(_function, type, id, _has, params, _colon, _nl_0, block, _endfunction, _nl_1) {
+    FuncDecl(_nl_0, _function, type, id, _has, params, _colon, _nl_1, block, _endfunction, _nl_2) {
       const functionDeclaration = core.functionDeclaration(id.sourceString);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, functionDeclaration);
@@ -276,7 +277,8 @@ export default function analyze(match) {
       context = context.parent;
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
-    ClassDecl(_class, id, _colon, _nl_0, fields, constructor, variableDeclaration, functionDeclaration, _endclass, _nl_1) {
+    // class body? has fields, constructor, variableDeclaration, functionDeclaration
+    ClassDecl(_class, id, _colon, _nl_0, _class_body, _nl_1, _endclass, _nl_2) {
       const type = core.classDeclaration(id.sourceString, [])
       mustNotAlreadyBeDeclared(id.sourceString, { at: id })
       context.add(id.sourceString, type)
@@ -300,10 +302,10 @@ export default function analyze(match) {
 
       return core.typeDeclaration(type)
     },
-    Field(type, id) {
+    Field(type, id, _dd, _nl) {
       return core.field(id.sourceString, type.rep())
     },
-    Constructor(_ctor, _has, params, _colon, _nl_0, ctorbody, _endctor, _nl_1) {
+    Constructor(_nl_0, _ctor, _has, params, _colon, _nl_1, ctorbody, _endctor, _nl_2) {
       // parameters
       context = context.newChildContext({ inLoop: false, function: functionDeclaration });
       const param = params.rep();
@@ -327,20 +329,20 @@ export default function analyze(match) {
     },
     RangeFunc(_range, _from, exp_0, _comma, exp_1) {},
 
-    Exp_booleanOr(exps, _or, exp) {
-      let right = exp.rep();
-      mustHaveBooleanType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp_booleanOr(exp1, _or, exp2) {
+      let right = exp2.rep();
+      mustHaveBooleanType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
         right = core.binaryExpression(left, right);
       }
       return right;
     },
-    Exp1_booleanAnd(exps, _and, exp) {
-      let right = exp.rep();
-      mustHaveBooleanType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp1_booleanAnd(exp1, _and, exp2) {
+      let right = exp2.rep();
+      mustHaveBooleanType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
         right = core.binaryExpression(left, right);
@@ -357,10 +359,31 @@ export default function analyze(match) {
       mustBothHaveTheSameType(leftExp, rightExp, { at: relop });
       return core.binaryExpression(op, leftExp, rightExp, BOOLEAN);
     },
-    Exp3_addSub(exps, ops, exp) {
-      let right = exp.rep();
-      mustHaveNumericType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp3_addSub(exp1, ops, exp2) {
+      const [left, op, right] = [exp1.rep(), ops.sourceString, exp2.rep()]
+      if (op === "+") {
+        mustHaveNumericOrStringType(left, { at: exp1 })
+      } else {
+        mustHaveNumericType(left, { at: exp1 })
+      }
+      mustBothHaveTheSameType(left, right, { at: ops })
+      return core.binaryExpression(op, left, right, left.type)
+    },
+      /*
+      let right = exp2.rep();
+      mustHaveNumericType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
+        let left = e.rep();
+        mustBothHaveTheSameType(left, right, { at: e });
+        mustHaveNumericType(left, { at: e });
+        right = core.binaryExpression(left, right);
+      }
+      return right;
+      */
+    Exp4_multDivMod(exp1, ops, exp2) {
+      let right = exp2.rep();
+      mustHaveNumericType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustBothHaveTheSameType(left, right, { at: e });
         mustHaveNumericType(left, { at: e });
@@ -368,10 +391,10 @@ export default function analyze(match) {
       }
       return right;
     },
-    Exp4_multDivMod(exps, ops, exp) {
-      let right = exp.rep();
-      mustHaveNumericType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp5_exponent(exp2, ops, exp1) {
+      let right = exp2.rep();
+      mustHaveNumericType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustBothHaveTheSameType(left, right, { at: e });
         mustHaveNumericType(left, { at: e });
@@ -379,19 +402,8 @@ export default function analyze(match) {
       }
       return right;
     },
-    Exp5_exponent(exp, ops, exps) {
-      let right = exp.rep();
-      mustHaveNumericType(right, { at: exp });
-      for (let e of exps.rep()) {
-        let left = e.rep();
-        mustBothHaveTheSameType(left, right, { at: e });
-        mustHaveNumericType(left, { at: e });
-        right = core.binaryExpression(left, right);
-      }
-      return right;
-    },
-    Exp6_parens(_open, exp, _close) {
-      return exp.rep();
+    Exp6_parens(_open, exp2, _close) {
+      return exp2.rep();
     },
     Exp6_listexp(_open, args, _close) {
       const elements = args.asIteration().children.map((e) => e.rep());
