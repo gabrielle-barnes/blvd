@@ -30,12 +30,12 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr>
 <td>
 
-<code>(note: Genre: romance)</code>
+<code>(note: take a drive through Sunset Blvd!)</code>
 
 </td>
 <td>
 
-<code>//Genre: romance</code>
+<code>//take a drive through Sunset Blvd!</code>
 
 </td>
 </tr> </table>
@@ -59,7 +59,7 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 </td>
 </tr> </table>
 
-### Assigning Variables
+### Variable Declaration
 
 <table>
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
@@ -76,19 +76,19 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 </td>
 </tr> </table>
 
-### Type Conversion
+### Assignment Statement
 
 <table>
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
 
-<code>RECAST actor into string--</code>
+<code>RECAST x as x + 1--</code>
 
 </td>
 <td>
 
-<code>let actor = String(actor)</code>
+<code>x = x + 1</code>
 
 </td>
 </tr> </table>
@@ -99,17 +99,17 @@ Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-<code>SCENE int freeway has string fwy: 
-    CAST string  fwy1 as "101"--
-    CAST string fwy2 as "405"--
+<code>SCENE string getFreeway has string fwy: 
+    CAST string  fwy1 as "405"--
+    EXIT WITH fwy1--
 END SCENE
 </code>
 
 </td>
 <td>
-<code>function freeway(fwy){
-    let fwy1 = "101"
-    let fwy2 = "405"
+<code>function getFreeway(fwy){
+    let fwy1 = "405"
+    return fwy1
 }
 </code>
 </td>
