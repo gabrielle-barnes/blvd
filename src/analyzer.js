@@ -294,7 +294,7 @@ export default function analyze(match) {
 
       context = context.newChildContext({ inLoop: false, function: functionDeclaration });
       const params_ = params.rep();
-      functionDeclaration.paramType = params.map((p) => p.type);
+      functionDeclaration.paramType = params_.map((p) => p.type);
       functionDeclaration.returnType = type.rep();
 
       const body = block.rep();
