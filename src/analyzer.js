@@ -254,6 +254,9 @@ export default function analyze(match) {
       context = context.parent;
       return core.WhileStmt(test, body);
     },
+    Block(directions) {
+      return core.block(directions.children.map((d) => d.rep()));
+    },
     ReturnStmt(_return, exp, _dd, _nl) {
       mustBeInAFunction({ at: _return });
       mustReturnSomething(context.function, { at: _return });
@@ -439,11 +442,11 @@ export default function analyze(match) {
     Type(type, list) {
       //handle custom types
       console.log("type", type);
-      return type === "boolean"
+      return type.sourceString === "boolean"
         ? core.boolType
-        : type === "number"
+        : type.sourceString === "number"
         ? core.NumberType
-        : type === "string"
+        : type.sourceString === "string"
         ? core.stringType
         : core.customType;
       //must make sure a variable exist before its used
