@@ -121,7 +121,7 @@ END SCENE
 <tr> <th>blvd</th><th>JavaScript</th> </tr>
 <tr>
 <td>
-<code>ACTION int stars in range from 1, 6:
+<code>ACTION number stars in range from 1, 6:
     say stars--
 </code>
 </td>
@@ -134,7 +134,7 @@ END SCENE
 </tr>
 
 <td>
-<code>CAST int rating as 1--
+<code>CAST number rating as 1--
 PERFORM rating <= 5:
     say "less than 5 stars"--
 </code>
