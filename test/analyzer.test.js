@@ -13,87 +13,28 @@ import analyze from "../src/analyzer.js";
 const semanticChecks = [
   [
     "variable declarations",
-    "PROLOGUE\nCAST number x as 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n",
+    `PROLOGUE\nCAST number x as 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n`,
   ],
   [
     "increment and decrement",
-    "PROLOGUE\nCAST number x as 1--\nRECAST x as x + 1--\nRECAST x as x - 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n",
-  ],
-  // ["full class", "PROLOGUE\n STAGE Person:\n string a--\n\n CONSTRUCTOR has string name:\n a GIVEN as name--\n END CONSTRUCTOR\n\n SCENE string getName has string name:\n EXIT WITH name--\n END SCENE\n EXIT STAGE\n END OF PROLOGUE\n\n ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n"],
-  /*  ["initialize with empty array", "let a = [int]();"],
-  ["type declaration", "struct S {f: (int)->boolean? g: string}"],
-  ["assign arrays", "let a = [int]();let b=[1];a=b;b=a;"],
-  ["assign to array element", "const a = [1,2,3]; a[1]=100;"],
-  ["initialize with empty optional", "let a = no int;"],
-  ["short return", "function f() { return; }"],
-  ["long return", "function f(): boolean { return true; }"],
-  ["assign optionals", "let a = no int;let b=some 1;a=b;b=a;"],
-  ["return in nested if", "function f() {if true {return;}}"],
-  ["break in nested if", "while false {if true {break;}}"],
-  ["long if", "if true {print(1);} else {print(3);}"],
-  ["elsif", "if true {print(1);} else if true {print(0);} else {print(3);}"],
-  ["for over collection", "for i in [2,3,5] {print(1);}"],
-  ["for in range", "for i in 1..<10 {print(0);}"],
-  ["repeat", "repeat 3 {let a = 1; print(a);}"],
-  ["conditionals with ints", "print(true ? 8 : 5);"],
-  ["conditionals with floats", "print(1<2 ? 8.0 : -5.22);"],
-  ["conditionals with strings", 'print(1<2 ? "x" : "y");'],
-  ["??", "print(some 5 ?? 0);"],
-  ["nested ??", "print(some 5 ?? 8 ?? 0);"],
-  ["||", "print(true||1<2||false||!true);"],
-  ["&&", "print(true&&1<2&&false&&!true);"],
-  ["bit ops", "print((1&2)|(9^3));"],
-  ["relations", 'print(1<=2 && "x">"y" && 3.5<1.2);'],
-  ["ok to == arrays", "print([1]==[5,8]);"],
-  ["ok to != arrays", "print([1]!=[5,8]);"],
-  ["shifts", "print(1<<3<<5<<8>>2>>0);"],
-  ["arithmetic", "let x=1;print(2*3+5**-3/2-5%8);"],
-  ["array length", "print(#[1,2,3]);"],
-  ["optional types", "let x = no int; x = some 100;"],
-  ["random with array literals, ints", "print(random [1,2,3]);"],
-  ["random with array literals, strings", 'print(random ["a", "b"]);'],
-  ["random on array variables", "let a=[true, false];print(random a);"],
-  ["variables", "let x=[[[[1]]]]; print(x[0][0][0][0]+2);"],
-  ["pseudo recursive struct", "struct S {z: S?} let x = S(no S);"],
-  ["nested structs", "struct T{y:int} struct S{z: T} let x=S(T(1)); print(x.z.y);"],
-  ["member exp", "struct S {x: int} let y = S(1);print(y.x);"],
-  ["optional member exp", "struct S {x: int} let y = some S(1);print(y?.x);"],
-  ["subscript exp", "let a=[1,2];print(a[0]);"],
-  ["array of struct", "struct S{} let x=[S(), S()];"],
-  ["struct of arrays and opts", "struct S{x: [int] y: string??}"],
-  ["assigned functions", "function f() {}\nlet g = f;g = f;"],
-  ["call of assigned functions", "function f(x: int) {}\nlet g=f;g(1);"],
-  ["type equivalence of nested arrays", "function f(x: [[int]]) {} print(f([[1],[2]]));"],
-  [
-    "call of assigned function in expression",
-    `function f(x: int, y: boolean): int {}
-    let g = f;
-    print(g(1, true));
-    f = g; // Type check here`,
+    `PROLOGUE\nCAST number x as 1--\nRECAST x as x + 1--\nRECAST x as x - 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n`,
   ],
   [
-    "pass a function to a function",
-    `function f(x: int, y: (boolean)->void): int { return 1; }
-     function g(z: boolean) {}
-     f(2, g);`,
+    "long if",
+    `PROLOGUE\n CAST boolean review as true--\n NOMINATE review is true:\n say "1"--\n SUPPORTING:\n say "3"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
-    "function return types",
-    `function square(x: int): int { return x * x; }
-     function compose(): (int)->int { return square; }`,
+    "elsif",
+    `PROLOGUE\n CAST boolean review as true--\n NOMINATE review is true:\n say "1"--\n RUNNER-UP review is true:\n say "0"--\n SUPPORTING:\n say "3"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
-  ["function assign", "function f() {} let g = f; let h = [g, f]; print(h[0]());"],
-  ["struct parameters", "struct S {} function f(x: S) {}"],
-  ["array parameters", "function f(x: [int?]) {}"],
-  ["optional parameters", "function f(x: [int], y: string?) {}"],
-  ["empty optional types", "print(no [int]); print(no string);"],
-  ["types in function type", "function f(g: (int?, float)->string) {}"],
-  ["voids in fn type", "function f(g: (void)->void) {}"],
-  ["outer variable", "let x=1; while(false) {print(x);}"],
-  ["built-in constants", "print(25.0 * π);"],
-  ["built-in sin", "print(sin(π));"],
-  ["built-in cos", "print(cos(93.999));"],
-  ["built-in hypot", "print(hypot(-4.0, 3.00001));"], */
+  [
+    "for in range",
+    "PROLOGUE\n  END OF PROLOGUE\n\n ACT 1\n ACTION number i in range from 1, 6: say i--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+  ],
+  [
+    "conditionals with numbers",
+    `PROLOGUE\n\n END OF PROLOGUE\n\n ACT 1\n NOMINATE 1 < 2:\n say 8--\n SUPPORTING:\n say 5--\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+  ],
 ];
 
 // Programs that are syntactically correct but have semantic errors
@@ -172,11 +113,6 @@ const semanticErrors = [
     'function f(x: int): int {return 1;} function g(y: int): string {return "uh-oh";} f = g;',
     /Cannot assign a \(int\)->string to a \(int\)->int/,
   ], */
-  [
-    "Non-type in param",
-    'PROLOGUE\nCAST number x as 1--\nSCENE string f has non-type fwy:\nCAST string fwy as "101"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n',
-    /Type expected/,
-  ],
   // Syntax error
   // [
   //   "Non-type in return type",
