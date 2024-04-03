@@ -215,10 +215,15 @@ export default function analyze(match) {
     PrintStmt(_print, expression, _dd, _nl) {
       return core.printStatement(expression.rep());
     },
-    ForStmt(_for, type, id, _in, range, _colon, _nl, block) {
+    ForStmt(_for, type, id, _in, range, _colon, _nl1, block, _cut, _nl2) {
       const iterator_type = type.rep();
-
-      return core.forStatement(id.sourceString, range.rep(), block.rep());
+      context = context.newChildContext({ inLoop: true });
+      const variable = core.variable(id.sourceString, iterator_type);
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      context.add(id.sourceString, variable);
+      const body = block.rep();
+      context = context.parent;
+      return core.forStatement(id.sourceString, range.rep(), body);
     },
     IfStmt(_if, exp, _colon, _nl, block, elseifstmt, elsestmt) {
       const test = exp.rep();
@@ -273,7 +278,6 @@ export default function analyze(match) {
     RecastDecl(_recast, id, _as, exp, _dd, _nl) {
       const source = exp.rep();
       const target = id.rep();
-      console.log("source:", source.type, "target:", target.type);
       mustBeAssignable(source, { toType: target.type }, { at: id });
       return core.assignmentStatement(target, source);
     },
@@ -431,8 +435,6 @@ export default function analyze(match) {
     Exp6_id(id) {
       const entity = context.lookup(id.sourceString);
       mustHaveBeenFound(entity, id.sourceString, { at: id });
-
-      //return core.variable(entity.name, entity.type);
       return entity;
     },
 

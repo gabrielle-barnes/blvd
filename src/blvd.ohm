@@ -12,21 +12,21 @@ blvd {
   // STATEMENTS
   PrintStmt     = print Exp dd nl 
   
-  ForStmt       = for Type id in RangeFunc ":" nl Block
+  ForStmt       = for Type id in RangeFunc ":" nl Block cut nl
   
-  IfStmt        = if Exp ":" nl Block ElseIf* Else?                   
+  IfStmt        = if Exp ":" nl Block ElseIf* Else?
   ElseIf        = elseif Exp ":" nl Block 
   Else          = else ":" nl Block 
     
   WhileStmt     = while Exp ":" nl Block
     
-  Block         = Direction*                  
+  Block         = Direction*
   
   ReturnStmt    = return Exp dd nl
   
   // CASTING
   CastDecl      = cast Type id as Exp dd nl
-  RecastDecl    = recast id as Exp dd nl
+  RecastDecl    = recast Exp6_id as Exp dd nl
 
   FuncDecl      = nl? function Type id has Params ":" "\n" Block endFunction nl 
   ClassDecl     = class id ":" nl Member* nl? endClass nl 
@@ -85,6 +85,7 @@ blvd {
   range         = "range" ~idchar
   from          = "from" ~idchar
   in            = "in" ~idchar
+  cut           = "CUT" ~idchar
   ctor          = "CONSTRUCTOR" ~idchar
   endCtor       = "END CONSTRUCTOR" ~idchar
   given         = "GIVEN" ~idchar

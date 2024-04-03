@@ -30,7 +30,20 @@ const semanticChecks = [
   ],
   [
     "for in range",
-    "PROLOGUE\n  END OF PROLOGUE\n\n ACT 1\n ACTION number i in range from 1, 6: say i--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+    `PROLOGUE
+    
+    END OF PROLOGUE
+    
+    ACT 1
+    ACTION number i in range from 1, 6:
+      say i--
+    CUT
+    END OF ACT
+    
+    EPILOGUE
+      say 0--
+    FIN
+  `,
   ],
   [
     "conditionals with numbers",
@@ -114,7 +127,6 @@ const semanticErrors = [
     'function f(x: int): int {return 1;} function g(y: int): string {return "uh-oh";} f = g;',
     /Cannot assign a \(int\)->string to a \(int\)->int/,
   ], */
-
   // Syntax error
   // [
   //   "Non-type in return type",

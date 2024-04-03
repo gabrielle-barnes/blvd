@@ -1,0 +1,12 @@
+PROLOGUE
+  CAST number x as 1--
+  RECAST x as x + 1--
+END OF PROLOGUE
+
+ACT 1
+
+END OF ACT
+
+EPILOGUE
+
+FIN
