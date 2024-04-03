@@ -19,6 +19,7 @@ const semanticChecks = [
     "increment and decrement",
     `PROLOGUE\nCAST number x as 1--\nRECAST x as x + 1--\nRECAST x as x - 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n`,
   ],
+
   [
     "long if",
     `PROLOGUE\n CAST boolean review as true--\n NOMINATE review is true:\n say "1"--\n SUPPORTING:\n say "3"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
@@ -113,6 +114,7 @@ const semanticErrors = [
     'function f(x: int): int {return 1;} function g(y: int): string {return "uh-oh";} f = g;',
     /Cannot assign a \(int\)->string to a \(int\)->int/,
   ], */
+
   // Syntax error
   // [
   //   "Non-type in return type",
