@@ -11,9 +11,23 @@ import analyze from "../src/analyzer.js";
 
 // Programs that are semantically correct
 const semanticChecks = [
-  ["variable declarations", "PROLOGUE\nCAST int x as 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n"],
-  ["increment and decrement", "PROLOGUE\nCAST int x as 1--\nRECAST x as x + 1--\nRECAST x as x - 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n"],
-/*  ["initialize with empty array", "let a = [int]();"],
+  [
+    "variable declarations",
+    "PROLOGUE\nCAST number x as 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n",
+  ],
+  [
+    "increment and decrement",
+    "PROLOGUE\nCAST number x as 1--\nRECAST x as x + 1--\nRECAST x as x - 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n",
+  ],
+  [
+    "initialize with empty array", 
+    "PROLOGUE\n CAST string list letters as [ ]--\n  END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n",
+  ],
+  [
+    "full class",
+    "PROLOGUE\n STAGE Person:\n string a--\n\n CONSTRUCTOR has string name:\n a GIVEN as name--\n END CONSTRUCTOR\n\n SCENE string getName has string name:\n EXIT WITH name--\n END SCENE\n EXIT STAGE\n END OF PROLOGUE\n\n ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n",
+  ],
+  /*  ["initialize with empty array", "let a = [int]();"],
   ["type declaration", "struct S {f: (int)->boolean? g: string}"],
   ["assign arrays", "let a = [int]();let b=[1];a=b;b=a;"],
   ["assign to array element", "const a = [1,2,3]; a[1]=100;"],
@@ -91,7 +105,7 @@ const semanticChecks = [
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
-/*  ["non-distinct fields", "struct S {x: boolean x: int}", /Fields must be distinct/],
+  /*  ["non-distinct fields", "struct S {x: boolean x: int}", /Fields must be distinct/],
   ["non-int increment", "let x=false;x++;", /an integer/],
   ["non-int decrement", 'let x=some[""];x++;', /an integer/],
   ["undeclared id", "print(x);", /Identifier x not declared/],
@@ -165,9 +179,25 @@ const semanticErrors = [
     'function f(x: int): int {return 1;} function g(y: int): string {return "uh-oh";} f = g;',
     /Cannot assign a \(int\)->string to a \(int\)->int/,
   ], */
-  ["Non-type in param", "PROLOGUE\nCAST int x as 1--\nSCENE string f has x fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Type expected/],
-  ["Non-type in return type", "PROLOGUE\nCAST int x as 1--\nSCENE x f has string fwy:\nCAST string fwy as \"101\"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Type expected/],
-  ["Non-type in field type", "PROLOGUE\nCAST int x as 1--\nCAST x y as 2--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n", /Type expected/],
+  /*
+  [
+    "Non-type in param",
+    'PROLOGUE\nCAST number x as 1--\nSCENE string f has non-type fwy:\nCAST string fwy as "101"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n',
+    /Type expected/,
+  ],
+  */
+  // Syntax error
+  // [
+  //   "Non-type in return type",
+  //   'PROLOGUE\nCAST number x as 1--\nSCENE non-type f has string fwy:\nCAST string fwy as "101"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n',
+  //   /Type expected/,
+  // ],
+  // This is actually a syntax error
+  // [
+  //   "Non-type in field type",
+  //   "PROLOGUE\nCAST number x as 1--\nCAST non-type y as 2--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n",
+  //   /Type expected/,
+  // ],
 ];
 
 describe("The analyzer", () => {

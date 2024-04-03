@@ -97,6 +97,19 @@ export default function analyze(match) {
     );
   }
 
+  function assignable(fromType, toType) {
+    return (
+      equivalent(fromType, toType) ||
+      (fromType?.kind === "FunctionType" &&
+        toType?.kind === "FunctionType" &&
+        // covariant in return types
+        assignable(fromType.returnType, toType.returnType) &&
+        fromType.paramTypes.length === toType.paramTypes.length &&
+        // contravariant in parameter types
+        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
+    );
+  }
+
   function equivalent(t1, t2) {
     return (
       t1 === t2 ||
@@ -111,23 +124,6 @@ export default function analyze(match) {
     );
   }
 
-  /* !!Do we have this?!! */
-  /*
-  function assignable(fromType, toType) {
-    return (
-      toType == ANY ||
-      equivalent(fromType, toType) ||
-      (fromType?.kind === "FunctionType" &&
-        toType?.kind === "FunctionType" &&
-        // covariant in return types
-        assignable(fromType.returnType, toType.returnType) &&
-        fromType.paramTypes.length === toType.paramTypes.length &&
-        // contravariant in parameter types
-        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
-    )
-  }
-  */
-
   function typeDescription(type) {
     switch (type.kind) {
       case "NumberType":
@@ -138,9 +134,6 @@ export default function analyze(match) {
         return "boolean";
       case "ClassType":
         return type.name;
-
-      /* !!We also have methods which have same aspects in functions!! */
-      /* !!So do we rewrite this piece of code?!! */
       case "FunctionType":
         const paramTypes = type.paramTypes.map(typeDescription).join(", ");
         const returnType = typeDescription(type.returnType);
@@ -155,14 +148,13 @@ export default function analyze(match) {
     must(assignable(e.type, type), message, at);
   }
 
-  /* !!Not sure how to do fields!! */
   function mustHaveDistinctFields(type, at) {
     const fieldNames = new Set(type.fields.map((f) => f.name));
     must(fieldNames.size === type.fields.length, "Fields must be distinct", at);
   }
 
-  function mustHaveMember(structType, field, at) {
-    must(structType.fields.map((f) => f.name).includes(field), "No such field", at);
+  function mustHaveMember(classType, field, at) {
+    must(classType.fields.map((f) => f.name).includes(field), "No such field", at);
   }
 
   function mustBeInAFunction(at) {
@@ -192,8 +184,6 @@ export default function analyze(match) {
   }
 
   /* Definitions of the semantic actions */
-
-  // do we need to specify nl for line ending?
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
     Script(prologue, acts, epilogue) {
       const statements = [];
@@ -230,7 +220,6 @@ export default function analyze(match) {
 
       return core.forStatement(id.sourceString, range.rep(), block.rep());
     },
-    // if x is 10: but get rid of id and is, so its if y is 2:
     IfStmt(_if, exp, _colon, _nl, block, elseifstmt, elsestmt) {
       const test = exp.rep();
       mustHaveBooleanType(test, { at: exp });
@@ -284,10 +273,11 @@ export default function analyze(match) {
     RecastDecl(_recast, id, _as, exp, _dd, _nl) {
       const source = exp.rep();
       const target = id.rep();
+      console.log("source:", source.type, "target:", target.type);
       mustBeAssignable(source, { toType: target.type }, { at: id });
       return core.assignmentStatement(target, source);
     },
-    FuncDecl(_function, type, id, _has, params, _colon, _nl_0, block, _endfunction, _nl_1) {
+    FuncDecl(_nl_0, _function, type, id, _has, params, _colon, _nl_1, block, _endfunction, _nl_2) {
       const functionDeclaration = core.functionDeclaration(id.sourceString);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, functionDeclaration);
@@ -301,12 +291,51 @@ export default function analyze(match) {
       context = context.parent;
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
-    ClassDecl(_class, id, _colon, _nl_0, decl, _endclass, _nl_1) {},
-    Constructor(_ctor, _has, params, _colon, _nl_0, ctorbody, _endctor, _nl_1) {},
-    /* CtorBody() TO DO need field
-       MemberExp_self(_given, name) {},
-       MemberExp(exp) {},
-    */
+    // class body? has fields, constructor, variableDeclaration, functionDeclaration
+    ClassDecl(_class, id, _colon, _nl_0, members, _nl_1, _endclass, _nl_2) {
+      const type = core.classDeclaration(id.sourceString, []);
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+      context.add(id.sourceString, type);
+
+      // members
+      type.fields = members.children.map((member) => member.rep());
+      mustHaveDistinctFields(type, { at: id });
+      mustNotBeSelfContaining(type, { at: id });
+
+      // constructors
+      type.constructor = constructor.children.map((constructor) => constructor.rep());
+      mustHaveDistinctFields(type, { at: id });
+
+      // variable assignment (CAST)
+      type.variableDeclaration = variableDeclaration.children.map((variableDeclaration) =>
+        variableDeclaration.rep()
+      );
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+
+      // functions
+      type.functionDeclaration = functionDeclaration.children.map((functionDeclaration) =>
+        functionDeclaration.rep()
+      );
+      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
+
+      return core.typeDeclaration(type);
+    },
+    Field(type, id, _dd, _nl) {
+      return core.field(id.sourceString, type.rep());
+    },
+    Constructor(_nl_0, _ctor, _has, params, _colon, _nl_1, ctorbody, _endctor, _nl_2) {
+      // parameters
+      context = context.newChildContext({ inLoop: false, function: functionDeclaration });
+      const param = params.rep();
+      constructor.paramType = param.map((p) => p.type);
+
+      // need to make new core for ctorbody? because ctorbody can only have member expressions
+      // when block can have much more
+      const constructor_body = ctorbody.rep();
+
+      context = context.parent;
+      return core.constructor(param, constructor_body);
+    },
     Params(params, _colon) {
       return params.asIteration().children.map((p) => p.rep());
     },
@@ -318,20 +347,20 @@ export default function analyze(match) {
     },
     RangeFunc(_range, _from, exp_0, _comma, exp_1) {},
 
-    Exp_booleanOr(exps, _or, exp) {
-      let right = exp.rep();
-      mustHaveBooleanType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp_booleanOr(exp1, _or, exp2) {
+      let right = exp2.rep();
+      mustHaveBooleanType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
         right = core.binaryExpression(left, right);
       }
       return right;
     },
-    Exp1_booleanAnd(exps, _and, exp) {
-      let right = exp.rep();
-      mustHaveBooleanType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp1_booleanAnd(exp1, _and, exp2) {
+      let right = exp2.rep();
+      mustHaveBooleanType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
         right = core.binaryExpression(left, right);
@@ -348,10 +377,31 @@ export default function analyze(match) {
       mustBothHaveTheSameType(leftExp, rightExp, { at: relop });
       return core.binaryExpression(op, leftExp, rightExp, BOOLEAN);
     },
-    Exp3_addSub(exps, ops, exp) {
-      let right = exp.rep();
-      mustHaveNumericType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp3_addSub(exp1, ops, exp2) {
+      const [left, op, right] = [exp1.rep(), ops.sourceString, exp2.rep()];
+      if (op === "+") {
+        mustHaveNumericOrStringType(left, { at: exp1 });
+      } else {
+        mustHaveNumericType(left, { at: exp1 });
+      }
+      mustBothHaveTheSameType(left, right, { at: ops });
+      return core.binaryExpression(op, left, right, left.type);
+    },
+    /*
+      let right = exp2.rep();
+      mustHaveNumericType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
+        let left = e.rep();
+        mustBothHaveTheSameType(left, right, { at: e });
+        mustHaveNumericType(left, { at: e });
+        right = core.binaryExpression(left, right);
+      }
+      return right;
+      */
+    Exp4_multDivMod(exp1, ops, exp2) {
+      let right = exp2.rep();
+      mustHaveNumericType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustBothHaveTheSameType(left, right, { at: e });
         mustHaveNumericType(left, { at: e });
@@ -359,10 +409,10 @@ export default function analyze(match) {
       }
       return right;
     },
-    Exp4_multDivMod(exps, ops, exp) {
-      let right = exp.rep();
-      mustHaveNumericType(right, { at: exp });
-      for (let e of exps.rep()) {
+    Exp5_exponent(exp2, ops, exp1) {
+      let right = exp2.rep();
+      mustHaveNumericType(right, { at: exp2 });
+      for (let e of exp1.rep()) {
         let left = e.rep();
         mustBothHaveTheSameType(left, right, { at: e });
         mustHaveNumericType(left, { at: e });
@@ -370,19 +420,8 @@ export default function analyze(match) {
       }
       return right;
     },
-    Exp5_exponent(exp, ops, exps) {
-      let right = exp.rep();
-      mustHaveNumericType(right, { at: exp });
-      for (let e of exps.rep()) {
-        let left = e.rep();
-        mustBothHaveTheSameType(left, right, { at: e });
-        mustHaveNumericType(left, { at: e });
-        right = core.binaryExpression(left, right);
-      }
-      return right;
-    },
-    Exp6_parens(_open, exp, _close) {
-      return exp.rep();
+    Exp6_parens(_open, exp2, _close) {
+      return exp2.rep();
     },
     Exp6_listexp(_open, args, _close) {
       const elements = args.asIteration().children.map((e) => e.rep());
@@ -407,6 +446,9 @@ export default function analyze(match) {
         ? core.stringType
         : core.customType;
       //must make sure a variable exist before its used
+    },
+    id(_first, _rest) {
+      return this.sourceString;
     },
     true(_) {
       return true;
