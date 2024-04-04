@@ -13,20 +13,155 @@ import analyze from "../src/analyzer.js";
 const semanticChecks = [
   [
     "variable declarations",
-    `PROLOGUE\nCAST number x as 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n`,
+    `PROLOGUE
+    CAST number x as 1--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
   ],
   [
     "increment and decrement",
-    `PROLOGUE\nCAST number x as 1--\nRECAST x as x + 1--\nRECAST x as x - 1--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n`,
+    `PROLOGUE
+    CAST number x as 1--
+    RECAST x as x + 1--
+    RECAST x as x - 1--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
+    "initialize with empty array",
+    `PROLOGUE
+    CAST number list letters as [ ]--
+    END OF PROLOGUE
+
+    ACT 1
+    say 0--
+    END OF ACT
+    
+    EPILOGUE
+    say 0--
+    FIN`,
   ],
 
   [
+    "assign to array element",
+    `PROLOGUE
+    CAST number list num as [1,2,3]--
+    END OF PROLOGUE
+
+    ACT 1
+    say 0--
+    END OF ACT
+    
+    EPILOGUE
+    say 0--
+    FIN`,
+  ],
+  //toal's example: ["short return", "function f() { return; }"],
+  // [
+  //   "short return",
+  //   `PROLOGUE
+  //   SCENE number prob has number lambda, number slope:
+  //   EXIT WITH--
+  //   END SCENE
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  // ],
+
+  //toal's example: ["long return", "function f(): boolean { return true; }"],
+  // [
+  //   "long return",
+  //   `PROLOGUE
+  //   SCENE number prob has number lambda, number slope:
+  //   EXIT WITH 1--
+  //   END SCENE
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  // ],
+
+  //toal's example: ["return in nested if", "function f() {if true {return;}}"],
+
+  // [
+  //   "return in nested if",
+  //   `PROLOGUE
+  //   SCENE number prob has number lambda, number slope:
+  //   NOMINATE true:
+  //   EXIT WITH--
+  //   END SCENE
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  // ],
+  [
     "long if",
-    `PROLOGUE\n CAST boolean review as true--\n NOMINATE review is true:\n say "1"--\n SUPPORTING:\n say "3"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE
+     CAST boolean review as true--
+     NOMINATE review is true:
+     say "1"--
+     SUPPORTING:
+     say "3"--
+     END OF PROLOGUE
+     
+     ACT 1
+     
+     END OF ACT
+     
+     EPILOGUE
+     
+     FIN`,
   ],
   [
     "elseif",
-    `PROLOGUE\n CAST boolean review as true--\n NOMINATE review is true:\n say "1"--\n RUNNER-UP review is true:\n say "0"--\n SUPPORTING:\n say "3"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE
+     CAST boolean review as true--
+     NOMINATE review is true:
+     say "1"--
+     RUNNER-UP review is true:
+     say "0"--
+     SUPPORTING:
+     say "3"--
+     END OF PROLOGUE
+     
+     ACT 1
+     
+     END OF ACT
+     
+     EPILOGUE
+     
+     FIN`,
   ],
   [
     "for in range",
@@ -42,20 +177,52 @@ const semanticChecks = [
     
     EPILOGUE
       say 0--
-    FIN
-  `,
+    FIN`,
   ],
   [
     "conditionals with numbers",
-    `PROLOGUE\n\n END OF PROLOGUE\n\n ACT 1\n NOMINATE 1 < 2:\n say 8--\n SUPPORTING:\n say 5--\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    `PROLOGUE
+    
+    END OF PROLOGUE
+    
+    ACT 1
+    NOMINATE 1 < 2:
+    say 8--
+    SUPPORTING:
+    say 5--
+    END OF ACT
+
+    EPILOGUE
+    
+    FIN`,
   ],
   [
     "and operator",
-    `PROLOGUE\n say (true and false)--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    `PROLOGUE
+    say (true and false)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
   ],
   [
     "bit ops",
-    `PROLOGUE\n say ((1 == 2) or (9 == 3))--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    `PROLOGUE
+    say ((1 == 2) or (9 == 3))--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
   ],
   // TODO
   // [
@@ -64,117 +231,564 @@ const semanticChecks = [
   // ],
   [
     "arithmetic",
-    `PROLOGUE\n CAST number x as 1--\n say (2*3+5**-3/2-5%8)--\n END OF PROLOGUE\n\n   ACT 1\n\n  END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    `PROLOGUE
+    CAST number x as 1--
+    say (2*3+5**-3/2-5%8)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
+    "good types for ==",
+    `PROLOGUE
+    say(2 == 2.0)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
   ],
 
   [
     "outer variable",
-    `PROLOGUE\n CAST number x as 1--\n PERFORM false:\n say x--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    `PROLOGUE
+    CAST number x as 1--
+    PERFORM false:
+    say x--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
   ],
-  [
-    "initialize with empty array",
-    `PROLOGUE\n CAST number list letters as [ ]--\n  END OF PROLOGUE\n\n ACT 1\n\n say 0--\n END OF ACT\n\n EPILOGUE\n\n say 0--\n FIN\n`,
-  ],
+  // toal's example: ["assigned functions", "function f() {}\nlet g = f;g = f;"],
+
+  // [
+  //   "assigned functions",
+  //   `PROLOGUE
+  //   SCENE number prob has number lambda, number slope:
+  //   RECAST lambda as slope--
+  //   RECAST slope as lambda--
+  //   END SCENE
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  // ],
 ];
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
   [
     "non-boolean in conditional",
-    `PROLOGUE\n say (true and 1 < 2 and false)--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    `PROLOGUE
+    say (true and 1 < 2 and false)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
     /Expected a boolean/,
   ],
   [
     "non-boolean in conditional",
-    `PROLOGUE\n say ((1 and 2) or (9**3))--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    `PROLOGUE
+    say ((1 and 2) or (9**3))--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
     /Expected a boolean/,
   ],
-  /*  ["non-distinct fields", "struct S {x: boolean x: int}", /Fields must be distinct/],
-  ["non-int increment", "let x=false;x++;", /an integer/],
-  ["non-int decrement", 'let x=some[""];x++;', /an integer/],
-  ["undeclared id", "print(x);", /Identifier x not declared/],
-  ["redeclared id", "let x = 1;let x = 1;", /Identifier x already declared/],
-  ["recursive struct", "struct S { x: int y: S }", /must not be self-containing/],
-  ["assign to const", "const x = 1;x = 2;", /Cannot assign to constant/],
-  ["assign bad type", "let x=1;x=true;", /Cannot assign a boolean to a int/],
-  ["assign bad array type", "let x=1;x=[true];", /Cannot assign a \[boolean\] to a int/],
-  ["assign bad optional type", "let x=1;x=some 2;", /Cannot assign a int\? to a int/],
-  ["break outside loop", "break;", /Break can only appear in a loop/],
   [
-    "break inside function",
-    "while true {function f() {break;}}",
-    /Break can only appear in a loop/,
-  ],
-  ["return outside function", "return;", /Return can only appear in a function/],
-  ["return value from void function", "function f() {return 1;}", /Cannot return a value/],
-  ["return nothing from non-void", "function f(): int {return;}", /should be returned/],
-  ["return type mismatch", "function f(): int {return false;}", /boolean to a int/],
-  ["non-boolean short if test", "if 1 {}", /Expected a boolean/],
-  ["non-boolean if test", "if 1 {} else {}", /Expected a boolean/],
-  ["non-boolean while test", "while 1 {}", /Expected a boolean/],
-  ["non-integer repeat", 'repeat "1" {}', /Expected an integer/],
-  ["non-integer low range", "for i in true...2 {}", /Expected an integer/],
-  ["non-integer high range", "for i in 1..<no int {}", /Expected an integer/],
-  ["non-array in for", "for i in 100 {}", /Expected an array/],
-  ["non-boolean conditional test", "print(1?2:3);", /Expected a boolean/],
-  ["diff types in conditional arms", "print(true?1:true);", /not have the same type/],
-  ["unwrap non-optional", "print(1??2);", /Expected an optional/],
-  ["bad types for ||", "print(false||1);", /Expected a boolean/],
-  ["bad types for &&", "print(false&&1);", /Expected a boolean/],
-  ["bad types for ==", "print(false==1);", /Operands do not have the same type/],
-  ["bad types for !=", "print(false==1);", /Operands do not have the same type/],
-  ["bad types for +", "print(false+1);", /Expected a number or string/],
-  ["bad types for -", "print(false-1);", /Expected a number/],
-  ["bad types for *", "print(false*1);", /Expected a number/],
-  ["bad types for /", "print(false/1);", /Expected a number/],
-  ["bad types for **", "print(false**1);", /Expected a number/],
-  ["bad types for <", "print(false<1);", /Expected a number or string/],
-  ["bad types for <=", "print(false<=1);", /Expected a number or string/],
-  ["bad types for >", "print(false>1);", /Expected a number or string/],
-  ["bad types for >=", "print(false>=1);", /Expected a number or string/],
-  ["bad types for ==", "print(2==2.0);", /not have the same type/],
-  ["bad types for !=", "print(false!=1);", /not have the same type/],
-  ["bad types for negation", "print(-true);", /Expected a number/],
-  ["bad types for length", "print(#false);", /Expected an array/],
-  ["bad types for not", 'print(!"hello");', /Expected a boolean/],
-  ["bad types for random", "print(random 3);", /Expected an array/],
-  ["non-integer index", "let a=[1];print(a[false]);", /Expected an integer/],
-  ["no such field", "struct S{} let x=S(); print(x.y);", /No such field/],
-  ["diff type array elements", "print([3,3.0]);", /Not all elements have the same type/],
-  ["shadowing", "let x = 1;\nwhile true {let x = 1;}", /Identifier x already declared/],
-  ["call of uncallable", "let x = 1;\nprint(x());", /Call of non-function/],
-  ["Too many args", "function f(x: int) {}\nf(1,2);", /1 argument\(s\) required but 2 passed/],
-  ["Too few args", "function f(x: int) {}\nf();", /1 argument\(s\) required but 0 passed/],
-  [
-    "Parameter type mismatch",
-    "function f(x: int) {}\nf(false);",
-    /Cannot assign a boolean to a int/,
+    "non-number increment",
+    `PROLOGUE
+    CAST boolean x as false--
+    RECAST x as x + 1--
+    END OF PROLOGUE
+      
+    ACT 1
+
+    END OF ACT
+      
+    EPILOGUE
+
+    FIN`,
+    /Expected a number or string/,
   ],
   [
-    "function type mismatch",
-    `function f(x: int, y: (boolean)->void): int { return 1; }
-     function g(z: boolean): int { return 5; }
-     f(2, g);`,
-    /Cannot assign a \(boolean\)->int to a \(boolean\)->void/,
+    "non-number decrement",
+    `PROLOGUE
+    CAST boolean x as false--
+    RECAST x as x - 1--
+    END OF PROLOGUE
+  
+    ACT 1
+  
+    END OF ACT
+  
+    EPILOGUE
+  
+    FIN`,
+    /Expected a number/,
   ],
-  ["bad param type in fn assign", "function f(x: int) {} function g(y: float) {} f = g;"],
   [
-    "bad return type in fn assign",
-    'function f(x: int): int {return 1;} function g(y: int): string {return "uh-oh";} f = g;',
-    /Cannot assign a \(int\)->string to a \(int\)->int/,
-  ], */
-  // Syntax error
+    "undeclared id",
+    `PROLOGUE
+     say x--
+     END OF PROLOGUE
+     
+     ACT 1
+     
+     END OF ACT
+     
+     EPILOGUE
+     
+     FIN`,
+    /Identifier x not declared/,
+  ],
+  [
+    "redeclared id",
+    `PROLOGUE
+    CAST number x as 1--
+    CAST number x as 1--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Identifier x already declared/,
+  ],
+  [
+    "assign bad type",
+    `PROLOGUE
+    CAST number x as 1--
+    RECAST x as true--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Cannot assign a boolean to a number/,
+  ],
+  [
+    "return outside function",
+    `PROLOGUE
+    EXIT WITH--
+    END OF PROLOGUE
+
+    ACT 1
+
+    END OF ACT
+
+    EPILOGUE
+
+    FIN`,
+    /Return can only appear in a function/,
+  ],
+  [
+    "non-boolean short if test",
+    `PROLOGUE
+    NOMINATE 1: 
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a boolean/,
+  ],
+  [
+    "non-boolean if test",
+    `PROLOGUE
+    NOMINATE 1:
+    say 2--
+    SUPPORTING:
+    say 4--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a boolean/,
+  ],
+  [
+    "non-boolean while test",
+    `PROLOGUE
+    PERFORM 1: 
+    END OF PROLOGUE
+  
+    ACT 1
+  
+    END OF ACT
+  
+    EPILOGUE
+  
+    FIN`,
+    /Expected a boolean/,
+  ],
+  //THIS SHOULDN"T WORK IN THE SEMANTICLY CORRECT TEST BUT IT DOES,
+  //SOMETHING TO DO WITH OUR RANGE FUNC OR FOR LOOP
   // [
-  //   "Non-type in return type",
-  //   'PROLOGUE\nCAST number x as 1--\nSCENE non-type f has string fwy:\nCAST string fwy as "101"--\nEND SCENE\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n',
+  //   "non-integer low range",
+  //   `PROLOGUE
+  //   ACTION number i in range from true, 2:
+  //   say "hi"--
+  //   CUT
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  //   /Expected an number/,
+  // ],
+  //THIS SHOULDN"T WORK IN THE SEMANTICLY CORRECT TEST BUT IT DOES,
+  //SOMETHING TO DO WITH OUR RANGE FUNC OR FOR LOOP
+  // [
+  //   "non-integer high range",
+  //   `PROLOGUE
+  //   ACTION number i in range from 1, six:
+  //   say "bye"--
+  //   CUT
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  //   /Expected an number/,
+  // ],
+  // [
+  //   "non-boolean conditional test",
+  //   `PROLOGUE
+  //   NOMINATE 1:
+  //   say 1--
+  //   SUPPORTING:
+  //   say 3--
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  //   /Expected a boolean/,
+  // ],
+
+  [
+    "bad types for `or`",
+    `PROLOGUE
+    say(false or 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a boolean/,
+  ],
+  [
+    "bad types for `and`",
+    `PROLOGUE
+    say(false and 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a boolean/,
+  ],
+  [
+    "bad types for ==",
+    `PROLOGUE
+    say(false == 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Operands do not have the same type/,
+  ],
+  [
+    "bad types for !=",
+    `PROLOGUE
+    say(false != 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Operands do not have the same type/,
+  ],
+  [
+    "bad types for +",
+    `PROLOGUE
+    say(false + 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number or string/,
+  ],
+  [
+    "bad types for -",
+    `PROLOGUE
+    say(false - 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number/,
+  ],
+  [
+    "bad types for *",
+    `PROLOGUE
+    say(false * 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number/,
+  ],
+  [
+    "bad types for /",
+    `PROLOGUE
+    say(false / 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number/,
+  ],
+  [
+    "bad types for /",
+    `PROLOGUE
+    say(false / 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number/,
+  ],
+  [
+    "bad types for <",
+    `PROLOGUE
+    say(false < 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number or string/,
+  ],
+  [
+    "bad types for <=",
+    `PROLOGUE
+    say(false <= 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number or string/,
+  ],
+  [
+    "bad types for >",
+    `PROLOGUE
+    say(false > 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number or string/,
+  ],
+  [
+    "bad types for >=",
+    `PROLOGUE
+    say(false >= 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a number or string/,
+  ],
+  [
+    "bad types for !=",
+    `PROLOGUE
+    say(false != 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /not have the same type/,
+  ],
+  // [
+  //   "Non-type in param",
+  //   `PROLOGUE
+  //   CAST number x as 1--
+  //   SCENE string city has string fwy:
+  //   RECAST fwy as "101"--
+  //   END SCENE
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
   //   /Type expected/,
   // ],
-  // This is actually a syntax error
-  // [
-  //   "Non-type in field type",
-  //   "PROLOGUE\nCAST number x as 1--\nCAST non-type y as 2--\nEND OF PROLOGUE\n\nACT 1\n\nEND OF ACT\n\nEPILOGUE\n\nFIN\n",
-  //   /Type expected/,
-  // ],
+  [
+    "Non-type in return type",
+    `PROLOGUE
+    CAST number x as 1--
+    SCENE city has string fwy:
+    CAST string fwy as "101"--
+    END SCENE
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected "boolean", "number", or "string"/,
+  ],
+  [
+    "Non-type in field type",
+    `PROLOGUE
+    CAST number x as 1--
+    CAST x as 2--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected "boolean", "number", or "string"/,
+  ],
 ];
 
 describe("The analyzer", () => {
