@@ -57,7 +57,7 @@ const semanticChecks = [
   ],
 
   [
-    "assign to array element",
+    "assign number array",
     `PROLOGUE
     CAST number list num as [1,2,3]--
     END OF PROLOGUE
@@ -70,6 +70,22 @@ const semanticChecks = [
     say 0--
     FIN`,
   ],
+  [
+    "assign string array ",
+    `PROLOGUE
+    
+    END OF PROLOGUE
+    
+    ACT 1
+    (note: list example)
+    CAST string list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--
+    END OF ACT
+
+    EPILOGUE
+
+    FIN`,
+  ],
+
   //toal's example: ["short return", "function f() { return; }"],
   // [
   //   "short return",
@@ -224,11 +240,21 @@ const semanticChecks = [
     
     FIN`,
   ],
-  // TODO
+
   // [
   //   "relations",
-  //   `PROLOGUE\n say ((1 <= 2) and ("x">"y") and (3.5<1.2))--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
-  // ],
+  //   `PROLOGUE
+  //   say (1 <= 2 and "x">"y" and 3.5<1.2)--
+  //   END OF PROLOGUE
+
+  //   ACT 1
+
+  //   END OF ACT
+
+  //   EPILOGUE
+
+  //   FIN`,
+  //],
   [
     "arithmetic",
     `PROLOGUE
@@ -294,6 +320,57 @@ const semanticChecks = [
 
   //   FIN`,
   // ],
+
+  [
+    "good types for +",
+    `PROLOGUE
+    say(1 + 1)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+
+  [
+    "while",
+
+    `PROLOGUE
+    CAST number stars as 20--
+    PERFORM stars >= 0:
+    say stars--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+
+  [
+    "function",
+
+    `PROLOGUE
+    SCENE string getFreeway has string fwy: 
+    CAST string  fwy1 as "405"--
+    END SCENE
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
 ];
 
 // Programs that are syntactically correct but have semantic errors
