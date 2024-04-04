@@ -1,11 +1,10 @@
 PROLOGUE
   (note: variable assignment)
-  CAST int i as 1--
+  CAST number i as 1--
 END OF PROLOGUE
 
 ACT 1
-  (note: type casting)
-  RECAST i into string--
+  RECAST i as 3--
 END OF ACT
 
 EPILOGUE 

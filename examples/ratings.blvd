@@ -3,8 +3,9 @@ PROLOGUE
 END OF PROLOGUE
 
 ACT 1
+(note: doesn't currently work)
   SCENE number arithmetic has number stars, number actors:
-	CAST number stars as 5--
+    RECAST stars as 3--
     RECAST actors as 0--
   END SCENE
 END OF ACT

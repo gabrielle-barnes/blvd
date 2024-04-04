@@ -1,17 +1,17 @@
+(note: an example of a long if statement)
 PROLOGUE
-  say "an example of if statements"--
+  CAST number review as 5--
 END OF PROLOGUE
 
 ACT 1
-  CAST number review as 1--
-  NOMINATE review is 1:
-    say "1 Star"--
-  RUNNER-UP review is 2:
-    say "2 Stars"--
+  NOMINATE review is 5:
+    say "5 Stars"--
+  RUNNER-UP review is 4:
+    say "4 Stars"--
   SUPPORTING:
-    say "3 or more stars"--
+    say "3 Stars"--
 END OF ACT
 
 EPILOGUE
-
+  say "Congratulations!"--
 FIN
