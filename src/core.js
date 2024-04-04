@@ -27,6 +27,10 @@ export function emptyStatement() {
 export function listType(baseType) {
   return { kind: "ListType", baseType };
 }
+export function emptyListType() {
+  return { kind: "EmptyListType" };
+}
+
 export function printStatement(expression) {
   return { kind: "PrintStatement", expression };
 }
@@ -58,7 +62,7 @@ export function classDeclaration(name, fields, methods, constructor, functions) 
   return { kind: "ClassDeclaration", name, fields, methods, constructor, functions };
 }
 export function field(type, name) {
-  return { kind: "Field", type, name }
+  return { kind: "Field", type, name };
 }
 export function constructor(parameters, body) {
   return { kind: "Constructor", parameters, body };
@@ -88,6 +92,11 @@ export const standardLibrary = Object.freeze({
   number: numberType,
   boolean: boolType,
   string: stringType,
+  //π: variable("π", true, numberType),
+  //sin: fun("sin", numberToNUmberType),
+  //cos: fun("cos", floatToFloatType),
+  //ln: fun("ln", floatToFloatType),
+  //hypot: fun("hypot", floatFloatToFloatType),
 });
 
 String.prototype.type = stringType;

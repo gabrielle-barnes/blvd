@@ -4,7 +4,7 @@ END OF PROLOGUE
 
 ACT 1
   (note: list example)
-  CAST list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--
+  CAST string list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--
 END OF ACT
 
 EPILOGUE

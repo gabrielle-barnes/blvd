@@ -120,7 +120,10 @@ export default function analyze(match) {
         t2?.kind === "FunctionType" &&
         equivalent(t1.returnType, t2.returnType) &&
         t1.paramTypes.length === t2.paramTypes.length &&
-        t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i])))
+        t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i]))) ||
+      (t1?.kind === "ListType" && t2?.kind === "EmptyListType") ||
+      (t1?.kind === "EmptyListType" && t2?.kind === "ListType") ||
+      (t1?.kind === "EmptyListType" && t2?.kind === "EmptyListType")
     );
   }
 
@@ -255,7 +258,7 @@ export default function analyze(match) {
       context = context.newChildContext({ inLoop: true });
       const body = block.rep();
       context = context.parent;
-      return core.WhileStmt(test, body);
+      return core.whileStatement(test, body);
     },
     Block(directions) {
       return core.block(directions.children.map((d) => d.rep()));
@@ -296,6 +299,7 @@ export default function analyze(match) {
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
     // class body? has fields, constructor, variableDeclaration, functionDeclaration
+    /*
     ClassDecl(_class, id, _colon, _nl_0, members, _nl_1, _endclass, _nl_2) {
       const type = core.classDeclaration(id.sourceString, []);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
@@ -340,6 +344,7 @@ export default function analyze(match) {
       context = context.parent;
       return core.constructor(param, constructor_body);
     },
+    */
     Params(params, _colon) {
       return params.asIteration().children.map((p) => p.rep());
     },
@@ -354,7 +359,7 @@ export default function analyze(match) {
     Exp_booleanOr(exp1, _or, exp2) {
       let right = exp2.rep();
       mustHaveBooleanType(right, { at: exp2 });
-      for (let e of exp1.rep()) {
+      for (let e of exp1.children) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
         right = core.binaryExpression(left, right);
@@ -364,7 +369,7 @@ export default function analyze(match) {
     Exp1_booleanAnd(exp1, _and, exp2) {
       let right = exp2.rep();
       mustHaveBooleanType(right, { at: exp2 });
-      for (let e of exp1.rep()) {
+      for (let e of exp1.children) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
         right = core.binaryExpression(left, right);
@@ -403,26 +408,16 @@ export default function analyze(match) {
       return right;
       */
     Exp4_multDivMod(exp1, ops, exp2) {
-      let right = exp2.rep();
-      mustHaveNumericType(right, { at: exp2 });
-      for (let e of exp1.rep()) {
-        let left = e.rep();
-        mustBothHaveTheSameType(left, right, { at: e });
-        mustHaveNumericType(left, { at: e });
-        right = core.binaryExpression(left, right);
-      }
-      return right;
+      const [left, op, right] = [exp1.rep(), ops.sourceString, exp2.rep()];
+      mustHaveNumericType(left, { at: exp1 });
+      mustBothHaveTheSameType(left, right, { at: ops });
+      return core.binaryExpression(op, left, right, left.type);
     },
     Exp5_exponent(exp2, ops, exp1) {
-      let right = exp2.rep();
-      mustHaveNumericType(right, { at: exp2 });
-      for (let e of exp1.rep()) {
-        let left = e.rep();
-        mustBothHaveTheSameType(left, right, { at: e });
-        mustHaveNumericType(left, { at: e });
-        right = core.binaryExpression(left, right);
-      }
-      return right;
+      const [left, op, right] = [exp1.rep(), ops.sourceString, exp2.rep()];
+      mustHaveNumericType(left, { at: exp1 });
+      mustBothHaveTheSameType(left, right, { at: ops });
+      return core.binaryExpression(op, left, right, left.type);
     },
     Exp6_parens(_open, exp2, _close) {
       return exp2.rep();
@@ -430,7 +425,9 @@ export default function analyze(match) {
     Exp6_listexp(_open, args, _close) {
       const elements = args.asIteration().children.map((e) => e.rep());
       mustAllHaveSameType(elements, { at: args });
-      return core.listExpression(elements);
+      let list = core.listExpression(elements);
+      list.type = elements[0]?.type ?? core.emptyListType();
+      return list;
     },
     Exp6_id(id) {
       const entity = context.lookup(id.sourceString);
@@ -440,14 +437,17 @@ export default function analyze(match) {
 
     Type(type, list) {
       //handle custom types
-      return type.sourceString === "boolean"
-        ? core.boolType
-        : type.sourceString === "number"
-        ? core.NumberType
-        : type.sourceString === "string"
-        ? core.stringType
-        : core.customType;
-      //must make sure a variable exist before its used
+
+      const baseType =
+        type.sourceString === "boolean"
+          ? core.boolType
+          : type.sourceString === "number"
+          ? core.NumberType
+          : type.sourceString === "string"
+          ? core.stringType
+          : core.customType;
+
+      return list ? core.listType(baseType) : baseType;
     },
     id(_first, _rest) {
       return this.sourceString;

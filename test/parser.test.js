@@ -52,7 +52,7 @@ const syntaxChecks = [
   ],
   [
     "for statement",
-    `PROLOGUE\n SCENE string director has:\n ACTION number i in range from 1, 6:\n say "i"--\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
+    `PROLOGUE\n SCENE string director has:\n ACTION number i in range from 1, 6:\n say "i"--\n CUT\n END SCENE\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
     "variable declaration (num)",

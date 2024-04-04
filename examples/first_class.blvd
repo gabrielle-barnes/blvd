@@ -1,4 +1,4 @@
-(note: a class with fields, constructor, and a method)
+(note: a class with fields, constructor, and a method -> doesn't work might add class stuff later)
 PROLOGUE
 STAGE Person:
   string a--

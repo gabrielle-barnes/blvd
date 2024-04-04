@@ -25,7 +25,7 @@ const semanticChecks = [
     `PROLOGUE\n CAST boolean review as true--\n NOMINATE review is true:\n say "1"--\n SUPPORTING:\n say "3"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
-    "elsif",
+    "elseif",
     `PROLOGUE\n CAST boolean review as true--\n NOMINATE review is true:\n say "1"--\n RUNNER-UP review is true:\n say "0"--\n SUPPORTING:\n say "3"--\n END OF PROLOGUE\n\n ACT 1\n say 0--\n END OF ACT\n\n EPILOGUE\n say 0--\n FIN\n`,
   ],
   [
@@ -49,10 +49,46 @@ const semanticChecks = [
     "conditionals with numbers",
     `PROLOGUE\n\n END OF PROLOGUE\n\n ACT 1\n NOMINATE 1 < 2:\n say 8--\n SUPPORTING:\n say 5--\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
   ],
+  [
+    "and operator",
+    `PROLOGUE\n say (true and false)--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+  ],
+  [
+    "bit ops",
+    `PROLOGUE\n say ((1 == 2) or (9 == 3))--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+  ],
+  // TODO
+  // [
+  //   "relations",
+  //   `PROLOGUE\n say ((1 <= 2) and ("x">"y") and (3.5<1.2))--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+  // ],
+  [
+    "arithmetic",
+    `PROLOGUE\n CAST number x as 1--\n say (2*3+5**-3/2-5%8)--\n END OF PROLOGUE\n\n   ACT 1\n\n  END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+  ],
+
+  [
+    "outer variable",
+    `PROLOGUE\n CAST number x as 1--\n PERFORM false:\n say x--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+  ],
+  [
+    "initialize with empty array",
+    `PROLOGUE\n CAST number list letters as [ ]--\n  END OF PROLOGUE\n\n ACT 1\n\n say 0--\n END OF ACT\n\n EPILOGUE\n\n say 0--\n FIN\n`,
+  ],
 ];
 
 // Programs that are syntactically correct but have semantic errors
 const semanticErrors = [
+  [
+    "non-boolean in conditional",
+    `PROLOGUE\n say (true and 1 < 2 and false)--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    /Expected a boolean/,
+  ],
+  [
+    "non-boolean in conditional",
+    `PROLOGUE\n say ((1 and 2) or (9**3))--\n END OF PROLOGUE\n\n   ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+    /Expected a boolean/,
+  ],
   /*  ["non-distinct fields", "struct S {x: boolean x: int}", /Fields must be distinct/],
   ["non-int increment", "let x=false;x++;", /an integer/],
   ["non-int decrement", 'let x=some[""];x++;', /an integer/],
