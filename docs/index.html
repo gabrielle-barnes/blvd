@@ -87,32 +87,23 @@
 
 <h3 id="header-3">Example 1</h3>
 
-<pre><code> (note: a class with fields, constructor, and a method)
-  PROLOGUE
-  STAGE Person:
-    string a--
-  
-    CONSTRUCTOR has string name:
-      a GIVEN as name--
-    END CONSTRUCTOR
-  
-    SCENE string getName has string name:
-      EXIT WITH name--
-    END SCENE
-  EXIT STAGE
-  END OF PROLOGUE
-  
-  ACT 1
-   CAST string actor1 as Person("Taylor Russell")--
-   CAST string actor2 as Person("Timothée Chalamet")--
-  END OF ACT
-  
-  EPILOGUE
-    say ("The main character is: ")--
-    say (actor1.getName())--
-    say ("The secondary character is: ")--
-    say (actor2.getName())--
-  FIN
+<pre><code>(note: an example of a long if statement)
+PROLOGUE
+  CAST number review as 5--
+END OF PROLOGUE
+
+ACT 1
+  NOMINATE review is 5:
+    say "5 Stars"--
+  RUNNER-UP review is 4:
+    say "4 Stars"--
+  SUPPORTING:
+    say "3 Stars"--
+END OF ACT
+
+EPILOGUE
+  say "Congratulations!"--
+FIN
   </code></pre>
   
 
