@@ -109,39 +109,80 @@ FIN
 
 <h3 id="header-3">Example 2</h3>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Javascript code with syntax highlighting.</span>
-<span class="kd">var</span> <span class="nx">fun</span> <span class="o">=</span> <span class="kd">function</span> <span class="nf">lang</span><span class="p">(</span><span class="nx">l</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">dateformat</span><span class="p">.</span><span class="nx">i18n</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./lang/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">l</span><span class="p">)</span>
-  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<pre><code>(note: an example of addition and subtraction)
+ PROLOGUE
+  CAST number x as 1--
+  RECAST x as x + 1--
+  RECAST x as x - 1--
+ END OF PROLOGUE
+    
+ ACT 1
+    
+ END OF ACT
+    
+ EPILOGUE
+
+    FIN
+    </code></pre>
+  
 
 <h3 id="header-3">Example 3</h3>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Javascript code with syntax highlighting.</span>
-<span class="kd">var</span> <span class="nx">fun</span> <span class="o">=</span> <span class="kd">function</span> <span class="nf">lang</span><span class="p">(</span><span class="nx">l</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">dateformat</span><span class="p">.</span><span class="nx">i18n</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./lang/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">l</span><span class="p">)</span>
-  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<pre><code>(note: an example of a for range loop)
+ PROLOGUE
+    
+ END OF PROLOGUE
+    
+ ACT 1
+  ACTION number i in range from 1, 6:
+    say i--
+  CUT
+ END OF ACT
+    
+ EPILOGUE
+  say 0--
+ FIN
+    </code></pre>
+  
 
 <h3 id="header-3">Example 4</h3>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Javascript code with syntax highlighting.</span>
-<span class="kd">var</span> <span class="nx">fun</span> <span class="o">=</span> <span class="kd">function</span> <span class="nf">lang</span><span class="p">(</span><span class="nx">l</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">dateformat</span><span class="p">.</span><span class="nx">i18n</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./lang/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">l</span><span class="p">)</span>
-  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<pre><code>(note: an example of assigning functions)
+ PROLOGUE
+  SCENE number prob has number lambda, number slope:
+    RECAST lambda as slope--
+    RECAST slope as lambda--
+  END SCENE
+ END OF PROLOGUE
+
+ ACT 1
+
+ END OF ACT
+
+ EPILOGUE
+
+ FIN
+    </code></pre>
+  
 
 <h3 id="header-3">Example 5</h3>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Javascript code with syntax highlighting.</span>
-<span class="kd">var</span> <span class="nx">fun</span> <span class="o">=</span> <span class="kd">function</span> <span class="nf">lang</span><span class="p">(</span><span class="nx">l</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">dateformat</span><span class="p">.</span><span class="nx">i18n</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./lang/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">l</span><span class="p">)</span>
-  <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
+<pre><code>(note: an example of a while statement)
+ PROLOGUE
+  CAST number stars as 20--
+  PERFORM stars >= 0:
+    say stars--
+ END OF PROLOGUE
+  
+ ACT 1
+  
+ END OF ACT
+  
+ EPILOGUE
+  
+ FIN
+    </code></pre>
+  
 
 <h1 id="header-1">Behind the Scenes</h1>
 
