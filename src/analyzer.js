@@ -56,10 +56,6 @@ export default function analyze(match) {
     must(e.type === BOOLEAN, "Expected a boolean", at);
   }
 
-  function mustHaveAListType(e, at) {
-    must(e.type?.kind === "ListType", "Expected an list", at);
-  }
-
   // function mustHaveAClassType(e, at) {
   //   must(e.type?.kind === "ClassType", "Expected a class", at);
   // }
@@ -78,15 +74,6 @@ export default function analyze(match) {
     );
   }
 
-  function mustBeAType(e, at) {
-    // This is a rather ugly hack
-    must(e?.kind.endsWith("Type"), "Type expected", at);
-  }
-
-  function mustBeAListType(t, at) {
-    must(t?.kind === "ListType", "Must be an array type", at);
-  }
-
   /* TO DO */
   /* !!In our classes we have a constructor, fields? and methods. Not sure how to implement that!! */
   // function includesAsField(classType, type) {
@@ -103,10 +90,8 @@ export default function analyze(match) {
       equivalent(fromType, toType) ||
       (fromType?.kind === "FunctionType" &&
         toType?.kind === "FunctionType" &&
-        // covariant in return types
         assignable(fromType.returnType, toType.returnType) &&
         fromType.paramTypes.length === toType.paramTypes.length &&
-        // contravariant in parameter types
         toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
     );
   }
@@ -136,14 +121,14 @@ export default function analyze(match) {
         return "string";
       case "BoolType":
         return "boolean";
-      case "ClassType":
-        return type.name;
+      //case "ClassType":
+        //return type.name;
       case "FunctionType":
         const paramTypes = type.paramTypes.map(typeDescription).join(", ");
         const returnType = typeDescription(type.returnType);
         return `(${paramTypes})->${returnType}`;
-      case "ListType":
-        return `[${typeDescription(type.baseType)}]`;
+      //case "ListType":
+        //return `[${typeDescription(type.baseType)}]`;
     }
   }
 
@@ -165,10 +150,11 @@ export default function analyze(match) {
     must(context.function, "Return can only appear in a function", at);
   }
 
-  function mustBeCallable(e, at) {
+  /* function mustBeCallable(e, at) {
     const callable = e?.kind === "ClassType" || e.type?.kind === "FunctionType";
     must(callable, "Call of non-function or non-constructor", at);
   }
+  */
 
   function mustReturnSomething(f, at) {
     must(f.type.returnType !== VOID, "Cannot return a value from this function", at);
@@ -178,10 +164,11 @@ export default function analyze(match) {
     mustBeAssignable(e, { toType: f.type.returnType }, at);
   }
 
-  function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
+  /* function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
     const message = `${paramCount} argument(s) required but ${argCount} passed`;
     must(argCount === paramCount, message, at);
   }
+  */
 
   /* Definitions of the semantic actions */
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
@@ -197,7 +184,7 @@ export default function analyze(match) {
     Prologue(_prologue, _nl_0, directions, _endPrologue, _nl_1, _nl_2) {
       return directions.children.map((d) => d.rep());
     },
-    Act(_act, digit, _nl_0, directions, _endAct, _nl_1, _nl_2) {
+    Act(_act, _digit, _nl_0, directions, _endAct, _nl_1, _nl_2) {
       return directions.children.map((d) => d.rep());
     },
     Epilogue(_epilogue, _nl_0, directions, _endEpilogue, _nl_1) {
@@ -296,6 +283,25 @@ export default function analyze(match) {
       context = context.parent;
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
+    /* Call(_id, _dot, _id, _open, expList, _close){
+      const callee = exp.rep()
+      mustBeCallable(callee, { at: exp })
+      const exps = expList.asIteration().children
+      const targetTypes =
+        callee?.kind === "StructType"
+          ? callee.fields.map(f => f.type)
+          : callee.type.paramTypes
+      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: open })
+      const args = exps.map((exp, i) => {
+        const arg = exp.rep()
+        mustBeAssignable(arg, { toType: targetTypes[i] }, { at: exp })
+        return arg
+      })
+      return callee?.kind === "StructType"
+        ? core.constructorCall(callee, args)
+        : core.functionCall(callee, args)
+    }
+    */
     // class body? has fields, constructor, variableDeclaration, functionDeclaration
     /*
     ClassDecl(_class, id, _colon, _nl_0, members, _nl_1, _endclass, _nl_2) {
@@ -352,7 +358,12 @@ export default function analyze(match) {
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable);
     },
-    RangeFunc(_range, _from, exp_0, _comma, exp_1) {},
+    RangeFunc(_range, _from, exp1, _comma, exp2) {
+      const [low, high] = [exp1.rep(), exp2.rep()];
+      mustHaveNumericType(low, { at: exp1 });
+      mustHaveNumericType(high, { at: exp2 });
+      return core.rangeFunction(low, high);
+    },
 
     Exp_booleanOr(exp1, _or, exp2) {
       let right = exp2.rep();
@@ -435,23 +446,14 @@ export default function analyze(match) {
 
       return list._node.matchLength > 0 ? core.listType(baseType) : baseType;
     },
-    id(_first, _rest) {
-      return this.sourceString;
+    id(_first, _rest){
+      return this.sourceString
     },
     true(_) {
       return true;
     },
     false(_) {
       return false;
-    },
-    number(_) {
-      return NUMBER;
-    },
-    string(_) {
-      return STRING;
-    },
-    boolean(_) {
-      return BOOLEAN;
     },
     message(_openQuote, _chars, _closeQuote) {
       return this.sourceString;

@@ -39,7 +39,7 @@ blvd {
   MemberExp     = given  
   
   CreateObject  = cast Type id as id "(" ListOf<Exp, ","> ")" dd nl
-  Call          = id "." id "(" ListOf<Exp, ","> ")" 
+  Call          = (id ".")? id "(" ListOf<Exp, ","> ")" 
 
   Params        = ListOf<Param, ","> ","?
   Param         = Type id

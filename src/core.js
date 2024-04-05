@@ -10,18 +10,17 @@ export function variableDeclaration(variable, initializer) {
 export function variable(name, type) {
   return { kind: "Variable", name, type };
 }
+/* 
 export function typeDeclaration(type) {
   return { kind: "TypeDeclaration", type };
 }
-
+*/
 export const boolType = { kind: "BoolType" };
 export const numberType = { kind: "NumberType" };
 export const stringType = { kind: "StringType " };
-// export const voidType = { kind: "VoidType" };
-
-export function customType(type) {
-  return { kind: "CustomType", id: type };
-}
+//export function customType(type) {
+  //return { kind: "CustomType", id: type };
+//}
 export function emptyStatement() {
   return { kind: "EmptyStatement" };
 }
@@ -64,15 +63,15 @@ export function functionDeclaration(name, parameters, returnType, body) {
 // export function classDeclaration(name, fields, methods, constructor, functions) {
 //   return { kind: "ClassDeclaration", name, fields, methods, constructor, functions };
 // }
-export function field(type, name) {
-  return { kind: "Field", type, name };
-}
+//export function field(type, name) {
+  //return { kind: "Field", type, name };
+//}
 // export function constructor(parameters, body) {
 //   return { kind: "Constructor", parameters, body };
 // }
-export function memberExpression(object, id) {
-  return { kind: "MemberExpression", object, id };
-}
+//export function memberExpression(object, id) {
+  //return { kind: "MemberExpression", object, id };
+//}
 export function rangeFunction(lowerbound, upperbound) {
   return { kind: "RangeFunction", lowerbound, upperbound };
 }
@@ -85,9 +84,9 @@ export function unaryExpression(operand) {
 export function listExpression(elements) {
   return { kind: "ListExpression", elements };
 }
-export function subscriptExpression(array, index) {
-  return { kind: "SubscriptExpression", array, index };
-}
+//export function subscriptExpression(array, index) {
+  //return { kind: "SubscriptExpression", array, index };
+//}
 export function call(callee, args) {
   return { kind: "Call", callee, args };
 }
@@ -95,11 +94,6 @@ export const standardLibrary = Object.freeze({
   number: numberType,
   boolean: boolType,
   string: stringType,
-  //π: variable("π", true, numberType),
-  //sin: fun("sin", numberToNUmberType),
-  //cos: fun("cos", floatToFloatType),
-  //ln: fun("ln", floatToFloatType),
-  //hypot: fun("hypot", floatFloatToFloatType),
 });
 
 String.prototype.type = stringType;
