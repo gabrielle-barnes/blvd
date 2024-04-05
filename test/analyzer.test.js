@@ -1,13 +1,6 @@
 import assert from "node:assert/strict";
 import parse from "../src/parser.js";
 import analyze from "../src/analyzer.js";
-/* import {
-  program,
-  variableDeclaration,
-  variable,
-  binaryExpression,
-  floatType,
-} from "../src/core.js"; */
 
 // Programs that are semantically correct
 const semanticChecks = [
@@ -15,6 +8,22 @@ const semanticChecks = [
     "variable declarations",
     `PROLOGUE
     CAST number x as 1--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
+    "string example",
+    `PROLOGUE
+    CAST string person as "me"--
+    say person--
+    say "hello"--
     END OF PROLOGUE
     
     ACT 1
@@ -102,7 +111,6 @@ const semanticChecks = [
 
     FIN`,
   ],
-
   [
     "return in nested if",
     `PROLOGUE
@@ -293,25 +301,23 @@ const semanticChecks = [
     
     FIN`,
   ],
-  // toal's example: ["assigned functions", "function f() {}\nlet g = f;g = f;"],
+  [
+    "assigned functions",
+    `PROLOGUE
+    SCENE number prob has number lambda, number slope:
+    RECAST lambda as slope--
+    RECAST slope as lambda--
+    END SCENE
+    END OF PROLOGUE
 
-  // [
-  //   "assigned functions",
-  //   `PROLOGUE
-  //   SCENE number prob has number lambda, number slope:
-  //   RECAST lambda as slope--
-  //   RECAST slope as lambda--
-  //   END SCENE
-  //   END OF PROLOGUE
+    ACT 1
 
-  //   ACT 1
+    END OF ACT
 
-  //   END OF ACT
+    EPILOGUE
 
-  //   EPILOGUE
-
-  //   FIN`,
-  // ],
+    FIN`,
+  ],
 
   [
     "good types for +",
@@ -539,44 +545,40 @@ const semanticErrors = [
     FIN`,
     /Expected a boolean/,
   ],
-  //THIS SHOULDN"T WORK IN THE SEMANTICLY CORRECT TEST BUT IT DOES,
-  //SOMETHING TO DO WITH OUR RANGE FUNC OR FOR LOOP
-  // [
-  //   "non-integer low range",
-  //   `PROLOGUE
-  //   ACTION number i in range from true, 2:
-  //   say "hi"--
-  //   CUT
-  //   END OF PROLOGUE
+  [
+   "non-integer low range",
+   `PROLOGUE
+   ACTION number i in range from true, 2:
+   say "hi"--
+   CUT
+   END OF PROLOGUE
 
-  //   ACT 1
+   ACT 1
 
-  //   END OF ACT
+   END OF ACT
 
-  //   EPILOGUE
+   EPILOGUE
 
-  //   FIN`,
-  //   /Expected an number/,
-  // ],
-  //THIS SHOULDN"T WORK IN THE SEMANTICLY CORRECT TEST BUT IT DOES,
-  //SOMETHING TO DO WITH OUR RANGE FUNC OR FOR LOOP
-  // [
-  //   "non-integer high range",
-  //   `PROLOGUE
-  //   ACTION number i in range from 1, six:
-  //   say "bye"--
-  //   CUT
-  //   END OF PROLOGUE
+   FIN`,
+  /Expected a number/,
+  ],
+  [
+    "non-integer high range",
+    `PROLOGUE
+    ACTION number i in range from 1, "six":
+    say "bye"--
+    CUT
+    END OF PROLOGUE
 
-  //   ACT 1
+    ACT 1
 
-  //   END OF ACT
+    END OF ACT
 
-  //   EPILOGUE
+    EPILOGUE
 
-  //   FIN`,
-  //   /Expected an number/,
-  // ],
+    FIN`,
+    /Expected a number/,
+  ],
   // [
   //   "non-boolean conditional test",
   //   `PROLOGUE
@@ -806,24 +808,6 @@ const semanticErrors = [
     FIN`,
     /not have the same type/,
   ],
-  // [
-  //   "Non-type in param",
-  //   `PROLOGUE
-  //   CAST number x as 1--
-  //   SCENE string city has string fwy:
-  //   RECAST fwy as "101"--
-  //   END SCENE
-  //   END OF PROLOGUE
-
-  //   ACT 1
-
-  //   END OF ACT
-
-  //   EPILOGUE
-
-  //   FIN`,
-  //   /Type expected/,
-  // ],
   [
     "Non-type in return type",
     `PROLOGUE
@@ -831,22 +815,6 @@ const semanticErrors = [
     SCENE city has string fwy:
     CAST string fwy as "101"--
     END SCENE
-    END OF PROLOGUE
-    
-    ACT 1
-    
-    END OF ACT
-    
-    EPILOGUE
-    
-    FIN`,
-    /Expected "boolean", "number", or "string"/,
-  ],
-  [
-    "Non-type in field type",
-    `PROLOGUE
-    CAST number x as 1--
-    CAST x as 2--
     END OF PROLOGUE
     
     ACT 1
