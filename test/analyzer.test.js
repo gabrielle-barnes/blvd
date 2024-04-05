@@ -86,61 +86,40 @@ const semanticChecks = [
     FIN`,
   ],
 
-  //toal's example: ["short return", "function f() { return; }"],
-  // [
-  //   "short return",
-  //   `PROLOGUE
-  //   SCENE number prob has number lambda, number slope:
-  //   EXIT WITH--
-  //   END SCENE
-  //   END OF PROLOGUE
+  [
+    "return",
+    `PROLOGUE
+    SCENE number prob has number lambda, number slope:
+    EXIT WITH 1--
+    END SCENE
+    END OF PROLOGUE
 
-  //   ACT 1
+    ACT 1
 
-  //   END OF ACT
+    END OF ACT
 
-  //   EPILOGUE
+    EPILOGUE
 
-  //   FIN`,
-  // ],
+    FIN`,
+  ],
 
-  //toal's example: ["long return", "function f(): boolean { return true; }"],
-  // [
-  //   "long return",
-  //   `PROLOGUE
-  //   SCENE number prob has number lambda, number slope:
-  //   EXIT WITH 1--
-  //   END SCENE
-  //   END OF PROLOGUE
+  [
+    "return in nested if",
+    `PROLOGUE
+    SCENE number prob has number lambda, number slope:
+    NOMINATE true:
+    EXIT WITH 0--
+    END SCENE
+    END OF PROLOGUE
 
-  //   ACT 1
+    ACT 1
 
-  //   END OF ACT
+    END OF ACT
 
-  //   EPILOGUE
+    EPILOGUE
 
-  //   FIN`,
-  // ],
-
-  //toal's example: ["return in nested if", "function f() {if true {return;}}"],
-
-  // [
-  //   "return in nested if",
-  //   `PROLOGUE
-  //   SCENE number prob has number lambda, number slope:
-  //   NOMINATE true:
-  //   EXIT WITH--
-  //   END SCENE
-  //   END OF PROLOGUE
-
-  //   ACT 1
-
-  //   END OF ACT
-
-  //   EPILOGUE
-
-  //   FIN`,
-  // ],
+    FIN`,
+  ],
   [
     "long if",
     `PROLOGUE
@@ -240,21 +219,34 @@ const semanticChecks = [
     
     FIN`,
   ],
+  [
+    "simple relations",
+    `PROLOGUE
+    say (true and true)--
+    END OF PROLOGUE
 
-  // [
-  //   "relations",
-  //   `PROLOGUE
-  //   say (1 <= 2 and "x">"y" and 3.5<1.2)--
-  //   END OF PROLOGUE
+    ACT 1
 
-  //   ACT 1
+    END OF ACT
 
-  //   END OF ACT
+    EPILOGUE
 
-  //   EPILOGUE
+    FIN`,
+  ],
+  [
+    "relations",
+    `PROLOGUE
+    say ((1 <= 2) and true and (3.5<1.2))--
+    END OF PROLOGUE
 
-  //   FIN`,
-  //],
+    ACT 1
+
+    END OF ACT
+
+    EPILOGUE
+
+    FIN`,
+  ],
   [
     "arithmetic",
     `PROLOGUE
@@ -353,13 +345,13 @@ const semanticChecks = [
     
     FIN`,
   ],
-
   [
     "function",
 
     `PROLOGUE
     SCENE string getFreeway has string fwy: 
     CAST string  fwy1 as "405"--
+    EXIT WITH fwy1--
     END SCENE
     END OF PROLOGUE
     
@@ -378,7 +370,7 @@ const semanticErrors = [
   [
     "non-boolean in conditional",
     `PROLOGUE
-    say (true and 1 < 2 and false)--
+    say ((1 and 2) or (9**3))--
     END OF PROLOGUE
     
     ACT 1
@@ -391,17 +383,17 @@ const semanticErrors = [
     /Expected a boolean/,
   ],
   [
-    "non-boolean in conditional",
+    "string in conditional",
     `PROLOGUE
-    say ((1 and 2) or (9**3))--
+    say ("x" and false)--
     END OF PROLOGUE
-    
+
     ACT 1
-    
+
     END OF ACT
-    
+
     EPILOGUE
-    
+
     FIN`,
     /Expected a boolean/,
   ],

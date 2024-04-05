@@ -17,6 +17,7 @@ export function typeDeclaration(type) {
 export const boolType = { kind: "BoolType" };
 export const numberType = { kind: "NumberType" };
 export const stringType = { kind: "StringType " };
+// export const voidType = { kind: "VoidType" };
 
 export function customType(type) {
   return { kind: "CustomType", id: type };
@@ -30,7 +31,9 @@ export function listType(baseType) {
 export function emptyListType() {
   return { kind: "EmptyListType" };
 }
-
+export function functionType(paramTypes, returnType) {
+  return { kind: "FunctionType", paramTypes, returnType };
+}
 export function printStatement(expression) {
   return { kind: "PrintStatement", expression };
 }
@@ -55,18 +58,18 @@ export function returnStatement(expression) {
 export function assignmentStatement(target, source) {
   return { kind: "AssignmentStatement", target, source };
 }
-export function functionDeclaration(name, parameters, retrn, body) {
-  return { kind: "FunctionDeclaration", name, parameters, retrn, body };
+export function functionDeclaration(name, parameters, returnType, body) {
+  return { kind: "FunctionDeclaration", name, parameters, returnType, body };
 }
-export function classDeclaration(name, fields, methods, constructor, functions) {
-  return { kind: "ClassDeclaration", name, fields, methods, constructor, functions };
-}
+// export function classDeclaration(name, fields, methods, constructor, functions) {
+//   return { kind: "ClassDeclaration", name, fields, methods, constructor, functions };
+// }
 export function field(type, name) {
   return { kind: "Field", type, name };
 }
-export function constructor(parameters, body) {
-  return { kind: "Constructor", parameters, body };
-}
+// export function constructor(parameters, body) {
+//   return { kind: "Constructor", parameters, body };
+// }
 export function memberExpression(object, id) {
   return { kind: "MemberExpression", object, id };
 }
