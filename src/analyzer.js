@@ -3,6 +3,7 @@ import * as core from "./core.js";
 const NUMBER = core.numberType;
 const STRING = core.stringType;
 const BOOLEAN = core.boolType;
+const VOID = core.voidType;
 
 class Context {
   constructor({ parent = null, locals = new Map(), inLoop = false, function: f = null }) {
@@ -59,9 +60,9 @@ export default function analyze(match) {
     must(e.type?.kind === "ListType", "Expected an list", at);
   }
 
-  function mustHaveAClassType(e, at) {
-    must(e.type?.kind === "ClassType", "Expected a class", at);
-  }
+  // function mustHaveAClassType(e, at) {
+  //   must(e.type?.kind === "ClassType", "Expected a class", at);
+  // }
 
   function mustBothHaveTheSameType(e1, e2, at) {
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
@@ -83,19 +84,19 @@ export default function analyze(match) {
   }
 
   function mustBeAListType(t, at) {
-    must(t?.kind === "Listype", "Must be an array type", at);
+    must(t?.kind === "ListType", "Must be an array type", at);
   }
 
   /* TO DO */
   /* !!In our classes we have a constructor, fields? and methods. Not sure how to implement that!! */
-  function includesAsField(classType, type) {
-    // Whether the class type has a field of type type, directly or indirectly
-    return classType.fields.some(
-      (field) =>
-        field.type === type ||
-        (field.type?.kind === "ClassType" && includesAsField(field.type, type))
-    );
-  }
+  // function includesAsField(classType, type) {
+  //   // Whether the class type has a field of type type, directly or indirectly
+  //   return classType.fields.some(
+  //     (field) =>
+  //       field.type === type ||
+  //       (field.type?.kind === "ClassType" && includesAsField(field.type, type))
+  //   );
+  // }
 
   function assignable(fromType, toType) {
     return (
@@ -151,14 +152,14 @@ export default function analyze(match) {
     must(assignable(e.type, type), message, at);
   }
 
-  function mustHaveDistinctFields(type, at) {
-    const fieldNames = new Set(type.fields.map((f) => f.name));
-    must(fieldNames.size === type.fields.length, "Fields must be distinct", at);
-  }
+  // function mustHaveDistinctFields(type, at) {
+  //   const fieldNames = new Set(type.fields.map((f) => f.name));
+  //   must(fieldNames.size === type.fields.length, "Fields must be distinct", at);
+  // }
 
-  function mustHaveMember(classType, field, at) {
-    must(classType.fields.map((f) => f.name).includes(field), "No such field", at);
-  }
+  // function mustHaveMember(classType, field, at) {
+  //   must(classType.fields.map((f) => f.name).includes(field), "No such field", at);
+  // }
 
   function mustBeInAFunction(at) {
     must(context.function, "Return can only appear in a function", at);
@@ -167,10 +168,6 @@ export default function analyze(match) {
   function mustBeCallable(e, at) {
     const callable = e?.kind === "ClassType" || e.type?.kind === "FunctionType";
     must(callable, "Call of non-function or non-constructor", at);
-  }
-
-  function mustNotReturnAnything(f, at) {
-    must(f.type.returnType === VOID, "Something should be returned", at);
   }
 
   function mustReturnSomething(f, at) {
@@ -263,15 +260,12 @@ export default function analyze(match) {
     Block(directions) {
       return core.block(directions.children.map((d) => d.rep()));
     },
-    Block(directions) {
-      return core.block(directions.children.map((d) => d.rep()));
-    },
-    ReturnStmt(_return, exp, _dd, _nl) {
-      mustBeInAFunction({ at: _return });
-      mustReturnSomething(context.function, { at: _return });
+    ReturnStmt(returnKeyword, exp, _dd, _nl) {
+      mustBeInAFunction({ at: returnKeyword });
+      mustReturnSomething(context.function, { at: returnKeyword });
       const returnBody = exp.rep();
       mustBeReturnable(returnBody, { from: context.function }, { at: exp });
-      return core.ReturnStmt(returnBody);
+      return core.returnStatement(returnBody);
     },
     CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
       const initializer = exp.rep();
@@ -294,8 +288,9 @@ export default function analyze(match) {
 
       context = context.newChildContext({ inLoop: false, function: functionDeclaration });
       const params_ = params.rep();
-      functionDeclaration.paramType = params_.map((p) => p.type);
-      functionDeclaration.returnType = type.rep();
+      const paramTypes = params_.map((p) => p.type);
+      const returnType = type.rep();
+      functionDeclaration.type = core.functionType(paramTypes, returnType);
 
       const body = block.rep();
       context = context.parent;
@@ -365,7 +360,7 @@ export default function analyze(match) {
       for (let e of exp1.children) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
-        right = core.binaryExpression(left, right);
+        right = core.binaryExpression("or", left, right, BOOLEAN);
       }
       return right;
     },
@@ -375,7 +370,7 @@ export default function analyze(match) {
       for (let e of exp1.children) {
         let left = e.rep();
         mustHaveBooleanType(left, { at: e });
-        right = core.binaryExpression(left, right);
+        right = core.binaryExpression("and", left, right, BOOLEAN);
       }
       return right;
     },
@@ -399,17 +394,6 @@ export default function analyze(match) {
       mustBothHaveTheSameType(left, right, { at: ops });
       return core.binaryExpression(op, left, right, left.type);
     },
-    /*
-      let right = exp2.rep();
-      mustHaveNumericType(right, { at: exp2 });
-      for (let e of exp1.rep()) {
-        let left = e.rep();
-        mustBothHaveTheSameType(left, right, { at: e });
-        mustHaveNumericType(left, { at: e });
-        right = core.binaryExpression(left, right);
-      }
-      return right;
-      */
     Exp4_multDivMod(exp1, ops, exp2) {
       const [left, op, right] = [exp1.rep(), ops.sourceString, exp2.rep()];
       mustHaveNumericType(left, { at: exp1 });
@@ -440,17 +424,16 @@ export default function analyze(match) {
 
     Type(type, list) {
       //handle custom types
-
       const baseType =
         type.sourceString === "boolean"
-          ? core.boolType
+          ? BOOLEAN
           : type.sourceString === "number"
-          ? core.NumberType
+          ? NUMBER
           : type.sourceString === "string"
-          ? core.stringType
+          ? STRING
           : core.customType;
 
-      return list ? core.listType(baseType) : baseType;
+      return list._node.matchLength > 0 ? core.listType(baseType) : baseType;
     },
     id(_first, _rest) {
       return this.sourceString;
@@ -462,7 +445,13 @@ export default function analyze(match) {
       return false;
     },
     number(_) {
-      return core.numberType;
+      return NUMBER;
+    },
+    string(_) {
+      return STRING;
+    },
+    boolean(_) {
+      return BOOLEAN;
     },
     message(_openQuote, _chars, _closeQuote) {
       return this.sourceString;
