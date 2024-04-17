@@ -88,7 +88,7 @@ export function listExpression(elements) {
   return { kind: "ListExpression", elements };
 }
 export function call(callee, args) {
-  return { kind: "Call", callee, args };
+  return { kind: "Call", callee, args, type: callee.type.returnType };
 }
 export const standardLibrary = Object.freeze({
   number: numberType,
