@@ -1,12 +1,10 @@
 PROLOGUE
-  (note: Operations without precedence)
   say (5 + 3 * 2) + 11--    
   say (10 + 2 * 5 - 3 / 2) + 28.5--
   say (4 + 2 * 8 / 2  - 5 % 3  ** 2) + 10 -- 
 END OF PROLOGUE
 
 ACT 1
-  (note: Operations with precedence)
   say ( 5 + 3 ) * 2--
   say 10 + 2 * ( 5 - 3 ) / 2-- 
   say ( ( 4 + 2 ) * ( 8 / 2 ) - ( 5 % 3 ) ) ** 2--

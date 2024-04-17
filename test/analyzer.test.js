@@ -35,6 +35,24 @@ const semanticChecks = [
     FIN`,
   ],
   [
+    "function call example",
+    `PROLOGUE
+    SCENE number prob has number lambda, number slope:
+    EXIT WITH 1--
+    END SCENE
+    prob(5.0, 2)--
+    say(prob)--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
     "increment and decrement",
     `PROLOGUE
     CAST number x as 1--
@@ -64,7 +82,6 @@ const semanticChecks = [
     say 0--
     FIN`,
   ],
-
   [
     "assign number array",
     `PROLOGUE
