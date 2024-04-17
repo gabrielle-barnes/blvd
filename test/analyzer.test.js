@@ -53,6 +53,21 @@ const semanticChecks = [
     FIN`,
   ],
   [
+    "list indexing example",
+    `PROLOGUE
+    CAST string list shows as ["Martin", "Succession", "致我们单纯的小美好"]--
+    say(shows[1])--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
     "increment and decrement",
     `PROLOGUE
     CAST number x as 1--
