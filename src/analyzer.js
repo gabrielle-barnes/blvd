@@ -150,11 +150,10 @@ export default function analyze(match) {
     must(context.function, "Return can only appear in a function", at);
   }
 
-  /* function mustBeCallable(e, at) {
+  function mustBeCallable(e, at) {
     const callable = e?.kind === "ClassType" || e.type?.kind === "FunctionType";
     must(callable, "Call of non-function or non-constructor", at);
   }
-  */
 
   function mustReturnSomething(f, at) {
     must(f.type.returnType !== VOID, "Cannot return a value from this function", at);
@@ -164,11 +163,10 @@ export default function analyze(match) {
     mustBeAssignable(e, { toType: f.type.returnType }, at);
   }
 
-  /* function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
+  function mustHaveCorrectArgumentCount(argCount, paramCount, at) {
     const message = `${paramCount} argument(s) required but ${argCount} passed`;
     must(argCount === paramCount, message, at);
   }
-  */
 
   /* Definitions of the semantic actions */
   const builder = match.matcher.grammar.createSemantics().addOperation("rep", {
@@ -283,7 +281,7 @@ export default function analyze(match) {
       context = context.parent;
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
-    /* Call(_id, _dot, _id, _open, expList, _close){
+    /*Call(_id, _dot, _id, _open, expList, _close){
       const callee = exp.rep()
       mustBeCallable(callee, { at: exp })
       const exps = expList.asIteration().children
@@ -300,8 +298,7 @@ export default function analyze(match) {
       return callee?.kind === "StructType"
         ? core.constructorCall(callee, args)
         : core.functionCall(callee, args)
-    }
-    */
+    },*/
     // class body? has fields, constructor, variableDeclaration, functionDeclaration
     /*
     ClassDecl(_class, id, _colon, _nl_0, members, _nl_1, _endclass, _nl_2) {
@@ -356,7 +353,7 @@ export default function analyze(match) {
       const variable = core.variable(id.sourceString, type.rep());
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, variable);
-      return core.variableDeclaration(variable);
+      return variable;
     },
     RangeFunc(_range, _from, exp1, _comma, exp2) {
       const [low, high] = [exp1.rep(), exp2.rep()];
@@ -426,6 +423,19 @@ export default function analyze(match) {
       let list = core.listExpression(elements);
       list.type = elements[0]?.type ?? core.emptyListType();
       return list;
+    },
+    Exp6_call(exp, open, expList, _close) {
+      const callee = exp.rep();
+      mustBeCallable(callee, { at: exp });
+      const exps = expList.asIteration().children;
+      const targetTypes = callee.type.paramTypes;
+      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: open });
+      const args = exps.map((exp, i) => {
+        const arg = exp.rep();
+        mustBeAssignable(arg, { toType: targetTypes[i] }, { at: exp });
+        return arg;
+      });
+      return core.call(callee, args);
     },
     Exp6_id(id) {
       const entity = context.lookup(id.sourceString);

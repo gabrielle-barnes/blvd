@@ -40,8 +40,8 @@ const semanticChecks = [
     SCENE number prob has number lambda, number slope:
     EXIT WITH 1--
     END SCENE
-    prob(5.0, 2)--
-    say(prob)--
+    CAST number x as prob(5.0, 2)--
+    say x--
     END OF PROLOGUE
     
     ACT 1
