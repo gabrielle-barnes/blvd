@@ -56,6 +56,10 @@ export default function analyze(match) {
     must(e.type === BOOLEAN, "Expected a boolean", at);
   }
 
+  function mustHaveListType(e, at) {
+    must(e.type?.kind === "ListType", "Expected a list", at);
+  }
+
   // function mustHaveAClassType(e, at) {
   //   must(e.type?.kind === "ClassType", "Expected a class", at);
   // }
@@ -122,13 +126,13 @@ export default function analyze(match) {
       case "BoolType":
         return "boolean";
       //case "ClassType":
-        //return type.name;
+      //return type.name;
       case "FunctionType":
         const paramTypes = type.paramTypes.map(typeDescription).join(", ");
         const returnType = typeDescription(type.returnType);
         return `(${paramTypes})->${returnType}`;
       //case "ListType":
-        //return `[${typeDescription(type.baseType)}]`;
+      //return `[${typeDescription(type.baseType)}]`;
     }
   }
 
@@ -427,6 +431,12 @@ export default function analyze(match) {
       list.type = elements[0]?.type ?? core.emptyListType();
       return list;
     },
+    Exp6_subscript(exp1, _open, exp2, _close) {
+      const [list, subscript] = [exp1.rep(), exp2.rep()];
+      mustHaveListType(list, { at: exp1 });
+      mustHaveNumericType(subscript, { at: exp2 });
+      return core.subscript(list, subscript);
+    },
     Exp6_id(id) {
       const entity = context.lookup(id.sourceString);
       mustHaveBeenFound(entity, id.sourceString, { at: id });
@@ -446,8 +456,8 @@ export default function analyze(match) {
 
       return list._node.matchLength > 0 ? core.listType(baseType) : baseType;
     },
-    id(_first, _rest){
-      return this.sourceString
+    id(_first, _rest) {
+      return this.sourceString;
     },
     true(_) {
       return true;
