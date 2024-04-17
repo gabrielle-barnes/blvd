@@ -151,29 +151,33 @@ const fixtures = [
   /*
   {
     name: "while",
-    source: `
-      let x = 0;
-      while x < 5 {
-        let y = 0;
-        while y < 5 {
-          print(x * y);
-          y = y + 1;
-          break;
-        }
-        x = x + 1;
-      }
+    source:
+    ` PROLOGUE
+      CAST number x as 1--
+      PERFORM false:
+      say x--
+      END OF PROLOGUE
+
+      ACT 1
+      CAST number y as 10--
+      PERFORM true:
+      say y-- 
+      END OF ACT
+
+      EPILOGUE
+      say ("Working while loops!")--
+      FIN
     `,
     expected: dedent`
-      let x_1 = 0;
-      while ((x_1 < 5)) {
-        let y_2 = 0;
-        while ((y_2 < 5)) {
-          console.log((x_1 * y_2));
-          y_2 = (y_2 + 1);
-          break;
-        }
-        x_1 = (x_1 + 1);
+      let x_1 = 1;
+      while (false) {
+        console.log(x_1);
       }
+      let y_1 = 10;
+      while (true) {
+        console.log(y_1);
+      }
+      console.log("Working while loops!");
     `,
   },
   */
@@ -182,15 +186,7 @@ const fixtures = [
   {
     name: "functions",
     source: `
-      let z = 0.5;
-      function f(x: float, y: boolean) {
-        print(sin(x) > π);
-        return;
-      }
-      function g(): boolean {
-        return false;
-      }
-      f(z, g());
+      
     `,
     expected: dedent`
       let z_1 = 0.5;
