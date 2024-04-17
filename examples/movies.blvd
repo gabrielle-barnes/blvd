@@ -3,7 +3,6 @@ PROLOGUE
 END OF PROLOGUE
 
 ACT 1
-  (note: list example)
   CAST string list best_movies as ["Fallen Angels", "Bones and All", "Saltburn"]--
 END OF ACT
 

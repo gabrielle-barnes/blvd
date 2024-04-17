@@ -1,11 +1,8 @@
 PROLOGUE
-  (note: loop examples)
   say "for and while"--
 END OF PROLOGUE
 
 ACT 1
-  (note: for loop)
-  (note: for loop doesn't currently work)
   ACTION number i in range from 1, 6:
 	say "i"--
   CUT
