@@ -70,6 +70,10 @@ const syntaxChecks = [
     "class declarations",
     `PROLOGUE\n STAGE Movie:\n string a--\n string b--\n EXIT STAGE\n\n END OF PROLOGUE\n\n  ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
   ],
+  [
+    "list indexing",
+    `PROLOGUE\n STAGE Movie:\n string a--\n string b--\n EXIT STAGE\n\n END OF PROLOGUE\n\n  ACT 1\n\n END OF ACT\n\n EPILOGUE\n\n FIN\n`,
+  ],
 ];
 
 const syntaxErrors = [

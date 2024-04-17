@@ -39,6 +39,8 @@ blvd {
   MemberExp     = given  
   Params        = ListOf<Param, ","> ","?
   Param         = Type id
+
+  
   
   // EXTRA FUNCTIONS
   RangeFunc     = range from Exp "," Exp
@@ -58,6 +60,7 @@ blvd {
                 | Exp6
   Exp6          = "(" Exp ")"                               --parens
                 | "["ListOf<Exp, ","> "]"                   --listexp
+                | id "[" num "]"                            --subsript
                 | message                                   
                 | (true | false)
                 | Exp6 "(" ListOf<Exp, ","> ")"             --call

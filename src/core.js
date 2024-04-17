@@ -19,7 +19,7 @@ export const boolType = { kind: "BoolType" };
 export const numberType = { kind: "NumberType" };
 export const stringType = { kind: "StringType " };
 //export function customType(type) {
-  //return { kind: "CustomType", id: type };
+//return { kind: "CustomType", id: type };
 //}
 export function emptyStatement() {
   return { kind: "EmptyStatement" };
@@ -64,13 +64,13 @@ export function functionDeclaration(name, parameters, returnType, body) {
 //   return { kind: "ClassDeclaration", name, fields, methods, constructor, functions };
 // }
 //export function field(type, name) {
-  //return { kind: "Field", type, name };
+//return { kind: "Field", type, name };
 //}
 // export function constructor(parameters, body) {
 //   return { kind: "Constructor", parameters, body };
 // }
 //export function memberExpression(object, id) {
-  //return { kind: "MemberExpression", object, id };
+//return { kind: "MemberExpression", object, id };
 //}
 export function rangeFunction(lowerbound, upperbound) {
   return { kind: "RangeFunction", lowerbound, upperbound };
@@ -81,12 +81,12 @@ export function binaryExpression(op, left, right, type) {
 export function unaryExpression(operand) {
   return { kind: "UnaryExpression", operand };
 }
+export function subscript(list, index) {
+  return { kind: "subscript", list, index, type: list.type.baseType };
+}
 export function listExpression(elements) {
   return { kind: "ListExpression", elements };
 }
-//export function subscriptExpression(array, index) {
-  //return { kind: "SubscriptExpression", array, index };
-//}
 export function call(callee, args) {
   return { kind: "Call", callee, args, type: callee.type.returnType };
 }
