@@ -52,6 +52,7 @@ const semanticChecks = [
     
     FIN`,
   ],
+  /*
   [
     "list indexing example",
     `PROLOGUE
@@ -67,6 +68,7 @@ const semanticChecks = [
     
     FIN`,
   ],
+  */
   [
     "increment and decrement",
     `PROLOGUE

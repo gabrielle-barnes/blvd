@@ -431,12 +431,14 @@ export default function analyze(match) {
       list.type = elements[0]?.type ?? core.emptyListType();
       return list;
     },
+    /*
     Exp6_subscript(exp1, _open, exp2, _close) {
       const [list, subscript] = [exp1.rep(), exp2.rep()];
       mustHaveListType(list, { at: exp1 });
       mustHaveNumericType(subscript, { at: exp2 });
       return core.subscript(list, subscript);
     },
+    */
     Exp6_id(id) {
       const entity = context.lookup(id.sourceString);
       mustHaveBeenFound(entity, id.sourceString, { at: id });
