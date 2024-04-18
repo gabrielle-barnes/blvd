@@ -259,9 +259,9 @@ export default function analyze(match) {
     },
     CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
       const initializer = exp.rep();
-      console.log("HELP", type.rep());
-      mustBothHaveTheSameType(initializer.type, type.rep(), { at: id });
+      // console.log("HELP type rep is", type.rep(), "and initializer type is", initializer.type);
       const variable = core.variable(id.sourceString, type.rep());
+      mustBothHaveTheSameType(initializer, variable, { at: id });
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
