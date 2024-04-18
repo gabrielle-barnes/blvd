@@ -78,11 +78,11 @@ export function rangeFunction(lowerbound, upperbound) {
 export function binaryExpression(op, left, right, type) {
   return { kind: "BinaryExpression", op, left, right, type };
 }
-export function unaryExpression(operand) {
-  return { kind: "UnaryExpression", operand };
-}
 export function subscript(list, index) {
   return { kind: "subscript", list, index, type: list.type.baseType };
+}
+export function emptyListExpression(type) {
+  return { kind: "emptyListExpression", type };
 }
 export function listExpression(elements) {
   return { kind: "ListExpression", elements };

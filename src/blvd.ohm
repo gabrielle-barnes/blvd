@@ -59,8 +59,9 @@ blvd {
   Exp5          = Exp6 "**" Exp5                            --exponent
                 | Exp6
   Exp6          = "(" Exp ")"                               --parens
+                | "[" "]"                                   --emptylist
                 | "["ListOf<Exp, ","> "]"                   --listexp
-                | id "[" num "]"                            --subsript
+                | id "[" num "]"                            --subscript
                 | message                                   
                 | (true | false)
                 | Exp6 "(" ListOf<Exp, ","> ")"             --call
@@ -68,7 +69,8 @@ blvd {
                 | num
   
   // TYPES
-  Type          = (string | number | boolean) list?
+  Type          = (string | number | boolean) list          --list
+                | (string | number | boolean)               --base
   
   // KEYWORDS
   print         = "say" ~idchar

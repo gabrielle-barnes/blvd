@@ -56,8 +56,8 @@ export default function analyze(match) {
     must(e.type === BOOLEAN, "Expected a boolean", at);
   }
 
-  function mustHaveListType(e, at) {
-    must(e.type?.kind === "ListType", "Expected a list", at);
+  function mustHaveAListType(e, at) {
+    must(e.type?.kind === "ListType", "Expected an list", at);
   }
 
   // function mustHaveAClassType(e, at) {
@@ -65,6 +65,7 @@ export default function analyze(match) {
   // }
 
   function mustBothHaveTheSameType(e1, e2, at) {
+    console.log("WAH", e1.type, e2.type);
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
 
@@ -101,6 +102,7 @@ export default function analyze(match) {
   }
 
   function equivalent(t1, t2) {
+    console.log("equivalent", t1, t2);
     return (
       t1 === t2 ||
       (t1?.kind === "ListType" &&
@@ -258,8 +260,9 @@ export default function analyze(match) {
     },
     CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
       const initializer = exp.rep();
-      mustBothHaveTheSameType(initializer.type, type, { at: id });
-      const variable = core.variable(id.sourceString, initializer.type);
+      // console.log("HELP type rep is", type.rep(), "and initializer type is", initializer.type);
+      const variable = core.variable(id.sourceString, type.rep());
+      mustBothHaveTheSameType(initializer, variable, { at: id });
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
       context.add(id.sourceString, variable);
       return core.variableDeclaration(variable, initializer);
@@ -421,11 +424,16 @@ export default function analyze(match) {
     Exp6_parens(_open, exp2, _close) {
       return exp2.rep();
     },
+    Exp6_emptylist(_open, _close) {
+      return core.emptyListExpression(core.emptyListType());
+    },
     Exp6_listexp(_open, args, _close) {
+      console.log(args.asIteration());
       const elements = args.asIteration().children.map((e) => e.rep());
       mustAllHaveSameType(elements, { at: args });
       let list = core.listExpression(elements);
-      list.type = elements[0]?.type ?? core.emptyListType();
+      console.log(elements);
+      list.type = core.listType(elements[0]?.type) ?? core.emptyListType();
       return list;
     },
     Exp6_call(exp, open, expList, _close) {
@@ -441,14 +449,19 @@ export default function analyze(match) {
       });
       return core.call(callee, args);
     },
+    Exp6_subscript(exp1, _open, exp2, _close) {
+      const [list, subscript] = [context.lookup(exp1.rep()), Math.floor(exp2.rep())];
+      mustHaveAListType(list, { at: exp1 });
+      mustHaveNumericType(subscript, { at: exp2 });
+      return core.subscript(list, subscript);
+    },
     Exp6_id(id) {
       const entity = context.lookup(id.sourceString);
       mustHaveBeenFound(entity, id.sourceString, { at: id });
       return entity;
     },
 
-    Type(type, list) {
-      //handle custom types
+    Type_list(type, list) {
       const baseType =
         type.sourceString === "boolean"
           ? BOOLEAN
@@ -457,8 +470,18 @@ export default function analyze(match) {
           : type.sourceString === "string"
           ? STRING
           : core.customType;
-
-      return list._node.matchLength > 0 ? core.listType(baseType) : baseType;
+      return core.listType(baseType);
+    },
+    Type_base(type) {
+      const baseType =
+        type.sourceString === "boolean"
+          ? BOOLEAN
+          : type.sourceString === "number"
+          ? NUMBER
+          : type.sourceString === "string"
+          ? STRING
+          : core.customType;
+      return baseType;
     },
     id(_first, _rest) {
       return this.sourceString;

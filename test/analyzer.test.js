@@ -52,12 +52,11 @@ const semanticChecks = [
     
     FIN`,
   ],
-  /*
   [
     "list indexing example",
     `PROLOGUE
-    CAST string list shows as ["Martin", "Succession", "致我们单纯的小美好"]--
-    say(shows[1])--
+    CAST string list movies as ["Get Out", "Fallen Angels", "Bones and All"]--
+    say(movies[1])--
     END OF PROLOGUE
     
     ACT 1
@@ -68,7 +67,35 @@ const semanticChecks = [
     
     FIN`,
   ],
-  */
+  [
+    "empty list example",
+    `PROLOGUE
+    CAST string list empty as []--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
+    "indexing floor example",
+    `PROLOGUE
+    CAST string list shows as ["Martin", "Succession", "致我们单纯的小美好"]--
+    say(shows[2.9])--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
   [
     "increment and decrement",
     `PROLOGUE
@@ -423,6 +450,54 @@ const semanticErrors = [
     /Expected a boolean/,
   ],
   [
+    "wrong type description string",
+    `PROLOGUE
+    CAST string balm as 2024--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Operands do not have the same type/,
+  ],
+  [
+    "wrong type description number",
+    `PROLOGUE
+    CAST number num as "dog"--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Operands do not have the same type/,
+  ],
+  [
+    "wrong return type",
+    `PROLOGUE
+    
+    SCENE number prob has number lambda, number slope:
+    EXIT WITH "not a number"--
+    END SCENE
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Cannot assign a undefined to a number/,
+  ],
+  [
     "string in conditional",
     `PROLOGUE
     say ("x" and false)--
@@ -580,8 +655,8 @@ const semanticErrors = [
     /Expected a boolean/,
   ],
   [
-   "non-integer low range",
-   `PROLOGUE
+    "non-integer low range",
+    `PROLOGUE
    ACTION number i in range from true, 2:
    say "hi"--
    CUT
@@ -594,7 +669,7 @@ const semanticErrors = [
    EPILOGUE
 
    FIN`,
-  /Expected a number/,
+    /Expected a number/,
   ],
   [
     "non-integer high range",
