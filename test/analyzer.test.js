@@ -68,6 +68,20 @@ const semanticChecks = [
     FIN`,
   ],
   [
+    "empty list example",
+    `PROLOGUE
+    CAST string list empty as []--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
     "indexing floor example",
     `PROLOGUE
     CAST string list shows as ["Martin", "Succession", "致我们单纯的小美好"]--
@@ -448,7 +462,40 @@ const semanticErrors = [
     EPILOGUE
     
     FIN`,
-    /Expected a string/,
+    /Operands do not have the same type/,
+  ],
+  [
+    "wrong type description number",
+    `PROLOGUE
+    CAST number num as "dog"--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Operands do not have the same type/,
+  ],
+  [
+    "wrong return type",
+    `PROLOGUE
+    
+    SCENE number prob has number lambda, number slope:
+    EXIT WITH "not a number"--
+    END SCENE
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Cannot assign a undefined to a number/,
   ],
   [
     "string in conditional",
@@ -901,10 +948,6 @@ describe("The analyzer", () => {
       assert.throws(() => analyze(parse(source)), errorMessagePattern);
     });
   }
-  console.log("CHECK");
-  it(`throws on ${semanticErrors[1][0]}`, () => {
-    assert.ok(analyze(parse(semanticErrors[1][1])));
-  });
   /* it("produces the expected representation for a trivial program", () => {
     assert.deepEqual(
       analyze(parse("let x = π + 2.2;")),

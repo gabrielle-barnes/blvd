@@ -59,6 +59,7 @@ blvd {
   Exp5          = Exp6 "**" Exp5                            --exponent
                 | Exp6
   Exp6          = "(" Exp ")"                               --parens
+                | "[" "]"                                   --emptylist
                 | "["ListOf<Exp, ","> "]"                   --listexp
                 | id "[" num "]"                            --subscript
                 | message                                   

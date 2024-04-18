@@ -102,6 +102,7 @@ export default function analyze(match) {
   }
 
   function equivalent(t1, t2) {
+    console.log("equivalent", t1, t2);
     return (
       t1 === t2 ||
       (t1?.kind === "ListType" &&
@@ -423,11 +424,16 @@ export default function analyze(match) {
     Exp6_parens(_open, exp2, _close) {
       return exp2.rep();
     },
+    Exp6_emptylist(_open, _close) {
+      return core.emptyListExpression(core.emptyListType());
+    },
     Exp6_listexp(_open, args, _close) {
+      console.log(args.asIteration());
       const elements = args.asIteration().children.map((e) => e.rep());
       mustAllHaveSameType(elements, { at: args });
       let list = core.listExpression(elements);
-      list.type = elements[0]?.type ?? core.emptyListType();
+      console.log(elements);
+      list.type = core.listType(elements[0]?.type) ?? core.emptyListType();
       return list;
     },
     Exp6_call(exp, open, expList, _close) {
