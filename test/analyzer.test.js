@@ -52,12 +52,11 @@ const semanticChecks = [
     
     FIN`,
   ],
-  /*
   [
     "list indexing example",
     `PROLOGUE
-    CAST string list shows as ["Martin", "Succession", "致我们单纯的小美好"]--
-    say(shows[1])--
+    CAST string list movies as ["Get Out", "Fallen Angels", "Bones and All"]--
+    say(movies[1])--
     END OF PROLOGUE
     
     ACT 1
@@ -68,7 +67,21 @@ const semanticChecks = [
     
     FIN`,
   ],
-  */
+  [
+    "indexing floor example",
+    `PROLOGUE
+    CAST string list shows as ["Martin", "Succession", "致我们单纯的小美好"]--
+    say(shows[2.9])--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
   [
     "increment and decrement",
     `PROLOGUE
@@ -423,6 +436,21 @@ const semanticErrors = [
     /Expected a boolean/,
   ],
   [
+    "wrong type description string",
+    `PROLOGUE
+    CAST string balm as 2024--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+    /Expected a string/,
+  ],
+  [
     "string in conditional",
     `PROLOGUE
     say ("x" and false)--
@@ -580,8 +608,8 @@ const semanticErrors = [
     /Expected a boolean/,
   ],
   [
-   "non-integer low range",
-   `PROLOGUE
+    "non-integer low range",
+    `PROLOGUE
    ACTION number i in range from true, 2:
    say "hi"--
    CUT
@@ -594,7 +622,7 @@ const semanticErrors = [
    EPILOGUE
 
    FIN`,
-  /Expected a number/,
+    /Expected a number/,
   ],
   [
     "non-integer high range",
@@ -873,6 +901,10 @@ describe("The analyzer", () => {
       assert.throws(() => analyze(parse(source)), errorMessagePattern);
     });
   }
+  console.log("CHECK");
+  it(`throws on ${semanticErrors[1][0]}`, () => {
+    assert.ok(analyze(parse(semanticErrors[1][1])));
+  });
   /* it("produces the expected representation for a trivial program", () => {
     assert.deepEqual(
       analyze(parse("let x = π + 2.2;")),
