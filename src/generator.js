@@ -1,5 +1,5 @@
 export default function generate(program) {
-  const output = []
+  const output = [];
   /*
   const standardFunctions = new Map([
     [standardLibrary.print, x => `console.log(${x})`],
@@ -13,23 +13,23 @@ export default function generate(program) {
   ])
   */
 
-  const targetName = (mapping => {
-    return entity => {
+  const targetName = ((mapping) => {
+    return (entity) => {
       if (!mapping.has(entity)) {
-        mapping.set(entity, mapping.size + 1)
+        mapping.set(entity, mapping.size + 1);
       }
-      return `${entity.name}_${mapping.get(entity)}`
-    }
-  })(new Map())
+      return `${entity.name}_${mapping.get(entity)}`;
+    };
+  })(new Map());
 
-  const gen = node => generators?.[node?.kind]?.(node) ?? node
+  const gen = (node) => generators?.[node?.kind]?.(node) ?? node;
 
   const generators = {
     Program(p) {
-      p.statements.forEach(gen)
+      p.statements.forEach(gen);
     },
     VariableDeclaration(d) {
-      output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`)
+      output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`);
     },
     /*
     TypeDeclaration(d) {
@@ -47,18 +47,18 @@ export default function generate(program) {
     /* TO DO */
     /* Where does END SCENE go? */
     FunctionDeclaration(d) {
-      output.push(`function ${gen(d.fun)}(${d.params.map(gen).join(", ")}) {`)
-      d.body.forEach(gen)
-      output.push("}")
+      output.push(`function ${gen(d.fun)}(${d.params.map(gen).join(", ")}) {`);
+      d.body.forEach(gen);
+      output.push("}");
     },
     Variable(v) {
-      return targetName(v)
+      return targetName(v);
     },
     Function(f) {
-      return targetName(f)
+      return targetName(f);
     },
     Assignment(s) {
-      output.push(`${gen(s.target)} = ${gen(s.source)};`)
+      output.push(`${gen(s.target)} = ${gen(s.source)};`);
     },
     /*
     BreakStatement(s) {
@@ -66,29 +66,29 @@ export default function generate(program) {
     },
     */
     ReturnStatement(s) {
-      output.push(`return ${gen(s.expression)};`)
+      output.push(`return ${gen(s.expression)};`);
     },
     IfStatement(s) {
-      output.push(`if (${gen(s.test)}) {`)
-      s.consequent.forEach(gen)
+      output.push(`if (${gen(s.test)}) {`);
+      s.consequent.forEach(gen);
       if (s.alternate?.kind?.endsWith?.("IfStatement")) {
-        output.push("} else")
-        gen(s.alternate)
+        output.push("} else");
+        gen(s.alternate);
       } else {
-        output.push("} else {")
-        s.alternate.forEach(gen)
-        output.push("}")
+        output.push("} else {");
+        s.alternate.forEach(gen);
+        output.push("}");
       }
     },
     ShortIfStatement(s) {
-      output.push(`if (${gen(s.test)}) {`)
-      s.consequent.forEach(gen)
-      output.push("}")
+      output.push(`if (${gen(s.test)}) {`);
+      s.consequent.forEach(gen);
+      output.push("}");
     },
     WhileStatement(s) {
-      output.push(`while (${gen(s.test)}) {`)
-      s.body.forEach(gen)
-      output.push("}")
+      output.push(`while (${gen(s.test)}) {`);
+      s.body.forEach(gen);
+      output.push("}");
     },
     /* 
     RepeatStatement(s) {
@@ -112,22 +112,22 @@ export default function generate(program) {
     },
     */
     Conditional(e) {
-      return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`
+      return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`;
     },
     BinaryExpression(e) {
-      const op = { "==": "===", "!=": "!==" }[e.op] ?? e.op
-      return `(${gen(e.left)} ${op} ${gen(e.right)})`
+      const op = { "==": "===", "!=": "!==" }[e.op] ?? e.op;
+      return `(${gen(e.left)} ${op} ${gen(e.right)})`;
     },
     UnaryExpression(e) {
-      const operand = gen(e.operand)
+      const operand = gen(e.operand);
       if (e.op === "some") {
-        return operand
+        return operand;
       } else if (e.op === "#") {
-        return `${operand}.length`
+        return `${operand}.length`;
       } else if (e.op === "random") {
-        return `((a=>a[~~(Math.random()*a.length)])(${operand}))`
+        return `((a=>a[~~(Math.random()*a.length)])(${operand}))`;
       }
-      return `${e.op}(${operand})`
+      return `${e.op}(${operand})`;
     },
     /*
     SubscriptExpression(e) {
@@ -135,7 +135,7 @@ export default function generate(program) {
     },
     */
     ArrayExpression(e) {
-      return `[${e.elements.map(gen).join(",")}]`
+      return `[${e.elements.map(gen).join(",")}]`;
     },
     /*
     MemberExpression(e) {
@@ -157,8 +157,8 @@ export default function generate(program) {
       output.push(`${targetCode};`)
     },
     */
-  }
+  };
 
-  gen(program)
-  return output.join("\n")
+  gen(program);
+  return output.join("\n");
 }
