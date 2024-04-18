@@ -65,7 +65,6 @@ export default function analyze(match) {
   // }
 
   function mustBothHaveTheSameType(e1, e2, at) {
-    console.log("WAH", e1.type, e2.type);
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
 
@@ -102,7 +101,6 @@ export default function analyze(match) {
   }
 
   function equivalent(t1, t2) {
-    console.log("equivalent", t1, t2);
     return (
       t1 === t2 ||
       (t1?.kind === "ListType" &&
@@ -428,11 +426,9 @@ export default function analyze(match) {
       return core.emptyListExpression(core.emptyListType());
     },
     Exp6_listexp(_open, args, _close) {
-      console.log(args.asIteration());
       const elements = args.asIteration().children.map((e) => e.rep());
       mustAllHaveSameType(elements, { at: args });
       let list = core.listExpression(elements);
-      console.log(elements);
       list.type = core.listType(elements[0]?.type) ?? core.emptyListType();
       return list;
     },
