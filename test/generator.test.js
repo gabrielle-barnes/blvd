@@ -30,11 +30,10 @@ const fixtures = [
 
   {
     // notes: CAST (variable declaration works) RECAST (variable assignment doesn't)
-    //also works if you remove the x_1 = 20;
+    // also works if you remove the x_1 = 20;
     name: "very small",
     source: ` PROLOGUE
       CAST number x as 10--
-      RECAST x as 20--
 
       END OF PROLOGUE
 
@@ -52,29 +51,29 @@ const fixtures = [
     `,
   },
 
-  // {
-  //   name: "small",
-  //   source: ` PROLOGUE
-  //     CAST number x as 10--
-  //     CAST number y as 3--
-  //     END OF PROLOGUE
+  {
+    name: "small",
+    source: ` PROLOGUE
+      CAST number x as 10--
+      CAST number y as 3--
+      END OF PROLOGUE
 
-  //     ACT 1
-  //     say x--
-  //     say y--
-  //     END OF ACT
+      ACT 1
+      say x--
+      say y--
+      END OF ACT
 
-  //     EPILOGUE
+      EPILOGUE
 
-  //     FIN
-  //   `,
-  //   expected: dedent`
-  //     let x_1 = 10;
-  //     let y_2 = 3;
-  //     console.log(x_1);
-  //     console.log(y_1);
-  //   `,
-  // },
+      FIN
+    `,
+    expected: dedent`
+      let x_1 = 10;
+      let y_1 = 3;
+      console.log(x_1);
+      console.log(y_1);
+    `,
+  },
 
   // notes: error (TypeError: s.consequent.forEach is not a function) when run
   // {

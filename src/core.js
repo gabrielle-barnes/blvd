@@ -17,10 +17,8 @@ export function typeDeclaration(type) {
 */
 export const boolType = { kind: "BoolType" };
 export const numberType = { kind: "NumberType" };
-export const stringType = { kind: "StringType " };
-//export function customType(type) {
-//return { kind: "CustomType", id: type };
-//}
+export const stringType = { kind: "StringType" };
+
 export function emptyStatement() {
   return { kind: "EmptyStatement" };
 }
@@ -60,18 +58,6 @@ export function assignmentStatement(target, source) {
 export function functionDeclaration(name, parameters, returnType, body) {
   return { kind: "FunctionDeclaration", name, parameters, returnType, body };
 }
-// export function classDeclaration(name, fields, methods, constructor, functions) {
-//   return { kind: "ClassDeclaration", name, fields, methods, constructor, functions };
-// }
-//export function field(type, name) {
-//return { kind: "Field", type, name };
-//}
-// export function constructor(parameters, body) {
-//   return { kind: "Constructor", parameters, body };
-// }
-//export function memberExpression(object, id) {
-//return { kind: "MemberExpression", object, id };
-//}
 export function rangeFunction(lowerbound, upperbound) {
   return { kind: "RangeFunction", lowerbound, upperbound };
 }

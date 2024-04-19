@@ -60,10 +60,6 @@ export default function analyze(match) {
     must(e.type?.kind === "ListType", "Expected an list", at);
   }
 
-  // function mustHaveAClassType(e, at) {
-  //   must(e.type?.kind === "ClassType", "Expected a class", at);
-  // }
-
   function mustBothHaveTheSameType(e1, e2, at) {
     must(equivalent(e1.type, e2.type), "Operands do not have the same type", at);
   }
@@ -78,26 +74,14 @@ export default function analyze(match) {
     );
   }
 
-  /* TO DO */
-  /* !!In our classes we have a constructor, fields? and methods. Not sure how to implement that!! */
-  // function includesAsField(classType, type) {
-  //   // Whether the class type has a field of type type, directly or indirectly
-  //   return classType.fields.some(
-  //     (field) =>
-  //       field.type === type ||
-  //       (field.type?.kind === "ClassType" && includesAsField(field.type, type))
-  //   );
-  // }
-
   function assignable(fromType, toType) {
-    return (
-      equivalent(fromType, toType) ||
+    return equivalent(fromType, toType) /*||
       (fromType?.kind === "FunctionType" &&
         toType?.kind === "FunctionType" &&
         assignable(fromType.returnType, toType.returnType) &&
         fromType.paramTypes.length === toType.paramTypes.length &&
         toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
-    );
+        */;
   }
 
   function equivalent(t1, t2) {
@@ -105,15 +89,15 @@ export default function analyze(match) {
       t1 === t2 ||
       (t1?.kind === "ListType" &&
         t2?.kind === "ListType" &&
-        equivalent(t1.baseType, t2.baseType)) ||
+        equivalent(t1.baseType, t2.baseType)) /*||
       (t1?.kind === "FunctionType" &&
         t2?.kind === "FunctionType" &&
         equivalent(t1.returnType, t2.returnType) &&
         t1.paramTypes.length === t2.paramTypes.length &&
-        t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i]))) ||
-      (t1?.kind === "ListType" && t2?.kind === "EmptyListType") ||
-      (t1?.kind === "EmptyListType" && t2?.kind === "ListType") ||
-      (t1?.kind === "EmptyListType" && t2?.kind === "EmptyListType")
+        t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i]))) */ ||
+      // (t1?.kind === "ListType" && t2?.kind === "EmptyListType") ||
+      (t1?.kind === "EmptyListType" && t2?.kind === "ListType") //||
+      //(t1?.kind === "EmptyListType" && t2?.kind === "EmptyListType")
     );
   }
 
@@ -125,14 +109,12 @@ export default function analyze(match) {
         return "string";
       case "BoolType":
         return "boolean";
-      //case "ClassType":
-      //return type.name;
+      /*
       case "FunctionType":
         const paramTypes = type.paramTypes.map(typeDescription).join(", ");
         const returnType = typeDescription(type.returnType);
         return `(${paramTypes})->${returnType}`;
-      //case "ListType":
-      //return `[${typeDescription(type.baseType)}]`;
+      */
     }
   }
 
@@ -140,15 +122,6 @@ export default function analyze(match) {
     const message = `Cannot assign a ${typeDescription(e.type)} to a ${typeDescription(type)}`;
     must(assignable(e.type, type), message, at);
   }
-
-  // function mustHaveDistinctFields(type, at) {
-  //   const fieldNames = new Set(type.fields.map((f) => f.name));
-  //   must(fieldNames.size === type.fields.length, "Fields must be distinct", at);
-  // }
-
-  // function mustHaveMember(classType, field, at) {
-  //   must(classType.fields.map((f) => f.name).includes(field), "No such field", at);
-  // }
 
   function mustBeInAFunction(at) {
     must(context.function, "Return can only appear in a function", at);
@@ -286,71 +259,6 @@ export default function analyze(match) {
       context = context.parent;
       return core.functionDeclaration(functionDeclaration, params_, body);
     },
-    /*Call(_id, _dot, _id, _open, expList, _close){
-      const callee = exp.rep()
-      mustBeCallable(callee, { at: exp })
-      const exps = expList.asIteration().children
-      const targetTypes =
-        callee?.kind === "StructType"
-          ? callee.fields.map(f => f.type)
-          : callee.type.paramTypes
-      mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: open })
-      const args = exps.map((exp, i) => {
-        const arg = exp.rep()
-        mustBeAssignable(arg, { toType: targetTypes[i] }, { at: exp })
-        return arg
-      })
-      return callee?.kind === "StructType"
-        ? core.constructorCall(callee, args)
-        : core.functionCall(callee, args)
-    },*/
-    // class body? has fields, constructor, variableDeclaration, functionDeclaration
-    /*
-    ClassDecl(_class, id, _colon, _nl_0, members, _nl_1, _endclass, _nl_2) {
-      const type = core.classDeclaration(id.sourceString, []);
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      context.add(id.sourceString, type);
-
-      // members
-      type.fields = members.children.map((member) => member.rep());
-      mustHaveDistinctFields(type, { at: id });
-      mustNotBeSelfContaining(type, { at: id });
-
-      // constructors
-      type.constructor = constructor.children.map((constructor) => constructor.rep());
-      mustHaveDistinctFields(type, { at: id });
-
-      // variable assignment (CAST)
-      type.variableDeclaration = variableDeclaration.children.map((variableDeclaration) =>
-        variableDeclaration.rep()
-      );
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-
-      // functions
-      type.functionDeclaration = functionDeclaration.children.map((functionDeclaration) =>
-        functionDeclaration.rep()
-      );
-      mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-
-      return core.typeDeclaration(type);
-    },
-    Field(type, id, _dd, _nl) {
-      return core.field(id.sourceString, type.rep());
-    },
-    Constructor(_nl_0, _ctor, _has, params, _colon, _nl_1, ctorbody, _endctor, _nl_2) {
-      // parameters
-      context = context.newChildContext({ inLoop: false, function: functionDeclaration });
-      const param = params.rep();
-      constructor.paramType = param.map((p) => p.type);
-
-      // need to make new core for ctorbody? because ctorbody can only have member expressions
-      // when block can have much more
-      const constructor_body = ctorbody.rep();
-
-      context = context.parent;
-      return core.constructor(param, constructor_body);
-    },
-    */
     Params(params, _colon) {
       return params.asIteration().children.map((p) => p.rep());
     },
@@ -429,7 +337,7 @@ export default function analyze(match) {
       const elements = args.asIteration().children.map((e) => e.rep());
       mustAllHaveSameType(elements, { at: args });
       let list = core.listExpression(elements);
-      list.type = core.listType(elements[0]?.type) ?? core.emptyListType();
+      list.type = core.listType(elements[0]?.type);
       return list;
     },
     Exp6_call(exp, open, expList, _close) {
@@ -463,9 +371,9 @@ export default function analyze(match) {
           ? BOOLEAN
           : type.sourceString === "number"
           ? NUMBER
-          : type.sourceString === "string"
-          ? STRING
-          : core.customType;
+          : //: type.sourceString === "string"
+            STRING;
+      //: core.customType;
       return core.listType(baseType);
     },
     Type_base(type) {
@@ -474,9 +382,9 @@ export default function analyze(match) {
           ? BOOLEAN
           : type.sourceString === "number"
           ? NUMBER
-          : type.sourceString === "string"
-          ? STRING
-          : core.customType;
+          : //: type.sourceString === "string"
+            STRING;
+      //: core.customType;
       return baseType;
     },
     id(_first, _rest) {
