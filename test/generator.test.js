@@ -69,19 +69,69 @@ const fixtures = [
     `,
     expected: dedent`
       let x_1 = 10;
-      let y_1 = 3;
+      let y_2 = 3;
       console.log(x_1);
-      console.log(y_1);
+      console.log(y_2);
     `,
   },
+  {
+    name: "short if",
+    source: ` PROLOGUE
+      CAST number x as 0--
+      NOMINATE (x is 0):
+       say ("1")--
+      END OF PROLOGUE
 
-  // notes: error (TypeError: s.consequent.forEach is not a function) when run
+      ACT 1
+
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+      let x_1 = 0;
+      if ((x_1 === 0))
+      {
+        console.log("1");
+      }
+    `,
+  },
+  {
+    name: "if then else if",
+    source: ` PROLOGUE
+      CAST number x as 1--
+      END OF PROLOGUE
+
+      ACT 1
+      NOMINATE x is 1:
+       say (1)--
+      RUNNER-UP x is 2:
+       say (2)--
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+      let x_1 = 1;
+
+      if ((x_1 === 1))
+      {
+        console.log(1);
+      }
+      else if ((x_1 === 2))
+      {
+        console.log(2);
+      }
+    `,
+  },
   // {
-  //   name: "if",
+  //   name: "if then else",
   //   source: ` PROLOGUE
   //     CAST number x as 0--
-  //     NOMINATE (x is 0):
-  //      say ("1")--
   //     END OF PROLOGUE
 
   //     ACT 1
@@ -91,122 +141,88 @@ const fixtures = [
   //      say (2)--
   //     END OF ACT
 
-  //     ACT 2
-  //     NOMINATE (x is 0):
-  //      say (1)--
-  //     RUNNER-UP x is 2:
-  //      say (3)--
-  //     END OF ACT
-
   //     EPILOGUE
-  //     NOMINATE (x is 0):
-  //      say (1)--
-  //     RUNNER-UP (x is 2):
-  //      say (3)--
-  //     SUPPORTING:
-  //      say (4)--
+
   //     FIN
   //   `,
   //   expected: dedent`
   //     let x_1 = 0;
-  //     if ((x_1 === 0)) {
-  //       console.log("1");
-  //     }
-  //     if ((x_1 === 0)) {
+
+  //     if ((x_1 === 0))
+  //     {
   //       console.log(1);
-  //     } else {
+  //     }
+  //     else
+  //     {
   //       console.log(2);
   //     }
-  //     if ((x_1 === 0)) {
-  //       console.log(1);
-  //     } else
-  //       if ((x_1 === 2)) {
-  //         console.log(3);
-  //       }
-  //     if ((x_1 === 0)) {
-  //       console.log(1);
-  //     } else
-  //       if ((x_1 === 2)) {
-  //         console.log(3);
-  //       } else {
-  //         console.log(4);
-  //       }
   //   `,
   // },
+  {
+    name: "while",
+    source: `PROLOGUE
+      CAST number x as 1--
+      PERFORM false:
+      say x--
+      END OF PROLOGUE
 
-  // {
-  //   name: "while",
-  //   source: `PROLOGUE
-  //     CAST number x as 1--
-  //     PERFORM false:
-  //     say x--
-  //     END OF PROLOGUE
+      ACT 1
 
-  //     ACT 1
-  //     CAST number y as 10--
-  //     PERFORM true:
-  //     say y--
-  //     END OF ACT
+      END OF ACT
 
-  //     EPILOGUE
-  //     say ("Working while loops!")--
-  //     FIN
-  //   `,
-  //   expected: dedent`
-  //     let x_1 = 1;
-  //     while (false) {
-  //       console.log(x_1);
-  //     }
-  //     let y_1 = 10;
-  //     while (true) {
-  //       console.log(y_1);
-  //     }
-  //     console.log("Working while loops!");
-  //   `,
-  // },
+      EPILOGUE
 
-  // /*
-  // ONCE WE ADD FUNCTIONS CALLS TO OUR LANG WE CAN PUT IT IN THIS EXAMPLE
+      FIN
+    `,
+    expected: dedent`
+      let x_1 = 1;
+      while (false)
+      {
+        console.log(x_1);
+      }
+    `,
+  },
   // {
   //   name: "functions",
-  //   source: `
-  //     PROLOGUE
-  //     CAST number z as 0.5--
+  //   source: `PROLOGUE
   //     SCENE number f has number x, boolean y:
-  //     NOMINATE(x>y):
-  //     say (x)--
   //     EXIT WITH 0--
   //     END SCENE
   //     END OF PROLOGUE
 
   //     ACT 1
-  //     SCENE boolean g has number x:
-  //     EXIT WITH false--
-  //     END SCENE
+
   //     END OF ACT
 
   //     EPILOGUE
-  //     say ("Working while loops!")--
-  //     FIN
 
+  //     FIN
   //   `,
   //   expected: dedent`
-  //     let z_1 = 0.5;
-  //     function f_2(x_3, y_4) {
-  //       if (x>y){
-
-  //       }
-
-  //       return;
+  //     function f_1(x_2, y_3)
+  //     {
+  //       return 0;
   //     }
-  //     function g_5() {
-  //       return false;
-  //     }
-  //     f_2(z_1, g_5());
   //   `,
   // },
-  // */
-  // // TypeError: s.consequent.forEach is not a function
+  {
+    name: "lists",
+    source: `PROLOGUE
+      CAST boolean list a as [true, false, true]--
+      END OF PROLOGUE
+
+      ACT 1
+
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+      let a_1 = [true, false, true];
+    `,
+  },
   // {
   //   name: "lists",
   //   source: `PROLOGUE

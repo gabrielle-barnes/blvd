@@ -37,14 +37,14 @@ export function printStatement(expression) {
 export function forStatement(iterator, collection, body) {
   return { kind: "ForStatement", iterator, collection, body };
 }
-export function ifStatement(test, consequent, alternate) {
-  return { kind: "IfStatement", test, consequent, alternate };
+export function ifStatement(test, consequent, alternates, tail) {
+  return { kind: "IfStatement", test, consequent, alternates, tail };
 }
 export function elseIfStatement(test, consequent) {
-  return { kind: "elseIfStatement", test, consequent };
+  return { kind: "ElseIfStatement", test, consequent };
 }
 export function elseStatement(consequent) {
-  return { kind: "elseStatement", consequent };
+  return { kind: "ElseStatement", consequent };
 }
 export function whileStatement(test, body) {
   return { kind: "WhileStatement", test, body };
@@ -65,10 +65,10 @@ export function binaryExpression(op, left, right, type) {
   return { kind: "BinaryExpression", op, left, right, type };
 }
 export function subscript(list, index) {
-  return { kind: "subscript", list, index, type: list.type.baseType };
+  return { kind: "Subscript", list, index, type: list.type.baseType };
 }
 export function emptyListExpression(type) {
-  return { kind: "emptyListExpression", type };
+  return { kind: "EmptyListExpression", type };
 }
 export function listExpression(elements) {
   return { kind: "ListExpression", elements };

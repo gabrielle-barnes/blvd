@@ -16,13 +16,22 @@ export default function generate(program) {
     Program(p) {
       p.statements.forEach(gen);
     },
+    Block(s) {
+      output.push("{");
+      s.statements.forEach(gen);
+      output.push("}");
+    },
     VariableDeclaration(d) {
       output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`);
     },
     FunctionDeclaration(d) {
-      output.push(`function ${gen(d.fun)}(${d.params.map(gen).join(", ")}) {`);
-      d.body.forEach(gen);
-      output.push("}");
+      console.log("D", d);
+      console.log("PARAMS", d.parameters);
+      output.push(`function ${gen(d.name)}(${d.parameters.map(gen).join(", ")})`);
+      gen(d.body);
+    },
+    PrintStatement(p) {
+      output.push(`console.log(${gen(p.expression)});`);
     },
     Variable(v) {
       return targetName(v);
@@ -37,26 +46,23 @@ export default function generate(program) {
       output.push(`return ${gen(s.expression)};`);
     },
     IfStatement(s) {
-      output.push(`if (${gen(s.test)}) {`);
-      s.consequent.forEach(gen);
-      if (s.alternate?.kind?.endsWith?.("IfStatement")) {
-        output.push("} else");
-        gen(s.alternate);
-      } else {
-        output.push("} else {");
-        s.alternate.forEach(gen);
-        output.push("}");
-      }
+      output.push(`if (${gen(s.test)})`);
+      gen(s.consequent);
+      s.alternates.forEach(gen);
+      gen(s?.tail);
     },
-    ShortIfStatement(s) {
-      output.push(`if (${gen(s.test)}) {`);
-      s.consequent.forEach(gen);
-      output.push("}");
+    ElseIfStatement(s) {
+      output.push(`else if (${gen(s.test)})`);
+      gen(s.consequent);
+    },
+    ElseStatement(s) {
+      console.log("ELSE", s);
+      output.push(`else`);
+      gen(s.consequent);
     },
     WhileStatement(s) {
-      output.push(`while (${gen(s.test)}) {`);
-      s.body.forEach(gen);
-      output.push("}");
+      output.push(`while (${gen(s.test)})`);
+      gen(s.body);
     },
     ForRangeStatement(s) {
       const i = targetName(s.iterator);
@@ -69,13 +75,14 @@ export default function generate(program) {
       return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`;
     },
     BinaryExpression(e) {
-      const op = { "==": "===", "!=": "!==" }[e.op] ?? e.op;
+      const op = { "==": "===", "!=": "!==", is: "===" }[e.op] ?? e.op;
       return `(${gen(e.left)} ${op} ${gen(e.right)})`;
     },
     SubscriptExpression(e) {
       return `${gen(e.array)}[${gen(e.index)}]`;
     },
     ArrayExpression(e) {
+      console.log("E", e);
       return `[${e.elements.map(gen).join(",")}]`;
     },
     EmptyArray(e) {
