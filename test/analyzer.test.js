@@ -5,6 +5,24 @@ import analyze from "../src/analyzer.js";
 // Programs that are semantically correct
 const semanticChecks = [
   [
+    "function calls and variables",
+    `PROLOGUE
+    SCENE number addOne has number n:
+    EXIT WITH n + 1--
+    END SCENE
+    CAST number a as addOne(3)--
+    say(addOne(2))--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
     "variable declarations",
     `PROLOGUE
     CAST number x as 1--
@@ -57,6 +75,21 @@ const semanticChecks = [
     `PROLOGUE
     CAST string list movies as ["Get Out", "Fallen Angels", "Bones and All"]--
     say(movies[1])--
+    END OF PROLOGUE
+    
+    ACT 1
+    
+    END OF ACT
+    
+    EPILOGUE
+    
+    FIN`,
+  ],
+  [
+    "list boolean example",
+    `PROLOGUE
+    CAST boolean list quiz as [true, false, true, true]--
+    say(quiz[3])--
     END OF PROLOGUE
     
     ACT 1
@@ -495,7 +528,7 @@ const semanticErrors = [
     EPILOGUE
     
     FIN`,
-    /Cannot assign a undefined to a number/,
+    /Cannot assign a string to a number/,
   ],
   [
     "string in conditional",
