@@ -250,14 +250,16 @@ export default function analyze(match) {
       context.add(id.sourceString, functionDeclaration);
 
       context = context.newChildContext({ inLoop: false, function: functionDeclaration });
-      const params_ = params.rep();
-      const paramTypes = params_.map((p) => p.type);
+      functionDeclaration.parameters = params.rep();
+      const paramTypes = functionDeclaration.parameters.map((p) => p.type);
       const returnType = type.rep();
       functionDeclaration.type = core.functionType(paramTypes, returnType);
 
       const body = block.rep();
       context = context.parent;
-      return core.functionDeclaration(functionDeclaration, params_, body);
+      functionDeclaration.body = body;
+      functionDeclaration.returnType = returnType;
+      return functionDeclaration;
     },
     Params(params, _colon) {
       return params.asIteration().children.map((p) => p.rep());

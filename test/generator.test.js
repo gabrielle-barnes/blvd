@@ -181,29 +181,29 @@ const fixtures = [
       }
     `,
   },
-  // {
-  //   name: "functions",
-  //   source: `PROLOGUE
-  //     SCENE number f has number x, boolean y:
-  //     EXIT WITH 0--
-  //     END SCENE
-  //     END OF PROLOGUE
+  {
+    name: "functions",
+    source: `PROLOGUE
+      SCENE number f has number x, boolean y:
+      EXIT WITH 0--
+      END SCENE
+      END OF PROLOGUE
 
-  //     ACT 1
+      ACT 1
 
-  //     END OF ACT
+      END OF ACT
 
-  //     EPILOGUE
+      EPILOGUE
 
-  //     FIN
-  //   `,
-  //   expected: dedent`
-  //     function f_1(x_2, y_3)
-  //     {
-  //       return 0;
-  //     }
-  //   `,
-  // },
+      FIN
+    `,
+    expected: dedent`
+      function f_1(x_2, y_3)
+      {
+        return 0;
+      }
+    `,
+  },
   {
     name: "lists",
     source: `PROLOGUE
@@ -283,24 +283,6 @@ const fixtures = [
   //     }
   //   `,
   // },
-
-  /*
-  {
-    name: "standard library",
-    source: `
-      let x = 0.5;
-      print(sin(x) - cos(x) + exp(x) * ln(x) / hypot(2.3, x));
-      print(bytes("∞§¶•"));
-      print(codepoints("💪🏽💪🏽🖖👩🏾💁🏽‍♀️"));
-    `,
-    expected: dedent`
-      let x_1 = 0.5;
-      console.log(((Math.sin(x_1) - Math.cos(x_1)) + ((Math.exp(x_1) * Math.log(x_1)) / Math.hypot(2.3,x_1))));
-      console.log([...Buffer.from("∞§¶•", "utf8")]);
-      console.log([...("💪🏽💪🏽🖖👩🏾💁🏽‍♀️")].map(s=>s.codePointAt(0)));
-    `,
-  },
-  */
 ];
 
 describe("The code generator", () => {

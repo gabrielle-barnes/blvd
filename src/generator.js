@@ -25,9 +25,7 @@ export default function generate(program) {
       output.push(`let ${gen(d.variable)} = ${gen(d.initializer)};`);
     },
     FunctionDeclaration(d) {
-      console.log("D", d);
-      console.log("PARAMS", d.parameters);
-      output.push(`function ${gen(d.name)}(${d.parameters.map(gen).join(", ")})`);
+      output.push(`function ${targetName(d)}(${d.parameters.map(gen).join(", ")})`);
       gen(d.body);
     },
     PrintStatement(p) {
