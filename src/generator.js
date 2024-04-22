@@ -78,14 +78,13 @@ export default function generate(program) {
       const op = { "==": "===", "!=": "!==", is: "===" }[e.op] ?? e.op;
       return `(${gen(e.left)} ${op} ${gen(e.right)})`;
     },
-    SubscriptExpression(e) {
-      return `${gen(e.array)}[${gen(e.index)}]`;
+    Subscript(e) {
+      return `${gen(e.list)}[${gen(e.index)}]`;
     },
-    ArrayExpression(e) {
-      console.log("E", e);
-      return `[${e.elements.map(gen).join(",")}]`;
+    ListExpression(e) {
+      return `[${e.elements.map(gen).join(", ")}]`;
     },
-    EmptyArray(e) {
+    EmptyListExpression(e) {
       return "[]";
     },
     FunctionCall(c) {

@@ -223,37 +223,40 @@ const fixtures = [
       let a_1 = [true, false, true];
     `,
   },
-  // {
-  //   name: "lists",
-  //   source: `PROLOGUE
-  //     CAST boolean list a as [true,false,true]--
-  //     CAST number list b as [10,20,30]--
-  //     CAST number list c as []--
-  //     END OF PROLOGUE
+  {
+    name: "more lists",
+    source: `PROLOGUE
+      CAST boolean list a as [true,false,true]--
+      CAST number list b as [10,20,30]--
+      CAST number list c as []--
+      END OF PROLOGUE
 
-  //     ACT 1
-  //     say (a[1])--
-  //     END OF ACT
+      ACT 1
+      say (a[1])--
+      END OF ACT
 
-  //     ACT 2
-  //     NOMINATE (b[0] < 88):
-  //      say false--
-  //     SUPPORTING:
-  //      say true--
-  //     END OF ACT
+      ACT 2
+      NOMINATE (b[0] < 88):
+       say false--
+      SUPPORTING:
+       say true--
+      END OF ACT
 
-  //     EPILOGUE
+      EPILOGUE
 
-  //     FIN
-  //   `,
-  //   expected: dedent`
-  //     let a_1 = [true,false,true];
-  //     let b_2 = [10,20,30];
-  //     let c_3 = [];
-  //     console.log(a_1[1]);
-  //     console.log((((b_2[0] < 88)) ? (false) : (true)));
-  //   `,
-  // },
+      FIN
+    `,
+    expected: dedent`
+      let a_1 = [true, false, true];
+      let b_2 = [10, 20, 30];
+      let c_3 = [];
+      console.log(a_1[1]);
+      if ((b_2[0] < 88))
+      {
+      console.log(false);
+      }
+    `,
+  },
   // // AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
   // {
   //   name: "for loops",
