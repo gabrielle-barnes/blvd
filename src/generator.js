@@ -49,14 +49,13 @@ export default function generate(program) {
       output.push(`if (${gen(s.test)})`);
       gen(s.consequent);
       s.alternates.forEach(gen);
-      gen(s?.tail);
+      gen(s.tail?.[0]);
     },
     ElseIfStatement(s) {
       output.push(`else if (${gen(s.test)})`);
       gen(s.consequent);
     },
     ElseStatement(s) {
-      console.log("ELSE", s);
       output.push(`else`);
       gen(s.consequent);
     },

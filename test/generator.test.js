@@ -128,36 +128,35 @@ const fixtures = [
       }
     `,
   },
-  // {
-  //   name: "if then else",
-  //   source: ` PROLOGUE
-  //     CAST number x as 0--
-  //     END OF PROLOGUE
+  {
+    name: "if then else",
+    source: ` PROLOGUE
+      CAST number x as 0--
+      END OF PROLOGUE
 
-  //     ACT 1
-  //     NOMINATE (x is 0):
-  //      say (1)--
-  //     SUPPORTING:
-  //      say (2)--
-  //     END OF ACT
+      ACT 1
+      NOMINATE (x is 0):
+       say (1)--
+      SUPPORTING:
+       say (2)--
+      END OF ACT
 
-  //     EPILOGUE
+      EPILOGUE
 
-  //     FIN
-  //   `,
-  //   expected: dedent`
-  //     let x_1 = 0;
-
-  //     if ((x_1 === 0))
-  //     {
-  //       console.log(1);
-  //     }
-  //     else
-  //     {
-  //       console.log(2);
-  //     }
-  //   `,
-  // },
+      FIN
+    `,
+    expected: dedent`
+      let x_1 = 0;
+      if ((x_1 === 0))
+      {
+      console.log(1);
+      }
+      else
+      {
+      console.log(2);
+      }
+    `,
+  },
   {
     name: "while",
     source: `PROLOGUE
@@ -254,6 +253,10 @@ const fixtures = [
       if ((b_2[0] < 88))
       {
       console.log(false);
+      }
+      else
+      {
+      console.log(true);
       }
     `,
   },
