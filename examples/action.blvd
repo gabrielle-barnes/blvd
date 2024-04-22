@@ -4,7 +4,7 @@ END OF PROLOGUE
 
 ACT 1
   ACTION number expenses in range from 1, 6:
-	RECAST expenses as expenses * 1000--
+	  RECAST expenses as expenses * 1000--
   CUT
 END OF ACT
 

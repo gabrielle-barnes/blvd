@@ -1,0 +1,39 @@
+PROLOGUE
+  SCENE number average has number to_add:
+    CAST number list num_list as [4, 5, 5, 3]--
+    CAST number ave as num_list[0]--
+    RECAST ave as ave + num_list[1]--
+    RECAST ave as ave + num_list[2]--
+    RECAST ave as ave + num_list[3]--
+    EXIT WITH ave--
+  END SCENE
+  
+  CAST number ave_review as average(5)--
+  say "The average is:"--
+  say ave_review--
+END OF PROLOGUE
+
+ACT 1
+  NOMINATE ave_review is 5:
+    say "Average rating of 5 Stars"--
+  RUNNER-UP ave_review is 4:
+    say "Average rating of 4 Stars"--
+  RUNNER-UP ave_review is 3:
+    say "Average rating of 3 Stars"--
+  RUNNER-UP ave_review is 2:
+    say "Average rating of 2 Stars"--
+  SUPPORTING:
+    say "Average rating of 1 Star"--
+END OF ACT
+
+ACT 2
+  CAST number actor as 0--
+  PERFORM actor <= 8:
+    RECAST actor as actor + 1--
+END OF ACT
+
+EPILOGUE
+  ACTION number expenses in range from 1, 9:
+	  RECAST expenses as expenses * 1000--
+  CUT
+FIN
