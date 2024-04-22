@@ -1,0 +1,16 @@
+PROLOGUE
+  say "Cast for Bodies Bodies Bodies is as follows..."--
+  CAST string main as "Rachel Sennott"--
+  (note: there's been an update in the cast!)
+  RECAST main as "Amandla Stenberg"--
+END OF PROLOGUE
+
+ACT 1
+  CAST string list actors as ["Chase Sui Wonders", "Myha'la"]--
+  CAST string emma as actors[0]--
+  say emma-- 
+END OF ACT
+
+EPILOGUE
+  say "Come to the director with your questions."-- 
+FIN

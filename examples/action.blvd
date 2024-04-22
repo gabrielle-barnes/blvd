@@ -1,0 +1,19 @@
+PROLOGUE
+  say "Costs with actors"--
+END OF PROLOGUE
+
+ACT 1
+  ACTION number expenses in range from 1, 6:
+	RECAST expenses as expenses * 1000--
+  CUT
+END OF ACT
+
+ACT 2
+  CAST number actor as 0--
+  PERFORM actor <= 8:
+    RECAST actor as actor + 1--
+END OF ACT
+
+EPILOGUE
+  say "Success!"--
+FIN

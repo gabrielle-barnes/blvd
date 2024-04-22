@@ -1,12 +1,11 @@
 PROLOGUE
-  CAST number x as 1--
-  RECAST x as x + 1--
+say "hello world"--
 END OF PROLOGUE
 
 ACT 1
-
+say "welcome..."--
 END OF ACT
 
 EPILOGUE
-
+say "to blvd!"--
 FIN

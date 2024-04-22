@@ -8,7 +8,7 @@ Introducing Blvd: A Cinematic Approach to Programming
 
 Whether you are a Los Angeles native, visitor, or admirer, it's likely that you are familiar with the city's iconic entertainment destinations. Many of which are linked to the famous Sunset Boulevard.
 
-Blvd is a statically-typed, object-oriented programming language whose syntax is influenced by movie scripts. With its simple design, Blvd allows you to be the creative director of your own programming projects.
+Blvd is a statically-typed programming language whose syntax is influenced by movie scripts. With its simple design, Blvd allows you to be the creative director of your own programming projects.
 
 Blvd is brought to you by [Gabrielle Barnes](https://github.com/gabrielle-barnes), [Funmi Idowu](https://github.com/Funmi-idowu), and [Kimberly Kubo](https://github.com/Kimberly-Kubo).
 
@@ -18,11 +18,10 @@ Our language website is available here: [blvd](https://gabrielle-barnes.github.i
 
 ### Features:
 
-- object oriented programming
 - .blvd file extension
 - parentheses can change the precedence of operators
 - static, manifest typing
-- data structures similar to lists and dictionaries
+- data structures similar to lists
 - reads like a script
 
 ### Comments:
@@ -125,6 +124,7 @@ END SCENE
 <td>
 <code>ACTION number stars in range from 1, 6:
     say stars--
+CUT
 </code>
 </td>
 <td>
