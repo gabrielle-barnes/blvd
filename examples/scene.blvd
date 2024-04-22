@@ -1,0 +1,14 @@
+PROLOGUE
+  say "Title: Eileen"--
+END OF PROLOGUE
+
+ACT 1
+  SCENE number costs has number props, number salary :
+    CAST number total as props + salary--
+    EXIT WITH total--
+  END SCENE
+END OF ACT
+
+EPILOGUE
+  CAST number b as costs(230, 1500)--
+FIN

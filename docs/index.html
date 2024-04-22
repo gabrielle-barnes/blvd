@@ -90,6 +90,8 @@
 
         <p><a href="https://github.com/gabrielle-barnes/blvd">The Blvd Github Repository</a>.</p>
 
+        <p><a href="https://github.com/gabrielle-barnes/blvd/blob/main/src/blvd.ohm">The Blvd Grammar</a>.</p>
+
         <h1 id="header-1">Roll Camera</h1>
 
         <p>
@@ -107,13 +109,26 @@
 
         <p>Let's take a look at some example programs!</p>
 
-        <h3 id="header-3">Example 1</h3>
+        <h3 id="header-3">template.blvd</h3>
 
-        <pre><code>(note: an example of a long if statement)
-PROLOGUE
+    <pre><code>PROLOGUE
+
+END OF PROLOGUE
+    
+ACT 1
+
+END OF ACT
+    
+EPILOGUE
+
+FIN </code></pre>
+
+        <h3 id="header-3">stars.blvd</h3>
+
+    <pre><code>PROLOGUE
   CAST number review as 5--
 END OF PROLOGUE
-
+    
 ACT 1
   NOMINATE review is 5:
     say "5 Stars"--
@@ -122,89 +137,71 @@ ACT 1
   SUPPORTING:
     say "3 Stars"--
 END OF ACT
-
+    
 EPILOGUE
   say "Congratulations!"--
-FIN
-  </code></pre>
+FIN </code></pre>
 
-        <h3 id="header-3">Example 2</h3>
+        <h3 id="header-3">cast.blvd</h3>
 
-<pre><code>(note: an example of addition and subtraction)
- PROLOGUE
-  CAST number x as 1--
-  RECAST x as x + 1--
-  RECAST x as x - 1--
- END OF PROLOGUE
-    
- ACT 1
-    
- END OF ACT
-    
- EPILOGUE
+<pre><code>PROLOGUE
+  say "Cast for Bodies Bodies Bodies is as follows..."--
+  CAST string main as "Rachel Sennott"--
+  (note: there's been an update in the cast!)
+  RECAST main as "Amandla Stenberg"--
+END OF PROLOGUE
 
-    FIN
-    </code></pre>
+ACT 1
+  CAST string list actors as ["Chase Sui Wonders", "Myha'la"]--
+  CAST string emma as actors[0]--
+  say emma-- 
+END OF ACT
+
+EPILOGUE
+  say "Come to the director with your questions."-- 
+FIN</code></pre>
   
 
-        <h3 id="header-3">Example 3</h3>
+        <h3 id="header-3">scene.blvd</h3>
 
-<pre><code>(note: an example of a for range loop)
- PROLOGUE
-    
- END OF PROLOGUE
-    
- ACT 1
-  ACTION number i in range from 1, 6:
-    say i--
-  CUT
- END OF ACT
-    
- EPILOGUE
-  say 0--
- FIN
-    </code></pre>
-  
+<pre><code>PROLOGUE
+  say "Title: Eileen"--
+END OF PROLOGUE
 
-        <h3 id="header-3">Example 4</h3>
-
-<pre><code>(note: an example of assigning functions)
- PROLOGUE
-  SCENE number prob has number lambda, number slope:
-    RECAST lambda as slope--
-    RECAST slope as lambda--
+ACT 1
+  SCENE number costs has number props, number salary :
+    CAST number total as props + salary--
+    EXIT WITH total--
   END SCENE
- END OF PROLOGUE
+END OF ACT
 
- ACT 1
-
- END OF ACT
-
- EPILOGUE
-
- FIN
-    </code></pre>
+EPILOGUE
+  CAST number b as costs(230, 1500)--
+FIN</code></pre>
   
 
-        <h3 id="header-3">Example 5</h3>
+        <h3 id="header-3">action.blvd</h3>
 
-<pre><code>(note: an example of a while statement)
- PROLOGUE
-  CAST number stars as 20--
-  PERFORM stars >= 0:
-    say stars--
- END OF PROLOGUE
-  
- ACT 1
-  
- END OF ACT
-  
- EPILOGUE
-  
- FIN
-    </code></pre>
-  
+<pre><code>PROLOGUE
+  say "Costs with actors"--
+END OF PROLOGUE
 
+ACT 1
+  ACTION number expenses in range from 1, 6:
+    RECAST expenses as expenses * 1000--
+  CUT
+END OF ACT
+
+ACT 2
+  CAST number actor as 0--
+  PERFORM actor <= 8:
+    RECAST actor as actor + 1--
+END OF ACT
+
+EPILOGUE
+  say "Success!"--
+FIN</code></pre>
+  
         <h1 id="header-1">Behind the Scenes</h1>
 
         <h3 id="small-image">Gabrielle Barnes</h3>
