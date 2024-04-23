@@ -29,11 +29,10 @@ const fixtures = [
   },
 
   {
-    // notes: CAST (variable declaration works) RECAST (variable assignment doesn't)
-    // also works if you remove the x_1 = 20;
     name: "very small",
     source: ` PROLOGUE
       CAST number x as 10--
+      RECAST x as 20--
 
       END OF PROLOGUE
 
@@ -47,7 +46,7 @@ const fixtures = [
     `,
     expected: dedent`
       let x_1 = 10;
-      
+      x_1 = 20;
     `,
   },
 
@@ -205,6 +204,30 @@ const fixtures = [
     `,
   },
   {
+    name: "function call",
+    source: `PROLOGUE
+      SCENE number f has number x, boolean y:
+      EXIT WITH 0--
+      END SCENE
+      END OF PROLOGUE
+
+      ACT 1
+      say f(5, true)--
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+      function f_1(x_2, y_3)
+      {
+        return 0;
+      }
+      console.log(f_1(5, true));
+    `,
+  },
+  {
     name: "lists",
     source: `PROLOGUE
       CAST boolean list a as [true, false, true]--
@@ -260,29 +283,29 @@ const fixtures = [
       }
     `,
   },
-  // // AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
-  // {
-  //   name: "for loops",
-  //   source: `PROLOGUE
-  //     ACTION number i in range from 1, 50:
-  //     say i--
-  //     CUT
-  //     END OF PROLOGUE
+  {
+    name: "for loops",
+    source: `PROLOGUE
+      ACTION number i in range from 1, 50:
+      say i--
+      CUT
+      END OF PROLOGUE
 
-  //     ACT 1
+      ACT 1
 
-  //     END OF ACT
+      END OF ACT
 
-  //     EPILOGUE
+      EPILOGUE
 
-  //     FIN
-  //   `,
-  //   expected: dedent`
-  //     for (let i_1 = 1; i_1 < 50; i_1++) {
-  //       console.log(i_1);
-  //     }
-  //   `,
-  // },
+      FIN
+    `,
+    expected: dedent`
+      for (let i_1 = 1; i_1 < 50; i_1++) 
+      {
+        console.log(i_1);
+      }
+    `,
+  },
 ];
 
 describe("The code generator", () => {

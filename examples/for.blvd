@@ -1,0 +1,13 @@
+PROLOGUE
+  ACTION number i in range from 1, 50:
+    say i--
+  CUT
+END OF PROLOGUE
+
+ACT 1
+
+END OF ACT
+
+EPILOGUE
+
+FIN

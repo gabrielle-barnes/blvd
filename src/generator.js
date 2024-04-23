@@ -37,7 +37,7 @@ export default function generate(program) {
     Function(f) {
       return targetName(f);
     },
-    Assignment(s) {
+    AssignmentStatement(s) {
       output.push(`${gen(s.target)} = ${gen(s.source)};`);
     },
     ReturnStatement(s) {
@@ -61,13 +61,27 @@ export default function generate(program) {
       output.push(`while (${gen(s.test)})`);
       gen(s.body);
     },
-    ForRangeStatement(s) {
+    ForStatement(s) {
       const i = targetName(s.iterator);
       const op = s.op === "..." ? "<=" : "<";
-      output.push(`for (let ${i} = ${gen(s.low)}; ${i} ${op} ${gen(s.high)}; ${i}++) {`);
-      s.body.forEach(gen);
+
+      const lowerbound = gen(s.lowerbound);
+      const upperbound = gen(s.upperbound);
+
+      const forLoopHeader = `for (let ${i} = ${lowerbound}; ${i} ${op} ${upperbound}; ${i}++) {`;
+      output.push(forLoopHeader);
+
+      gen(s.body);
+
       output.push("}");
     },
+    // ForStatement(s) {
+    //   const i = targetName(s.iterator);
+    //   const op = s.op === "..." ? "<=" : "<";
+    //   output.push(`for (let ${i} = ${gen(s.low)}; ${i} ${op} ${gen(s.high)}; ${i}++) {`);
+    //   s.body.forEach(gen);
+    //   output.push("}");
+    // },
     Conditional(e) {
       return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`;
     },
@@ -84,16 +98,28 @@ export default function generate(program) {
     EmptyListExpression(e) {
       return "[]";
     },
-    FunctionCall(c) {
-      const targetCode = standardFunctions.has(c.callee)
-        ? standardFunctions.get(c.callee)(c.args.map(gen))
-        : `${gen(c.callee)}(${c.args.map(gen).join(", ")})`;
-      // Calls in expressions vs in statements are handled differently
-      if (c.callee.type.returnType !== voidType) {
+    Call(c) {
+      const calleeCode = gen(c.callee);
+      const argsCode = c.args.map(gen).join(", ");
+
+      const targetCode = `${calleeCode}(${argsCode})`;
+
+      if (!c.callee.type.returnType) {
         return targetCode;
+      } else {
+        output.push(`${targetCode};`);
       }
-      output.push(`${targetCode};`);
     },
+    // Call(c) {
+    //   const targetCode = standardFunctions.has(c.callee)
+    //     ? standardFunctions.get(c.callee)(c.args.map(gen))
+    //     : `${gen(c.callee)}(${c.args.map(gen).join(", ")})`;
+    //   // Calls in expressions vs in statements are handled differently
+    //   if (c.callee.type.returnType !== voidType) {
+    //     return targetCode;
+    //   }
+    //   output.push(`${targetCode};`);
+    // },
   };
 
   gen(program);
