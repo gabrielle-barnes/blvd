@@ -99,12 +99,10 @@ export default function generate(program) {
       return "[]";
     },
     Call(c) {
-      const calleeCode = gen(c.callee);
       const argsCode = c.args.map(gen).join(", ");
+      const targetCode = `${targetName(c.callee)}(${argsCode})`;
 
-      const targetCode = `${calleeCode}(${argsCode})`;
-
-      if (!c.callee.type.returnType) {
+      if (c.callee.type.returnType) {
         return targetCode;
       } else {
         output.push(`${targetCode};`);
