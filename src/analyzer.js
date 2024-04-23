@@ -345,8 +345,8 @@ export default function analyze(match) {
     Exp6_call(exp, open, expList, _close) {
       const callee = exp.rep();
       mustBeCallable(callee, { at: exp });
-      const exps = expList.asIteration().children;
       const targetTypes = callee.type.paramTypes;
+      const exps = expList.asIteration().children;
       mustHaveCorrectArgumentCount(exps.length, targetTypes.length, { at: open });
       const args = exps.map((exp, i) => {
         const arg = exp.rep();
