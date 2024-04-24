@@ -34,8 +34,8 @@ export function functionType(paramTypes, returnType) {
 export function printStatement(expression) {
   return { kind: "PrintStatement", expression };
 }
-export function forStatement(iterator, collection, body) {
-  return { kind: "ForStatement", iterator, collection, body };
+export function forStatement(iterator, low, high, body) {
+  return { kind: "ForStatement", iterator, low, high, body };
 }
 export function ifStatement(test, consequent, alternates, tail) {
   return { kind: "IfStatement", test, consequent, alternates, tail };
@@ -57,9 +57,6 @@ export function assignmentStatement(target, source) {
 }
 export function functionDeclaration(name, parameters, returnType, body) {
   return { kind: "FunctionDeclaration", name, parameters, returnType, body };
-}
-export function rangeFunction(lowerbound, upperbound) {
-  return { kind: "RangeFunction", lowerbound, upperbound };
 }
 export function binaryExpression(op, left, right, type) {
   return { kind: "BinaryExpression", op, left, right, type };

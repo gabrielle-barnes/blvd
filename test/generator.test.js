@@ -27,7 +27,26 @@ const fixtures = [
 
     `,
   },
+  {
+    name: "binary op",
+    source: ` PROLOGUE
+      CAST boolean y as 1==2--
+      say y--
+      END OF PROLOGUE
 
+      ACT 1 
+
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+     let y_1 = (1 === 2);
+     console.log(y_1);
+    `,
+  },
   {
     name: "very small",
     source: ` PROLOGUE
@@ -300,7 +319,7 @@ const fixtures = [
       FIN
     `,
     expected: dedent`
-      for (let i_1 = 1; i_1 < 50; i_1++) 
+      for (let i_1 = 1; i_1 < 50; i_1++)
       {
         console.log(i_1);
       }
