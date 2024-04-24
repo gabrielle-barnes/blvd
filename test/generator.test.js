@@ -300,7 +300,7 @@ const fixtures = [
       FIN
     `,
     expected: dedent`
-      for (let i_1 = 1; i_1 < 50; i_1++) 
+      for (let i_1 = 1; i_1 < 50; i_1++)
       {
         console.log(i_1);
       }

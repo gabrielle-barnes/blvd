@@ -177,15 +177,33 @@ export default function analyze(match) {
     PrintStmt(_print, expression, _dd, _nl) {
       return core.printStatement(expression.rep());
     },
-    ForStmt(_for, type, id, _in, range, _colon, _nl1, block, _cut, _nl2) {
-      const iterator_type = type.rep();
-      context = context.newChildContext({ inLoop: true });
-      const variable = core.variable(id.sourceString, iterator_type);
+    // ForStmt can only be range, also can simplify to not require type
+    ForStmt(
+      _for,
+      type,
+      id,
+      _in,
+      _range,
+      _from,
+      exp1,
+      _comma,
+      exp2,
+      _colon,
+      _nl1,
+      block,
+      _cut,
+      _nl2
+    ) {
+      const [low, high] = [exp1.rep(), exp2.rep()];
+      mustHaveNumericType(low, { at: exp1 });
+      mustHaveNumericType(high, { at: exp2 });
+      const iterator = core.variable(id.sourceString, NUMBER);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
-      context.add(id.sourceString, variable);
+      context = context.newChildContext({ inLoop: true });
+      context.add(id.sourceString, iterator);
       const body = block.rep();
       context = context.parent;
-      return core.forStatement(id.sourceString, range.rep(), body);
+      return core.forStatement(iterator, low, high, body);
     },
     IfStmt(_if, exp, _colon, _nl, block, elseifstmt, elsestmt) {
       const test = exp.rep();
@@ -270,12 +288,14 @@ export default function analyze(match) {
       context.add(id.sourceString, variable);
       return variable;
     },
-    RangeFunc(_range, _from, exp1, _comma, exp2) {
-      const [low, high] = [exp1.rep(), exp2.rep()];
-      mustHaveNumericType(low, { at: exp1 });
-      mustHaveNumericType(high, { at: exp2 });
-      return core.rangeFunction(low, high);
-    },
+    // RangeFunc(_range, _from, exp1, _comma, exp2) {
+    //   const [low, high] = [exp1.rep(), exp2.rep()];
+    //   mustHaveNumericType(low, { at: exp1 });
+    //   mustHaveNumericType(high, { at: exp2 });
+    //   const iterator = core.variable(id.sourceString, NUMBER);
+    //   context.add(id.sourceString, iterator);
+    //   return core.rangeFunction(low, high);
+    // },
 
     Exp_booleanOr(exp1, _or, exp2) {
       let right = exp2.rep();

@@ -12,7 +12,7 @@ blvd {
   // STATEMENTS
   PrintStmt     = print Exp dd nl 
   
-  ForStmt       = for Type id in RangeFunc ":" nl Block cut nl
+  ForStmt       = for Type id in range from Exp "," Exp ":" nl Block cut nl
   
   IfStmt        = if Exp ":" nl Block ElseIf* Else?
   ElseIf        = elseif Exp ":" nl Block 
@@ -39,11 +39,6 @@ blvd {
   MemberExp     = given  
   Params        = ListOf<Param, ","> ","?
   Param         = Type id
-
-  
-  
-  // EXTRA FUNCTIONS
-  RangeFunc     = range from Exp "," Exp
 
   // EXPRESSIONS
   Exp           = Exp "or" Exp1                             --booleanOr

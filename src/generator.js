@@ -63,25 +63,12 @@ export default function generate(program) {
     },
     ForStatement(s) {
       const i = targetName(s.iterator);
-      const op = s.op === "..." ? "<=" : "<";
-
-      const lowerbound = gen(s.lowerbound);
-      const upperbound = gen(s.upperbound);
-
-      const forLoopHeader = `for (let ${i} = ${lowerbound}; ${i} ${op} ${upperbound}; ${i}++) {`;
+      const lowerbound = gen(s.low);
+      const upperbound = gen(s.high);
+      const forLoopHeader = `for (let ${i} = ${lowerbound}; ${i} < ${upperbound}; ${i}++)`;
       output.push(forLoopHeader);
-
       gen(s.body);
-
-      output.push("}");
     },
-    // ForStatement(s) {
-    //   const i = targetName(s.iterator);
-    //   const op = s.op === "..." ? "<=" : "<";
-    //   output.push(`for (let ${i} = ${gen(s.low)}; ${i} ${op} ${gen(s.high)}; ${i}++) {`);
-    //   s.body.forEach(gen);
-    //   output.push("}");
-    // },
     Conditional(e) {
       return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`;
     },
