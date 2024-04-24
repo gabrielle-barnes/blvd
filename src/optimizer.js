@@ -27,22 +27,28 @@ const optimizers = {
     }
     return s;
   },
+  PrintStatement(p) {
+    p.expression = optimize(p.expression);
+    return p;
+  },
   ReturnStatement(s) {
     s.expression = optimize(s.expression);
     return s;
   },
   IfStatement(s) {
-    s.test = optimize(s.test);
-    s.consequent = s.consequent.flatMap(optimize);
-    if (s.alternate?.kind?.endsWith?.("IfStatement")) {
-      s.alternate = optimize(s.alternate);
-    } else {
-      s.alternate = s.alternate.flatMap(optimize);
-    }
-    if (s.test.constructor === Boolean) {
-      return s.test ? s.consequent : s.alternate;
-    }
+    s.consequent = s.consequent.statements.flatMap(optimize);
+    s.alternates = s.alternates.flatMap(optimize);
+    s.tail = s.tail.flatMap(optimize);
     return s;
+    // if (s.alternate?.kind?.endsWith?.("IfStatement")) {
+    //   s.alternates = optimize(s.alternate);
+    // } else {
+    //   s.alternates = s.alternates.flatMap(optimize);
+    // }
+    // if (s.test.constructor === Boolean) {
+    //   return s.test ? s.consequent : s.alternate;
+    // }
+    // return s;
   },
   ShortIfStatement(s) {
     s.test = optimize(s.test);
@@ -80,11 +86,11 @@ const optimizers = {
     e.op = optimize(e.op);
     e.left = optimize(e.left);
     e.right = optimize(e.right);
-    if (e.op === "&&") {
+    if (e.op === "and") {
       // Optimize boolean constants in && and ||
       if (e.left === true) return e.right;
       else if (e.right === true) return e.left;
-    } else if (e.op === "||") {
+    } else if (e.op === "or") {
       if (e.left === false) return e.right;
       else if (e.right === false) return e.left;
     } else if ([Number, BigInt].includes(e.left.constructor)) {

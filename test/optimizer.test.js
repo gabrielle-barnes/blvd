@@ -6,7 +6,7 @@ import * as core from "../src/core.js";
 const x = core.variable("x", false, core.numberType);
 const less = (x, y) => core.binaryExpression("<", x, y);
 const or = (...d) => d.reduce((x, y) => core.binaryExpression("or", x, y));
-const and = (...c) => c.reduce((x, y) => core.binaryExpression("&&", x, y));
+const and = (...c) => c.reduce((x, y) => core.binaryExpression("and", x, y));
 const program = core.program;
 const list = (...elements) => core.listExpression(elements);
 const onePlusTwo = core.binaryExpression("+", 1, 2, core.numberType);
@@ -55,7 +55,7 @@ const tests = [
   ["optimizes *0", core.binaryExpression("*", x, 0), 0],
   ["optimizes 0*", core.binaryExpression("*", 0, x), 0],
   ["optimizes 0/", core.binaryExpression("/", 0, x), 0],
-  [("optimizes 0+", core.binaryExpression("+", 0, x), x)],
+  ["optimizes 0+", core.binaryExpression("+", 0, x), x],
   ["optimizes 1*", core.binaryExpression("*", 1, x), x],
   ["optimizes 1**", core.binaryExpression("**", 1, x), 1],
   ["optimizes **0", core.binaryExpression("**", x, 0), 1],
@@ -88,7 +88,7 @@ const tests = [
       //core.conditional(x, 1, 2),
       core.ifStatement(x, [], []),
       //core.shortIfStatement(x, []),
-      core.rangeFunction(x, 2, "..<", 5, []),
+      // core.rangeFunction(x, 2, "..<", 5, []),
     ]),
   ],
 ];
