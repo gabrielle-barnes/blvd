@@ -34,9 +34,6 @@ export default function generate(program) {
     Variable(v) {
       return targetName(v);
     },
-    Function(f) {
-      return targetName(f);
-    },
     AssignmentStatement(s) {
       output.push(`${gen(s.target)} = ${gen(s.source)};`);
     },
@@ -63,27 +60,11 @@ export default function generate(program) {
     },
     ForStatement(s) {
       const i = targetName(s.iterator);
-      const op = s.op === "..." ? "<=" : "<";
-
-      const lowerbound = gen(s.lowerbound);
-      const upperbound = gen(s.upperbound);
-
-      const forLoopHeader = `for (let ${i} = ${lowerbound}; ${i} ${op} ${upperbound}; ${i}++) {`;
+      const lowerbound = gen(s.low);
+      const upperbound = gen(s.high);
+      const forLoopHeader = `for (let ${i} = ${lowerbound}; ${i} < ${upperbound}; ${i}++)`;
       output.push(forLoopHeader);
-
       gen(s.body);
-
-      output.push("}");
-    },
-    // ForStatement(s) {
-    //   const i = targetName(s.iterator);
-    //   const op = s.op === "..." ? "<=" : "<";
-    //   output.push(`for (let ${i} = ${gen(s.low)}; ${i} ${op} ${gen(s.high)}; ${i}++) {`);
-    //   s.body.forEach(gen);
-    //   output.push("}");
-    // },
-    Conditional(e) {
-      return `((${gen(e.test)}) ? (${gen(e.consequent)}) : (${gen(e.alternate)}))`;
     },
     BinaryExpression(e) {
       const op = { "==": "===", "!=": "!==", is: "===" }[e.op] ?? e.op;
@@ -102,22 +83,8 @@ export default function generate(program) {
       const argsCode = c.args.map(gen).join(", ");
       const targetCode = `${targetName(c.callee)}(${argsCode})`;
 
-      if (c.callee.type.returnType) {
-        return targetCode;
-      } else {
-        output.push(`${targetCode};`);
-      }
+      return targetCode;
     },
-    // Call(c) {
-    //   const targetCode = standardFunctions.has(c.callee)
-    //     ? standardFunctions.get(c.callee)(c.args.map(gen))
-    //     : `${gen(c.callee)}(${c.args.map(gen).join(", ")})`;
-    //   // Calls in expressions vs in statements are handled differently
-    //   if (c.callee.type.returnType !== voidType) {
-    //     return targetCode;
-    //   }
-    //   output.push(`${targetCode};`);
-    // },
   };
 
   gen(program);
