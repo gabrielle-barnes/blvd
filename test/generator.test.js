@@ -48,6 +48,26 @@ const fixtures = [
     `,
   },
   {
+    name: "optimize assign",
+    source: ` PROLOGUE
+      CAST number x as 10--
+      RECAST x as x--
+
+      END OF PROLOGUE
+
+      ACT 1 
+
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+      let x_1 = 10;
+    `,
+  },
+  {
     name: "very small",
     source: ` PROLOGUE
       CAST number x as 10--
@@ -68,7 +88,6 @@ const fixtures = [
       x_1 = 20;
     `,
   },
-
   {
     name: "small",
     source: ` PROLOGUE
@@ -176,7 +195,7 @@ const fixtures = [
     `,
   },
   {
-    name: "while",
+    name: "while false",
     source: `PROLOGUE
       CAST number x as 1--
       PERFORM false:
@@ -193,6 +212,32 @@ const fixtures = [
     `,
     expected: dedent`
       let x_1 = 1;
+    `,
+  },
+  {
+    name: "while",
+    source: `PROLOGUE
+      CAST number x as 1--
+      PERFORM x is 1:
+      RECAST x as x + 1--
+      say x--
+      END OF PROLOGUE
+
+      ACT 1
+
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+      let x_1 = 1;
+      while (x_1 === 1)
+      {
+        x_1 = (x_1 + 1);
+        console.log(x_1);
+      }
     `,
   },
   {
@@ -319,6 +364,26 @@ const fixtures = [
       {
         console.log(i_1);
       }
+    `,
+  },
+  {
+    name: "for low > high",
+    source: `PROLOGUE
+      ACTION number i in range from 50, 1:
+      say i--
+      CUT
+      END OF PROLOGUE
+
+      ACT 1
+
+      END OF ACT
+
+      EPILOGUE
+
+      FIN
+    `,
+    expected: dedent`
+      
     `,
   },
 ];

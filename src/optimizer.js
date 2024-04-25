@@ -15,8 +15,7 @@ const optimizers = {
     return d;
   },
   FunctionDeclaration(d) {
-    d.fun = optimize(d.fun);
-    if (d.body) d.body = d.body.flatMap(optimize);
+    if (d.body) d.body.statements = d.body.statements.flatMap(optimize);
     return d;
   },
   AssignmentStatement(s) {
@@ -36,43 +35,33 @@ const optimizers = {
     return s;
   },
   IfStatement(s) {
-    s.consequent = s.consequent.statements.flatMap(optimize);
+    s.consequent.statements = s.consequent.statements.flatMap(optimize);
     s.alternates = s.alternates.flatMap(optimize);
     s.tail = s.tail.flatMap(optimize);
     return s;
-    // if (s.alternate?.kind?.endsWith?.("IfStatement")) {
-    //   s.alternates = optimize(s.alternate);
-    // } else {
-    //   s.alternates = s.alternates.flatMap(optimize);
-    // }
-    // if (s.test.constructor === Boolean) {
-    //   return s.test ? s.consequent : s.alternate;
-    // }
-    // return s;
   },
-  ShortIfStatement(s) {
-    s.test = optimize(s.test);
-    s.consequent = s.consequent.flatMap(optimize);
-    if (s.test.constructor === Boolean) {
-      return s.test ? s.consequent : [];
-    }
-    return s;
-  },
+  // ShortIfStatement(s) {
+  //   s.test = optimize(s.test);
+  //   s.consequent = s.consequent.flatMap(optimize);
+  //   if (s.test.constructor === Boolean) {
+  //     return s.test ? s.consequent : [];
+  //   }
+  //   return s;
+  // },
   WhileStatement(s) {
     s.test = optimize(s.test);
     if (s.test === false) {
-      // while false is a no-op
       return [];
     }
-    s.body = s.body.flatMap(optimize);
+    s.body.statements = s.body.statements.flatMap(optimize);
     return s;
   },
-  ForRangeStatement(s) {
+  ForStatement(s) {
+    console.log(s);
     s.iterator = optimize(s.iterator);
     s.low = optimize(s.low);
-    s.op = optimize(s.op);
     s.high = optimize(s.high);
-    s.body = s.body.flatMap(optimize);
+    s.body.statements = s.body.statements.flatMap(optimize);
     if (s.low.constructor === Number) {
       if (s.high.constructor === Number) {
         if (s.low > s.high) {
@@ -87,7 +76,6 @@ const optimizers = {
     e.left = optimize(e.left);
     e.right = optimize(e.right);
     if (e.op === "and") {
-      // Optimize boolean constants in && and ||
       if (e.left === true) return e.right;
       else if (e.right === true) return e.left;
     } else if (e.op === "or") {

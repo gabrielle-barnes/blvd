@@ -55,7 +55,7 @@ export default function generate(program) {
       gen(s.consequent);
     },
     WhileStatement(s) {
-      output.push(`while (${gen(s.test)})`);
+      output.push(`while ${gen(s.test)}`);
       gen(s.body);
     },
     ForStatement(s) {
