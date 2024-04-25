@@ -43,7 +43,7 @@ const fixtures = [
       FIN
     `,
     expected: dedent`
-     let y_1 = (1 === 2);
+     let y_1 = false;
      console.log(y_1);
     `,
   },
@@ -193,10 +193,6 @@ const fixtures = [
     `,
     expected: dedent`
       let x_1 = 1;
-      while (false)
-      {
-        console.log(x_1);
-      }
     `,
   },
   {
