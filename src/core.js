@@ -10,11 +10,7 @@ export function variableDeclaration(variable, initializer) {
 export function variable(name, type) {
   return { kind: "Variable", name, type };
 }
-/* 
-export function typeDeclaration(type) {
-  return { kind: "TypeDeclaration", type };
-}
-*/
+
 export const boolType = { kind: "BoolType" };
 export const numberType = { kind: "NumberType" };
 export const stringType = { kind: "StringType" };

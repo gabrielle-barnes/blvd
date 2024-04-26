@@ -1,5 +1,3 @@
-import * as core from "./core.js";
-
 export default function optimize(node) {
   return optimizers?.[node.kind]?.(node) ?? node;
 }
@@ -40,14 +38,6 @@ const optimizers = {
     s.tail = s.tail.flatMap(optimize);
     return s;
   },
-  // ShortIfStatement(s) {
-  //   s.test = optimize(s.test);
-  //   s.consequent = s.consequent.flatMap(optimize);
-  //   if (s.test.constructor === Boolean) {
-  //     return s.test ? s.consequent : [];
-  //   }
-  //   return s;
-  // },
   WhileStatement(s) {
     s.test = optimize(s.test);
     if (s.test === false) {
@@ -57,7 +47,6 @@ const optimizers = {
     return s;
   },
   ForStatement(s) {
-    console.log(s);
     s.iterator = optimize(s.iterator);
     s.low = optimize(s.low);
     s.high = optimize(s.high);
@@ -82,7 +71,6 @@ const optimizers = {
       if (e.left === false) return e.right;
       else if (e.right === false) return e.left;
     } else if ([Number, BigInt].includes(e.left.constructor)) {
-      // Numeric constant folding when left operand is constant
       if ([Number, BigInt].includes(e.right.constructor)) {
         if (e.op === "+") return e.left + e.right;
         else if (e.op === "-") return e.left - e.right;
@@ -100,7 +88,6 @@ const optimizers = {
       else if (e.left === 1 && e.op === "**") return 1;
       else if (e.left === 0 && ["*", "/"].includes(e.op)) return 0;
     } else if ([Number, BigInt].includes(e.right.constructor)) {
-      // Numeric constant folding when right operand is constant
       if (["+", "-"].includes(e.op) && e.right === 0) return e.left;
       else if (["*", "/"].includes(e.op) && e.right === 1) return e.left;
       else if (e.op === "*" && e.right === 0) return 0;

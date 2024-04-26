@@ -28,7 +28,6 @@ export default function analyze(match) {
   let context = Context.root();
 
   /* a bunch of semantic validation functions */
-  /* !!I think we need to add a constructor related function!! */
   function must(condition, message, errorLocation) {
     if (!condition) {
       const prefix = errorLocation.at.source.getLineAndColumnMessage();
@@ -65,8 +64,6 @@ export default function analyze(match) {
   }
 
   function mustAllHaveSameType(expressions, at) {
-    // Used to check the elements of an list expression, and the two
-    // arms of a conditional expression, among other scenarios.
     must(
       expressions.slice(1).every((e) => equivalent(e.type, expressions[0].type)),
       "Not all elements have the same type",
@@ -75,13 +72,7 @@ export default function analyze(match) {
   }
 
   function assignable(fromType, toType) {
-    return equivalent(fromType, toType) /*||
-      (fromType?.kind === "FunctionType" &&
-        toType?.kind === "FunctionType" &&
-        assignable(fromType.returnType, toType.returnType) &&
-        fromType.paramTypes.length === toType.paramTypes.length &&
-        toType.paramTypes.every((t, i) => assignable(t, fromType.paramTypes[i])))
-        */;
+    return equivalent(fromType, toType);
   }
 
   function equivalent(t1, t2) {
@@ -89,15 +80,8 @@ export default function analyze(match) {
       t1 === t2 ||
       (t1?.kind === "ListType" &&
         t2?.kind === "ListType" &&
-        equivalent(t1.baseType, t2.baseType)) /*||
-      (t1?.kind === "FunctionType" &&
-        t2?.kind === "FunctionType" &&
-        equivalent(t1.returnType, t2.returnType) &&
-        t1.paramTypes.length === t2.paramTypes.length &&
-        t1.paramTypes.every((t, i) => equivalent(t, t2.paramTypes[i]))) */ ||
-      // (t1?.kind === "ListType" && t2?.kind === "EmptyListType") ||
-      (t1?.kind === "EmptyListType" && t2?.kind === "ListType") //||
-      //(t1?.kind === "EmptyListType" && t2?.kind === "EmptyListType")
+        equivalent(t1.baseType, t2.baseType)) ||
+      (t1?.kind === "EmptyListType" && t2?.kind === "ListType")
     );
   }
 
@@ -109,12 +93,6 @@ export default function analyze(match) {
         return "string";
       case "BoolType":
         return "boolean";
-      /*
-      case "FunctionType":
-        const paramTypes = type.paramTypes.map(typeDescription).join(", ");
-        const returnType = typeDescription(type.returnType);
-        return `(${paramTypes})->${returnType}`;
-      */
     }
   }
 
@@ -177,7 +155,6 @@ export default function analyze(match) {
     PrintStmt(_print, expression, _dd, _nl) {
       return core.printStatement(expression.rep());
     },
-    // ForStmt can only be range, also can simplify to not require type
     ForStmt(
       _for,
       type,
@@ -249,7 +226,6 @@ export default function analyze(match) {
     },
     CastDecl(_cast, type, id, _as, exp, _dd, _nl) {
       const initializer = exp.rep();
-      // console.log("HELP type rep is", type.rep(), "and initializer type is", initializer.type);
       const variable = core.variable(id.sourceString, type.rep());
       mustBothHaveTheSameType(initializer, variable, { at: id });
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
@@ -262,6 +238,12 @@ export default function analyze(match) {
       mustBeAssignable(source, { toType: target.type }, { at: id });
       return core.assignmentStatement(target, source);
     },
+    /*
+      FunctionDeclarations also hold our Functions.
+      Currently, we access function type, id, and parameters through our FuncDecl
+      but we should have created a Function object in the FuncDecl.
+    }
+    */
     FuncDecl(_nl_0, _function, type, id, _has, params, _colon, _nl_1, block, _endfunction, _nl_2) {
       const functionDeclaration = core.functionDeclaration(id.sourceString);
       mustNotAlreadyBeDeclared(id.sourceString, { at: id });
@@ -288,15 +270,6 @@ export default function analyze(match) {
       context.add(id.sourceString, variable);
       return variable;
     },
-    // RangeFunc(_range, _from, exp1, _comma, exp2) {
-    //   const [low, high] = [exp1.rep(), exp2.rep()];
-    //   mustHaveNumericType(low, { at: exp1 });
-    //   mustHaveNumericType(high, { at: exp2 });
-    //   const iterator = core.variable(id.sourceString, NUMBER);
-    //   context.add(id.sourceString, iterator);
-    //   return core.rangeFunction(low, high);
-    // },
-
     Exp_booleanOr(exp1, _or, exp2) {
       let right = exp2.rep();
       mustHaveBooleanType(right, { at: exp2 });
@@ -387,15 +360,13 @@ export default function analyze(match) {
       return entity;
     },
 
-    Type_list(type, list) {
+    Type_list(type, _list) {
       const baseType =
         type.sourceString === "boolean"
           ? BOOLEAN
           : type.sourceString === "number"
           ? NUMBER
-          : //: type.sourceString === "string"
-            STRING;
-      //: core.customType;
+          : STRING;
       return core.listType(baseType);
     },
     Type_base(type) {
@@ -404,9 +375,7 @@ export default function analyze(match) {
           ? BOOLEAN
           : type.sourceString === "number"
           ? NUMBER
-          : //: type.sourceString === "string"
-            STRING;
-      //: core.customType;
+          : STRING;
       return baseType;
     },
     id(_first, _rest) {
