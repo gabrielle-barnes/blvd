@@ -1,7 +1,7 @@
 PROLOGUE
-CAST number x as 0--
-NOMINATE (x is 0):
-say ("1")--
+  CAST number x as 0--
+  NOMINATE (x is 0):
+    say ("1")--
 END OF PROLOGUE
 
 ACT 1
