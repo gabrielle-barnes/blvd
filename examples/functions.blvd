@@ -1,13 +1,13 @@
 PROLOGUE
-      SCENE number f has number x, boolean y:
-      EXIT WITH 0--
-      END SCENE
-      END OF PROLOGUE
+  SCENE number f has number x, boolean y:
+    EXIT WITH 0--
+  END SCENE
+END OF PROLOGUE
 
-      ACT 1
+ACT 1
 
-      END OF ACT
+END OF ACT
 
-      EPILOGUE
+EPILOGUE
 
 FIN
