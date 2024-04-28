@@ -1,17 +1,17 @@
 PROLOGUE
-    CAST boolean list a as [true,false,true]--
-    CAST number list b as [10,20,30]--
-    CAST number list c as []--
+  CAST boolean list a as [true,false,true]--
+  CAST number list b as [10,20,30]--
+  CAST number list c as []--
 END OF PROLOGUE
 
 ACT 1
-    say (a[1])--
+  say (a[1])--
 END OF ACT
 
 ACT 2
-NOMINATE (b[0] < 88):
+  NOMINATE (b[0] < 88):
     say false--
-SUPPORTING:
+  SUPPORTING:
     say true--
 END OF ACT
 
