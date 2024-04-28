@@ -1,12 +1,12 @@
 PROLOGUE
-CAST number x as 0--
+  CAST number x as 0--
 END OF PROLOGUE
 
 ACT 1
-NOMINATE (x is 0):
-say (1)--
-SUPPORTING:
-say (2)--
+  NOMINATE (x is 0):
+    say (1)--
+  SUPPORTING:
+    say (2)--
 END OF ACT
 
 EPILOGUE
