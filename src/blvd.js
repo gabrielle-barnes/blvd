@@ -13,7 +13,6 @@ Prints to stdout according to <outputType>, which must be one of:
   js         the translation to JavaScript
 `;
 async function compileFromFile(filename, outputType) {
-  // try {
   const buffer = await fs.readFile(filename);
   const compiled = compile(buffer.toString(), outputType);
   if (typeof compiled === "string") {
@@ -21,10 +20,6 @@ async function compileFromFile(filename, outputType) {
   } else {
     console.log(stringify(compiled) || "Syntax ok");
   }
-  // } catch (e) {
-  //   console.error(`\u001b[31m${e}\u001b[39m`);
-  //   process.exitCode = 1;
-  // }
 }
 if (process.argv.length !== 4) {
   console.log(help);

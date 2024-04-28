@@ -721,25 +721,6 @@ const semanticErrors = [
     FIN`,
     /Expected a number/,
   ],
-  // [
-  //   "non-boolean conditional test",
-  //   `PROLOGUE
-  //   NOMINATE 1:
-  //   say 1--
-  //   SUPPORTING:
-  //   say 3--
-  //   END OF PROLOGUE
-
-  //   ACT 1
-
-  //   END OF ACT
-
-  //   EPILOGUE
-
-  //   FIN`,
-  //   /Expected a boolean/,
-  // ],
-
   [
     "bad types for `or`",
     `PROLOGUE
@@ -981,15 +962,4 @@ describe("The analyzer", () => {
       assert.throws(() => analyze(parse(source)), errorMessagePattern);
     });
   }
-  /* it("produces the expected representation for a trivial program", () => {
-    assert.deepEqual(
-      analyze(parse("let x = π + 2.2;")),
-      program([
-        variableDeclaration(
-          variable("x", false, floatType),
-          binaryExpression("+", variable("π", true, floatType), 2.2, floatType)
-        ),
-      ])
-    );
-  }); */
 });
