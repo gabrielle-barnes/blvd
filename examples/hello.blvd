@@ -1,11 +1,11 @@
 PROLOGUE
-say "hello world"--
+  say "hello world"--
 END OF PROLOGUE
 
 ACT 1
-say "welcome..."--
+  say "welcome..."--
 END OF ACT
 
 EPILOGUE
-say "to blvd!"--
+  say "to blvd!"--
 FIN
